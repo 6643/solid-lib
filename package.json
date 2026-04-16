@@ -1,0 +1,52 @@
+{
+    "name": "solid-lib",
+    "version": "0.0.0",
+    "type": "module",
+    "bin": {
+        "solid-build": "./src/builder/build.ts",
+        "solid-dev": "./src/builder/dev.ts"
+    },
+    "exports": {
+        "./builder": {
+            "types": "./src/builder/_.ts",
+            "import": "./src/builder/_.ts"
+        },
+        "./route": {
+            "types": "./src/route/_.ts",
+            "import": "./src/route/_.ts"
+        },
+        "./ui": {
+            "types": "./src/ui/_.ts",
+            "import": "./src/ui/_.ts"
+        },
+        "./ui.css": "./src/ui/_.css"
+    },
+    "files": [
+        "docs",
+        "src",
+        "README.md",
+        "tsconfig.json"
+    ],
+    "scripts": {
+        "test": "bun run test:unit",
+        "test:local-consumer": "bun ./test/demo-local-consumer.ts",
+        "test:packed-consumer": "bun ./test/demo-local-consumer.ts pack",
+        "test:smoke": "bun run test:local-consumer && bun run test:packed-consumer",
+        "test:unit": "bun test"
+    },
+    "dependencies": {
+        "@babel/core": "latest",
+        "@babel/preset-typescript": "latest",
+        "babel-preset-solid": "next",
+        "dom-expressions": "latest",
+        "typescript": "latest"
+    },
+    "devDependencies": {
+        "@types/babel__core": "latest",
+        "@types/bun": "latest",
+        "solid-js": "next"
+    },
+    "peerDependencies": {
+        "solid-js": "next"
+    }
+}

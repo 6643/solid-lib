@@ -1,0 +1,92 @@
+.button {
+  appearance: none;
+  background: var(--button-background, var(--base-bg));
+  border: var(--button-border-width, 0) solid var(--button-border-color, transparent);
+  border-radius: var(--button-border-radius, 999px);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--base-fg) 8%, transparent),
+    0 6px 16px color-mix(in srgb, var(--base-fg) 8%, transparent);
+  box-sizing: border-box;
+  color: var(--button-color, var(--base-fg));
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 8px;
+  justify-content: center;
+  min-height: 40px;
+  min-width: 40px;
+  overflow: hidden;
+  padding: 0 16px;
+  position: relative;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+  user-select: none;
+  vertical-align: middle;
+  width: var(--button-width);
+  height: var(--button-height);
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--theme-color) 48%, transparent);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  background: var(--disabled-bg);
+  border-color: color-mix(in srgb, var(--disabled-fg) 12%, transparent);
+  box-shadow: none;
+  color: var(--disabled-fg);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.content {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.icon {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  --button-border-radius: 999px;
+  --button-height: 40px;
+  --button-width: 40px;
+}
+
+.text {
+  background: transparent;
+  box-shadow: none;
+  color: var(--button-color, var(--theme-color));
+}
+
+.text:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--theme-color) 10%, transparent);
+}
+
+.filled {
+  --button-background: var(--button-bg-color, var(--theme-color));
+  --button-color: var(--button-color, #f3fffe);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--theme-color) 22%, transparent);
+}
+
+.outlined {
+  background: transparent;
+  box-shadow: none;
+  --button-border-color: color-mix(in srgb, var(--button-color, var(--theme-color)) 32%, transparent);
+  --button-border-width: 1px;
+  --button-color: var(--button-color, var(--theme-color));
+}
+
+.outlined:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--theme-color) 10%, transparent);
+}

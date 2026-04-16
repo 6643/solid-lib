@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "lib": ["ESNext"],
+        "target": "ESNext",
+        "module": "Preserve",
+        "jsx": "preserve",
+        "jsxImportSource": "solid-js",
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "verbatimModuleSyntax": true,
+        "types": ["bun"],
+        "noEmit": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+    },
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/ui/_.css"],
+    "exclude": ["src/**/*.test.ts"],
+}

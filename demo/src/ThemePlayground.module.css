@@ -1,0 +1,145 @@
+.shell {
+  min-height: 100vh;
+  background: var(--base-bg);
+  color: var(--base-fg);
+  font-family: Georgia, "Times New Roman", serif;
+  padding: 36px 20px 72px;
+}
+
+.hero {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+  margin: 0 auto 24px;
+  max-width: 1080px;
+}
+
+.kicker,
+.eyebrow,
+.caption {
+  color: color-mix(in srgb, var(--base-fg) 64%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: clamp(40px, 7vw, 76px);
+  line-height: 0.95;
+  margin: 10px 0 14px;
+  max-width: 9ch;
+}
+
+.lead {
+  color: color-mix(in srgb, var(--base-fg) 82%, transparent);
+  font-size: 18px;
+  line-height: 1.75;
+  margin: 0;
+  max-width: 60ch;
+}
+
+.controls,
+.panel {
+  padding: 18px;
+}
+
+.buttonRow,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+  margin: 0 auto;
+  max-width: 1080px;
+}
+
+.card {
+  display: block;
+}
+
+.cardTitle {
+  font-size: 32px;
+  line-height: 1.05;
+  margin: 10px 0 12px;
+}
+
+.cardBody {
+  color: color-mix(in srgb, var(--raised-fg) 84%, transparent);
+  font-size: 17px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+  max-width: 56ch;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.fieldLabel {
+  color: color-mix(in srgb, var(--raised-fg) 72%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+}
+
+.error {
+  color: var(--error-color);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 10px 0 0;
+}
+
+.tokenList {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+}
+
+.token {
+  background: color-mix(in srgb, var(--base-bg) 90%, var(--base-fg) 10%);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.token dt {
+  color: var(--base-fg);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.token dd {
+  color: color-mix(in srgb, var(--base-fg) 72%, transparent);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 6px 0 0;
+}
+
+@media (max-width: 760px) {
+  .shell {
+    padding: 24px 16px 56px;
+  }
+
+  .hero,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card,
+  .controls,
+  .panel {
+    padding: 20px;
+  }
+}

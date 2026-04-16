@@ -1,0 +1,4 @@
+.SvgIcon {
+    fill: var(--color, currentColor);
+    vertical-align: middle;
+}

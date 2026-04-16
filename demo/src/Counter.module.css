@@ -1,0 +1,57 @@
+.shell {
+  margin: 0 auto;
+  max-width: 720px;
+  padding: 56px 24px;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.kicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7a5c2e;
+}
+
+.title {
+  margin: 12px 0 8px;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.body {
+  margin: 0 0 24px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.button {
+  border: 1px solid #1f1f1f;
+  background: #1f1f1f;
+  color: #fff8ed;
+  cursor: pointer;
+  font: inherit;
+  padding: 12px 18px;
+}
+
+.buttonAlt {
+  background: #fff8ed;
+  color: #1f1f1f;
+}
+
+.error {
+  color: #9f1d1d;
+  margin-top: 20px;
+}
+
+.panel {
+  border-top: 1px solid #d4c3a4;
+  margin-top: 24px;
+  padding-top: 20px;
+}

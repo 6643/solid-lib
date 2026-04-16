@@ -1,0 +1,13 @@
+node_modules
+.worktrees
+dist
+demo/node_modules
+demo/dist
+demo/bun.lock
+deno.lock
+.tmp-*
+.tmp-spawn-*
+.tmp-local-consumer-debug-*
+.solid-build-config-*
+.solid-build.config.*.ts
+solid-lib-trash-*

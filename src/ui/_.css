@@ -1,0 +1,38 @@
+:root {
+    --base-bg: #f2ebdf;
+    --base-fg: #2a241d;
+
+    --raised-bg: #fbf6ee;
+    --raised-fg: #2a241d;
+
+    --inset-bg: #e5dbcb;
+    --inset-fg: #241e18;
+
+    --disabled-bg: #e1d8cc;
+    --disabled-fg: #948675;
+
+    --theme-color: teal;
+    --error-color: firebrick;
+}
+
+html {
+    color-scheme: light;
+    background: var(--base-bg);
+    color: var(--base-fg);
+}
+
+html[data-theme-mode="dark"] {
+    color-scheme: dark;
+
+    --base-bg: #171412;
+    --base-fg: #ebe3d8;
+
+    --raised-bg: #211d19;
+    --raised-fg: #efe7dd;
+
+    --inset-bg: #100e0d;
+    --inset-fg: #d8cfc4;
+
+    --disabled-bg: #292521;
+    --disabled-fg: #847970;
+}

@@ -1,0 +1,500 @@
+<style>
+  .preview-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    margin-top: 20px;
+  }
+
+  .note {
+    margin-top: 8px;
+    color: #6d6358;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .scene {
+    border-radius: 24px;
+    background: var(--base-bg);
+    color: var(--base-fg);
+    box-shadow:
+      0 24px 60px color-mix(in srgb, var(--base-fg) 10%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--base-fg) 8%, transparent);
+    overflow: hidden;
+  }
+
+  .scene-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+  }
+
+  .scene-label {
+    color: color-mix(in srgb, var(--base-fg) 60%, transparent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .scene-title {
+    margin: 6px 0 0;
+    font-size: 26px;
+    line-height: 1.05;
+  }
+
+  .scene-body {
+    display: grid;
+    gap: 18px;
+    padding: 0 20px 20px;
+  }
+
+  .chip-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chip {
+    border-radius: 16px;
+    padding: 14px;
+    min-height: 108px;
+    background: var(--bg);
+    color: var(--fg);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent);
+  }
+
+  .chip h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .chip p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .chip-base {
+    --bg: var(--base-bg);
+    --fg: var(--base-fg);
+  }
+
+  .chip-raised {
+    --bg: var(--raised-bg);
+    --fg: var(--raised-fg);
+  }
+
+  .chip-inset {
+    --bg: var(--inset-bg);
+    --fg: var(--inset-fg);
+  }
+
+  .chip-disabled {
+    --bg: var(--disabled-bg);
+    --fg: var(--disabled-fg);
+  }
+
+  .inject-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inject-card {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 72px 1fr;
+    align-items: center;
+    border-radius: 16px;
+    padding: 14px;
+    background: color-mix(in srgb, var(--base-bg) 88%, var(--base-fg) 12%);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--base-fg) 8%, transparent);
+  }
+
+  .inject-swatch {
+    height: 56px;
+    border-radius: 14px;
+    background: var(--swatch);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, black 10%, transparent);
+  }
+
+  .inject-card h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .inject-card p {
+    margin: 0;
+    color: color-mix(in srgb, var(--base-fg) 82%, transparent);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .theme-color-card {
+    --swatch: var(--theme-color);
+  }
+
+  .error-color-card {
+    --swatch: var(--error-color);
+  }
+
+  .card {
+    border-radius: 20px;
+    background: var(--raised-bg);
+    color: var(--raised-fg);
+    padding: 18px;
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--base-fg) 8%, transparent);
+  }
+
+  .card h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+  }
+
+  .card p {
+    margin: 0 0 16px;
+    color: color-mix(in srgb, var(--raised-fg) 84%, transparent);
+    line-height: 1.6;
+  }
+
+  .field {
+    display: grid;
+    gap: 8px;
+  }
+
+  .field-label {
+    color: color-mix(in srgb, var(--raised-fg) 72%, transparent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    outline: 0;
+    border-radius: 14px;
+    background: var(--inset-bg);
+    color: var(--inset-fg);
+    font: inherit;
+    padding: 12px 14px;
+    box-shadow: inset 0 1px 3px color-mix(in srgb, black 12%, transparent);
+  }
+
+  .input::placeholder {
+    color: color-mix(in srgb, var(--inset-fg) 54%, transparent);
+  }
+
+  .field-error {
+    color: var(--error-color);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .button {
+    border: 0;
+    border-radius: 999px;
+    background: var(--base-bg);
+    color: var(--base-fg);
+    font: inherit;
+    padding: 10px 14px;
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--base-fg) 8%, transparent),
+      0 4px 10px color-mix(in srgb, var(--base-fg) 6%, transparent);
+  }
+
+  .button.theme {
+    background: var(--theme-color);
+    box-shadow:
+      0 10px 22px color-mix(in srgb, var(--theme-color) 32%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, black 12%, transparent);
+  }
+
+  .scene-light .button.theme {
+    color: #f3fffe;
+  }
+
+  .scene-dark .button.theme {
+    color: #062a28;
+  }
+
+  .button.disabled {
+    background: var(--disabled-bg);
+    color: var(--disabled-fg);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--disabled-fg) 8%, transparent);
+  }
+
+  .meta-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .meta {
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--base-bg) 88%, var(--base-fg) 12%);
+    padding: 12px 14px;
+  }
+
+  .meta span {
+    display: block;
+    color: color-mix(in srgb, var(--base-fg) 56%, transparent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .meta strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--base-fg);
+    font-size: 18px;
+  }
+
+  .scene-light {
+    --base-bg: #f2ebdf;
+    --base-fg: #2a241d;
+
+    --raised-bg: #fbf6ee;
+    --raised-fg: #2a241d;
+
+    --inset-bg: #e5dbcb;
+    --inset-fg: #241e18;
+
+    --disabled-bg: #e1d8cc;
+    --disabled-fg: #948675;
+
+    --theme-color: #0f8077;
+    --error-color: #b33330;
+  }
+
+  .scene-dark {
+    --base-bg: #171412;
+    --base-fg: #ebe3d8;
+
+    --raised-bg: #211d19;
+    --raised-fg: #efe7dd;
+
+    --inset-bg: #100e0d;
+    --inset-fg: #d8cfc4;
+
+    --disabled-bg: #292521;
+    --disabled-fg: #847970;
+
+    --theme-color: #1fa89b;
+    --error-color: #ff8d85;
+  }
+
+  @media (max-width: 720px) {
+    .chip-grid,
+    .inject-grid,
+    .meta-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<h2>Theme Test Page v4</h2>
+<p class="subtitle">Updated names: <code>--theme-color</code> and <code>--error-color</code></p>
+<p class="note">
+  This round keeps <code>base / raised / inset / disabled</code> as paired surfaces,
+  while <code>theme-color</code> and <code>error-color</code> are injected single colors.
+  The examples below show how components consume them.
+</p>
+
+<div class="preview-grid">
+  <div class="mockup">
+    <div class="mockup-header">Light Mode</div>
+    <div class="mockup-body">
+      <div class="scene scene-light">
+        <div class="scene-head">
+          <div>
+            <div class="scene-label">Paper + Teal</div>
+            <div class="scene-title">Raised card, inset control</div>
+          </div>
+          <button class="button theme">Theme</button>
+        </div>
+
+        <div class="scene-body">
+          <div class="chip-grid">
+            <div class="chip chip-base">
+              <h4>Base</h4>
+              <p>Root background and neutral component baseline.</p>
+            </div>
+            <div class="chip chip-raised">
+              <h4>Raised</h4>
+              <p>A lifted surface for cards and grouped content.</p>
+            </div>
+            <div class="chip chip-inset">
+              <h4>Inset</h4>
+              <p>A pressed-in surface for inputs and embedded controls.</p>
+            </div>
+            <div class="chip chip-disabled">
+              <h4>Disabled</h4>
+              <p>Muted without disappearing, but clearly not actionable.</p>
+            </div>
+          </div>
+
+          <div class="inject-grid">
+            <div class="inject-card theme-color-card">
+              <div class="inject-swatch"></div>
+              <div>
+                <h4>Theme Color</h4>
+                <p>Used by the primary button and could also feed links, selection, focus, or emphasis.</p>
+              </div>
+            </div>
+            <div class="inject-card error-color-card">
+              <div class="inject-swatch"></div>
+              <div>
+                <h4>Error Color</h4>
+                <p>Used for validation feedback, error hints, and destructive emphasis.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Form Preview</h3>
+            <p>No default border. The card floats above the page, the input sinks inward, and errors stay as a focused signal.</p>
+
+            <div class="field">
+              <div class="field-label">Email</div>
+              <input class="input" value="not-an-email" />
+              <div class="field-error">Enter a valid email address.</div>
+            </div>
+
+            <div class="button-row">
+              <button class="button">Base</button>
+              <button class="button theme">Theme</button>
+              <button class="button disabled">Disabled</button>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta">
+              <span>Root</span>
+              <strong>Base</strong>
+            </div>
+            <div class="meta">
+              <span>Card</span>
+              <strong>Raised</strong>
+            </div>
+            <div class="meta">
+              <span>Input</span>
+              <strong>Inset</strong>
+            </div>
+            <div class="meta">
+              <span>Signal</span>
+              <strong>Error</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Dark Mode</div>
+    <div class="mockup-body">
+      <div class="scene scene-dark">
+        <div class="scene-head">
+          <div>
+            <div class="scene-label">Paper + Teal</div>
+            <div class="scene-title">Raised card, inset control</div>
+          </div>
+          <button class="button theme">Theme</button>
+        </div>
+
+        <div class="scene-body">
+          <div class="chip-grid">
+            <div class="chip chip-base">
+              <h4>Base</h4>
+              <p>Root background and neutral component baseline.</p>
+            </div>
+            <div class="chip chip-raised">
+              <h4>Raised</h4>
+              <p>A slightly lifted surface that stays matte, not glossy.</p>
+            </div>
+            <div class="chip chip-inset">
+              <h4>Inset</h4>
+              <p>A more sunken surface for fields or embedded controls.</p>
+            </div>
+            <div class="chip chip-disabled">
+              <h4>Disabled</h4>
+              <p>Muted and low-energy, but still legible enough.</p>
+            </div>
+          </div>
+
+          <div class="inject-grid">
+            <div class="inject-card theme-color-card">
+              <div class="inject-swatch"></div>
+              <div>
+                <h4>Theme Color</h4>
+                <p>Still a single injected color. Components decide how strongly to use it.</p>
+              </div>
+            </div>
+            <div class="inject-card error-color-card">
+              <div class="inject-swatch"></div>
+              <div>
+                <h4>Error Color</h4>
+                <p>Bright enough to register in dark mode without becoming neon.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Form Preview</h3>
+            <p>The card rises above the page, the input stays pressed in, and validation remains a local signal instead of repainting the whole field.</p>
+
+            <div class="field">
+              <div class="field-label">Email</div>
+              <input class="input" value="not-an-email" />
+              <div class="field-error">Enter a valid email address.</div>
+            </div>
+
+            <div class="button-row">
+              <button class="button">Base</button>
+              <button class="button theme">Theme</button>
+              <button class="button disabled">Disabled</button>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta">
+              <span>Root</span>
+              <strong>Base</strong>
+            </div>
+            <div class="meta">
+              <span>Card</span>
+              <strong>Raised</strong>
+            </div>
+            <div class="meta">
+              <span>Input</span>
+              <strong>Inset</strong>
+            </div>
+            <div class="meta">
+              <span>Signal</span>
+              <strong>Error</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
