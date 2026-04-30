@@ -180,32 +180,30 @@ export type ThemeMode = "system" | "light" | "dark";
 const THEME_MODE_ATTRIBUTE = "data-theme-mode";
 const THEME_MODE_STORAGE_KEY = "solid-lib:theme-mode";
 
-export function getThemeMode(): ThemeMode {
-  return readThemeModeFromRoot() ?? "system";
-}
+export const getThemeMode = (): ThemeMode => readThemeModeFromRoot() ?? "system";
 
-export function setThemeMode(mode: ThemeMode) {
+export const setThemeMode = (mode: ThemeMode) => {
   writeThemeModeToRoot(mode);
   writeThemeModeToStorage(mode);
-}
+};
 
-export function initializeThemeMode(): ThemeMode {
+export const initializeThemeMode = (): ThemeMode => {
   const mode = readThemeModeFromStorage() ?? "system";
   writeThemeModeToRoot(mode);
   return mode;
-}
+};
 
-export function setSystemTheme() {
+export const setSystemTheme = () => {
   setThemeMode("system");
-}
+};
 
-export function setLightTheme() {
+export const setLightTheme = () => {
   setThemeMode("light");
-}
+};
 
-export function setDarkTheme() {
+export const setDarkTheme = () => {
   setThemeMode("dark");
-}
+};
 ```
 
 Test helpers should fake:

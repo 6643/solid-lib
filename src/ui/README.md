@@ -57,4 +57,4 @@ import "solid-lib/ui.css";
 - `OutlinedButton` 使用透明背景 + `theme-color` 描边
 - `FilledButton` 使用 `theme-color`
 - `IconButton` 使用中性透明面
-- 组件禁用态统一使用 `disabled`
+- 组件只暴露业务 props, 禁用态使用 `disabled`

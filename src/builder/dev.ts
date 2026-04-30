@@ -229,7 +229,8 @@ export const startDevServer = async (
             const assetPath = pathname.replace(/^\//, "");
             const asset = currentBuild.assets.get(assetPath);
             if (asset) {
-                return new Response(asset.body, {
+                const body = typeof asset.body === "string" ? asset.body : (asset.body as BodyInit);
+                return new Response(body, {
                     headers: {
                         "content-type": asset.contentType,
                         "cache-control": "no-store",

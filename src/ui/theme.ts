@@ -1,29 +1,29 @@
 export type ThemeMode = "system" | "light" | "dark";
 
 type ThemeDocument = {
-  documentElement?: {
-    getAttribute?: (name: string) => string | null;
-    setAttribute?: (name: string, value: string) => void;
-  };
+    documentElement?: {
+        getAttribute?: (name: string) => string | null;
+        setAttribute?: (name: string, value: string) => void;
+    };
 };
 
 type ThemeStorage = {
-  getItem?: (key: string) => string | null;
-  setItem?: (key: string, value: string) => void;
+    getItem?: (key: string) => string | null;
+    setItem?: (key: string, value: string) => void;
 };
 
 type ThemeMediaChangeEvent = {
-  matches: boolean;
+    matches: boolean;
 };
 
 type ThemeMediaChangeListener = (event: ThemeMediaChangeEvent) => void;
 
 type ThemeMediaQueryList = {
-  matches: boolean;
-  addEventListener?: (type: "change", listener: ThemeMediaChangeListener) => void;
-  removeEventListener?: (type: "change", listener: ThemeMediaChangeListener) => void;
-  addListener?: (listener: ThemeMediaChangeListener) => void;
-  removeListener?: (listener: ThemeMediaChangeListener) => void;
+    matches: boolean;
+    addEventListener?: (type: "change", listener: ThemeMediaChangeListener) => void;
+    removeEventListener?: (type: "change", listener: ThemeMediaChangeListener) => void;
+    addListener?: (listener: ThemeMediaChangeListener) => void;
+    removeListener?: (listener: ThemeMediaChangeListener) => void;
 };
 
 const THEME_MODE_ATTRIBUTE = "data-theme-mode";
@@ -37,115 +37,112 @@ let systemThemeMediaQueryListener: ThemeMediaChangeListener | undefined;
 let currentThemeMode: ThemeMode | undefined;
 
 const getThemeDocument = (): ThemeDocument | undefined =>
-  (globalThis as Record<string, unknown>).document as ThemeDocument | undefined;
+    (globalThis as Record<string, unknown>).document as ThemeDocument | undefined;
 
 const getThemeStorage = (): ThemeStorage | undefined =>
-  (globalThis as Record<string, unknown>).localStorage as ThemeStorage | undefined;
+    (globalThis as Record<string, unknown>).localStorage as ThemeStorage | undefined;
 
 const getThemeMediaQueryList = (): ThemeMediaQueryList | undefined => {
-  const matchMedia = (globalThis as Record<string, unknown>).matchMedia as
-    | ((query: string) => ThemeMediaQueryList)
-    | undefined;
+    const matchMedia = (globalThis as Record<string, unknown>).matchMedia as
+        | ((query: string) => ThemeMediaQueryList)
+        | undefined;
 
-  return matchMedia?.(SYSTEM_THEME_MEDIA_QUERY);
+    return matchMedia?.(SYSTEM_THEME_MEDIA_QUERY);
 };
 
 const parseThemeMode = (value: string | null | undefined): ThemeMode | undefined =>
-  value && THEME_MODES.has(value as ThemeMode) ? (value as ThemeMode) : undefined;
+    value && THEME_MODES.has(value as ThemeMode) ? (value as ThemeMode) : undefined;
 
 const readThemeModeFromStorage = (): ThemeMode | undefined =>
-  parseThemeMode(getThemeStorage()?.getItem?.(THEME_MODE_STORAGE_KEY));
+    parseThemeMode(getThemeStorage()?.getItem?.(THEME_MODE_STORAGE_KEY));
 
 const writeThemeModeToStorage = (mode: ThemeMode) => {
-  getThemeStorage()?.setItem?.(THEME_MODE_STORAGE_KEY, mode);
+    getThemeStorage()?.setItem?.(THEME_MODE_STORAGE_KEY, mode);
 };
 
-const resolveThemeMode = (): Exclude<ThemeMode, "system"> =>
-  getThemeMediaQueryList()?.matches ? "dark" : "light";
+const resolveThemeMode = (): Exclude<ThemeMode, "system"> => (getThemeMediaQueryList()?.matches ? "dark" : "light");
 
 const writeResolvedThemeModeToRoot = (mode: Exclude<ThemeMode, "system">) => {
-  getThemeDocument()?.documentElement?.setAttribute?.(THEME_MODE_ATTRIBUTE, mode);
+    getThemeDocument()?.documentElement?.setAttribute?.(THEME_MODE_ATTRIBUTE, mode);
 };
 
 const detachSystemThemeListener = () => {
-  if (!systemThemeMediaQueryList || !systemThemeMediaQueryListener) {
+    if (!systemThemeMediaQueryList || !systemThemeMediaQueryListener) {
+        systemThemeMediaQueryList = undefined;
+        systemThemeMediaQueryListener = undefined;
+        return;
+    }
+
+    systemThemeMediaQueryList.removeEventListener?.("change", systemThemeMediaQueryListener);
+    systemThemeMediaQueryList.removeListener?.(systemThemeMediaQueryListener);
     systemThemeMediaQueryList = undefined;
     systemThemeMediaQueryListener = undefined;
-    return;
-  }
-
-  systemThemeMediaQueryList.removeEventListener?.("change", systemThemeMediaQueryListener);
-  systemThemeMediaQueryList.removeListener?.(systemThemeMediaQueryListener);
-  systemThemeMediaQueryList = undefined;
-  systemThemeMediaQueryListener = undefined;
 };
 
 const attachSystemThemeListener = () => {
-  const mediaQueryList = getThemeMediaQueryList();
-  detachSystemThemeListener();
+    const mediaQueryList = getThemeMediaQueryList();
+    detachSystemThemeListener();
 
-  if (!mediaQueryList) {
-    return;
-  }
-
-  const listener: ThemeMediaChangeListener = (event) => {
-    if (currentThemeMode !== "system") {
-      return;
+    if (!mediaQueryList) {
+        return;
     }
 
-    writeResolvedThemeModeToRoot(event.matches ? "dark" : "light");
-  };
+    const listener: ThemeMediaChangeListener = (event) => {
+        if (currentThemeMode !== "system") {
+            return;
+        }
 
-  mediaQueryList.addEventListener?.("change", listener);
-  mediaQueryList.addListener?.(listener);
+        writeResolvedThemeModeToRoot(event.matches ? "dark" : "light");
+    };
 
-  systemThemeMediaQueryList = mediaQueryList;
-  systemThemeMediaQueryListener = listener;
+    mediaQueryList.addEventListener?.("change", listener);
+    mediaQueryList.addListener?.(listener);
+
+    systemThemeMediaQueryList = mediaQueryList;
+    systemThemeMediaQueryListener = listener;
 };
 
 const syncResolvedThemeMode = (mode: ThemeMode) => {
-  writeResolvedThemeModeToRoot(mode === "system" ? resolveThemeMode() : mode);
+    writeResolvedThemeModeToRoot(mode === "system" ? resolveThemeMode() : mode);
 };
 
-export function getThemeMode(): ThemeMode {
-  return currentThemeMode ?? readThemeModeFromStorage() ?? "system";
-}
+export const getThemeMode = (): ThemeMode => currentThemeMode ?? readThemeModeFromStorage() ?? "system";
 
-export function setThemeMode(mode: ThemeMode) {
-  currentThemeMode = mode;
-  writeThemeModeToStorage(mode);
-  syncResolvedThemeMode(mode);
+export const setThemeMode = (mode: ThemeMode) => {
+    currentThemeMode = mode;
+    writeThemeModeToStorage(mode);
+    syncResolvedThemeMode(mode);
 
-  if (mode === "system") {
-    attachSystemThemeListener();
-    return;
-  }
+    if (mode === "system") {
+        attachSystemThemeListener();
+        return;
+    }
 
-  detachSystemThemeListener();
-}
-
-export function initializeThemeMode(): ThemeMode {
-  const mode = readThemeModeFromStorage() ?? "system";
-  currentThemeMode = mode;
-  syncResolvedThemeMode(mode);
-
-  if (mode === "system") {
-    attachSystemThemeListener();
-  } else {
     detachSystemThemeListener();
-  }
+};
 
-  return mode;
-}
+export const initializeThemeMode = (): ThemeMode => {
+    const mode = readThemeModeFromStorage() ?? "system";
+    currentThemeMode = mode;
+    syncResolvedThemeMode(mode);
 
-export function setSystemTheme() {
-  setThemeMode("system");
-}
+    if (mode === "system") {
+        attachSystemThemeListener();
+    } else {
+        detachSystemThemeListener();
+    }
 
-export function setLightTheme() {
-  setThemeMode("light");
-}
+    return mode;
+};
 
-export function setDarkTheme() {
-  setThemeMode("dark");
-}
+export const setSystemTheme = () => {
+    setThemeMode("system");
+};
+
+export const setLightTheme = () => {
+    setThemeMode("light");
+};
+
+export const setDarkTheme = () => {
+    setThemeMode("dark");
+};

@@ -1,9 +1,17 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
         "jsx": "preserve",
         "jsxImportSource": "solid-js",
         "module": "Preserve",
         "moduleResolution": "bundler",
+        "ignoreDeprecations": "6.0",
+        "paths": {
+            "solid-lib/builder": ["../src/builder/_.ts"],
+            "solid-lib/route": ["../src/route/_.ts"],
+            "solid-lib/ui": ["../src/ui/_.ts"],
+            "solid-lib/ui.css": ["../src/ui/_.css"]
+        },
         "skipLibCheck": true,
         "target": "ESNext",
         "types": ["bun"],

@@ -31,8 +31,8 @@
 ## Public API
 
 ```ts
-export function setLightTheme(): void;
-export function setDarkTheme(): void;
+export const setLightTheme = (): void => {};
+export const setDarkTheme = (): void => {};
 ```
 
 语义约束:

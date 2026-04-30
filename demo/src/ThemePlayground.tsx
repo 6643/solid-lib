@@ -66,7 +66,7 @@ const ThemePlayground = () => {
             <TextButton text="Text" />
             <OutlinedButton text="Outline" />
             <FilledButton text="Theme" />
-            <IconButton aria-label="Icon" icon={iconMinus} />
+            <IconButton icon={iconMinus} />
             <FilledButton disabled text="Disabled" />
           </div>
         </Card>

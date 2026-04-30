@@ -5,6 +5,13 @@ import { join } from "node:path";
 import { loadConfig } from "../src/builder/config";
 import { startDevServer } from "../src/builder/dev";
 
+const noProxyHosts = ["127.0.0.1", "localhost", "::1"];
+const existingNoProxy = process.env.NO_PROXY ?? process.env.no_proxy;
+const mergedNoProxy = Array.from(new Set([...(existingNoProxy ? [existingNoProxy] : []), ...noProxyHosts])).join(",");
+
+process.env.NO_PROXY = mergedNoProxy;
+process.env.no_proxy = mergedNoProxy;
+
 const createdDirs: string[] = [];
 const stopFns: Array<() => void> = [];
 
@@ -50,7 +57,7 @@ test("solid-dev serves html, js, css, and sse without writing dist", async () =>
     [
       'import styles from "./App.module.css";',
       "",
-      "export default function App() {",
+      "export default () => {",
       '  return <main class={styles.shell}>Hello solid-dev</main>;',
       "}",
       "",
@@ -130,7 +137,7 @@ test("solid-dev serves the app html for SPA route paths", async () => {
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       '  return <main>SPA route html</main>;',
       "}",
       "",
@@ -179,7 +186,7 @@ test("solid-dev rebuilds and emits reload events when source files change", asyn
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       '  return <main>Before rebuild</main>;',
       "}",
       "",
@@ -198,7 +205,7 @@ test("solid-dev rebuilds and emits reload events when source files change", asyn
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       '  return <main>After rebuild</main>;',
       "}",
       "",
@@ -250,7 +257,7 @@ test("solid-dev uses devPort from config when no explicit port override is provi
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       '  return <main>Port config</main>;',
       "}",
       "",
@@ -310,7 +317,7 @@ test("solid-dev watches the full app source tree, not only the entry directory",
     [
       'import { message } from "../shared/message";',
       "",
-      "export default function App() {",
+      "export default () => {",
       "  return <main>{message}</main>;",
       "}",
       "",
@@ -383,7 +390,7 @@ test("solid-dev also watches the full source tree when appComponent uses ./src p
     [
       'import { message } from "../shared/message";',
       "",
-      "export default function App() {",
+      "export default () => {",
       "  return <main>{message}</main>;",
       "}",
       "",
@@ -452,7 +459,7 @@ test("solid-dev reloads updated config values after config file changes", async 
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       '  return <main>Config reload</main>;',
       "}",
       "",
@@ -527,7 +534,7 @@ test("solid-dev reloads config values when imported helper modules change", asyn
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       '  return <main>Config helper reload</main>;',
       "}",
       "",
@@ -596,7 +603,7 @@ test("solid-dev warns that devPort changes require restart and keeps the current
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       '  return <main>Port reload</main>;',
       "}",
       "",
@@ -688,7 +695,7 @@ test("loadConfig rejects app components that only mention export default in stri
     join(appRoot, "src", "_.tsx"),
     [
       'const misleading = "export default nope";',
-      "export function App() {",
+      "export const App = () => {",
       "  return <main>No real default export</main>;",
       "}",
       "",
@@ -727,7 +734,7 @@ test("loadConfig rejects outDir inside the source tree when appComponent uses ./
   writeFileSync(
     join(appRoot, "src", "app", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       "  return <main>Outdir validation</main>;",
       "}",
       "",
@@ -756,7 +763,7 @@ test("loadConfig rejects appComponent paths outside the project root", async () 
 
   const outsideComponentPath = join(process.cwd(), ".tmp-solid-config-external-app.tsx");
 
-  writeFileSync(outsideComponentPath, 'export default function App() { return <main>Outside</main>; }\n');
+  writeFileSync(outsideComponentPath, 'export default () => { return <main>Outside</main>; }\n');
 
   try {
     mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -805,7 +812,7 @@ test("loadConfig rejects symlinked appComponent paths whose real target escapes 
 
   const outsideComponentPath = join(process.cwd(), ".tmp-solid-config-external-symlink-app.tsx");
 
-  writeFileSync(outsideComponentPath, 'export default function App() { return <main>Outside symlink</main>; }\n');
+  writeFileSync(outsideComponentPath, 'export default () => { return <main>Outside symlink</main>; }\n');
 
   try {
     mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -884,7 +891,7 @@ test("loadConfig rejects assetsDirs outside the project root", async () => {
     writeFileSync(
       join(appRoot, "src", "_.tsx"),
       [
-        "export default function App() {",
+        "export default () => {",
         "  return <main>Outside assets</main>;",
         "}",
         "",
@@ -945,7 +952,7 @@ test("loadConfig rejects symlinked assetsDirs whose real target escapes the proj
     writeFileSync(
       join(appRoot, "src", "_.tsx"),
       [
-        "export default function App() {",
+        "export default () => {",
         "  return <main>Symlink assets</main>;",
         "}",
         "",
@@ -999,7 +1006,7 @@ test("loadConfig uses the nested src directory as app source root", async () => 
   writeFileSync(
     join(appRoot, "packages", "web", "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       "  return <main>Nested src</main>;",
       "}",
       "",
@@ -1059,7 +1066,7 @@ test("loadConfig rejects symlinked outDir paths", async () => {
     writeFileSync(
       join(appRoot, "src", "_.tsx"),
       [
-        "export default function App() {",
+        "export default () => {",
         "  return <main>Symlink outDir</main>;",
         "}",
         "",
@@ -1118,7 +1125,7 @@ test("loadConfig rejects config helper imports outside the project root", async 
     writeFileSync(
       join(appRoot, "src", "_.tsx"),
       [
-        "export default function App() {",
+        "export default () => {",
         "  return <main>Parent helper</main>;",
         "}",
         "",
@@ -1179,7 +1186,7 @@ test("loadConfig rejects config helper symlinks whose real target escapes the pr
     writeFileSync(
       join(appRoot, "src", "_.tsx"),
       [
-        "export default function App() {",
+        "export default () => {",
         "  return <main>Symlink helper</main>;",
         "}",
         "",
@@ -1234,7 +1241,7 @@ test("loadConfig works when the project root is read-only", async () => {
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       "  return <main>Readonly config</main>;",
       "}",
       "",
@@ -1292,7 +1299,7 @@ test("loadConfig works when the project path contains percent-encoded characters
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       "  return <main>Encoded path config</main>;",
       "}",
       "",
@@ -1344,7 +1351,7 @@ test("solid-dev works when the project root is read-only", async () => {
   writeFileSync(
     join(appRoot, "src", "_.tsx"),
     [
-      "export default function App() {",
+      "export default () => {",
       "  return <main>Readonly dev root</main>;",
       "}",
       "",
@@ -1377,7 +1384,7 @@ test("solid-dev works when the project root is read-only", async () => {
   }
 });
 
-async function readReloadEvent(stream: ReadableStream<Uint8Array>): Promise<string> {
+const readReloadEvent = async (stream: ReadableStream<Uint8Array>): Promise<string> => {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
   const timeoutAt = Date.now() + 10000;
