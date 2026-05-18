@@ -57,4 +57,10 @@ import "solid-lib/ui.css";
 - `OutlinedButton` 使用透明背景 + `theme-color` 描边
 - `FilledButton` 使用 `theme-color`
 - `IconButton` 使用中性透明面
-- 组件只暴露业务 props, 禁用态使用 `disabled`
+- 组件禁用态统一使用 `disabled`
+
+## 内部结构
+
+- `SvgIcon.tsx` 只负责 SVG 渲染与 path 数据解析
+- `icons.ts` 保存生成的 icon path 常量
+- `className.ts` 保存组件间共享的 class 拼接辅助

@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { lstatSync, readdirSync, statSync, type Dirent, type Stats } from "node:fs";
 import { networkInterfaces } from "node:os";
-import { join, relative, resolve, sep } from "node:path";
+import { join, resolve } from "node:path";
 
 import type { LoadedSolidBuildConfig } from "./config";
 import { loadConfig } from "./config";
 import { buildAppBundle, getAssetContentType } from "./bundle";
+import { isSameOrSubpath, resolveExistingRealPath } from "./path";
 
 export interface StartDevServerOptions {
     host?: string;
@@ -21,7 +22,7 @@ export interface StartedDevServer {
 }
 
 interface InMemoryAsset {
-    body: Uint8Array | string;
+    body: ArrayBuffer | string;
     contentType: string;
 }
 
@@ -29,6 +30,8 @@ interface InMemoryCompilation {
     assets: Map<string, InMemoryAsset>;
     html: string;
 }
+
+type DevClientController = ReadableStreamDefaultController<string>;
 
 const DEV_EVENTS_PATH = "/__solid_dev/events";
 const DEFAULT_POLL_INTERVAL_MS = 300;
@@ -58,31 +61,64 @@ const isSpaRequest = (request: Request, pathname: string): boolean => {
     return !pathname.split("/").at(-1)?.includes(".");
 };
 
-const listFiles = (rootPath: string): string[] => {
-    if (!existsSync(rootPath)) {
-        return [];
+const safeLstat = (filePath: string): Stats | undefined => {
+    try {
+        return lstatSync(filePath);
+    } catch (_error) {
+        return undefined;
     }
-
-    const stats = statSync(rootPath);
-    if (stats.isFile()) {
-        return [rootPath];
-    }
-
-    const files: string[] = [];
-    for (const entry of readdirSync(rootPath, { withFileTypes: true })) {
-        const fullPath = join(rootPath, entry.name);
-        if (entry.isDirectory()) {
-            files.push(...listFiles(fullPath));
-            continue;
-        }
-        files.push(fullPath);
-    }
-    return files;
 };
 
-const isSameOrSubpath = (targetPath: string, basePath: string): boolean => {
-    const relativePath = relative(basePath, targetPath);
-    return relativePath === "" || (!relativePath.startsWith(`..${sep}`) && relativePath !== "..");
+const safeStat = (filePath: string): Stats | undefined => {
+    try {
+        return statSync(filePath);
+    } catch (_error) {
+        return undefined;
+    }
+};
+
+const safeReadDir = (dirPath: string): Dirent[] => {
+    try {
+        return readdirSync(dirPath, { withFileTypes: true });
+    } catch (_error) {
+        return [];
+    }
+};
+
+const safeRealPath = (filePath: string): string | undefined => {
+    try {
+        return resolveExistingRealPath(filePath);
+    } catch (_error) {
+        return undefined;
+    }
+};
+
+const listFiles = (rootPath: string): string[] => {
+    const files: string[] = [];
+    const pendingPaths = [rootPath];
+
+    while (pendingPaths.length > 0) {
+        const currentPath = pendingPaths.pop()!;
+        const stats = safeLstat(currentPath);
+        if (!stats) {
+            continue;
+        }
+
+        if (stats.isFile() || stats.isSymbolicLink()) {
+            files.push(currentPath);
+            continue;
+        }
+
+        if (!stats.isDirectory()) {
+            continue;
+        }
+
+        for (const entry of safeReadDir(currentPath)) {
+            pendingPaths.push(join(currentPath, entry.name));
+        }
+    }
+
+    return files;
 };
 
 const createWatchSignature = ({ config, configDependencyPaths, cwd }: LoadedSolidBuildConfig): string => {
@@ -96,10 +132,9 @@ const createWatchSignature = ({ config, configDependencyPaths, cwd }: LoadedSoli
     return Array.from(roots)
         .flatMap((root) => listFiles(root))
         .sort()
-        .map((filePath) => {
-            const stats = statSync(filePath);
-            return `${filePath}:${stats.size}:${stats.mtimeMs}`;
-        })
+        .map((filePath) => [filePath, safeLstat(filePath)] as const)
+        .filter((entry): entry is readonly [string, Stats] => entry[1] !== undefined)
+        .map(([filePath, stats]) => `${filePath}:${stats.size}:${stats.mtimeMs}`)
         .join("|");
 };
 
@@ -108,14 +143,80 @@ const buildDevCompilation = async (loadedConfig: LoadedSolidBuildConfig): Promis
     const assets = new Map<string, InMemoryAsset>();
 
     for (const output of bundle.assets) {
-        const bytes = new Uint8Array(await output.artifact.arrayBuffer());
         assets.set(output.path, {
-            body: bytes,
+            body: await output.artifact.arrayBuffer(),
             contentType: getAssetContentType(output.path, output.artifact),
         });
     }
 
     return { assets, html: injectDevClient(bundle.html) };
+};
+
+const createNoStoreResponse = (body: BodyInit, contentType: string): Response =>
+    new Response(body, {
+        headers: {
+            "content-type": contentType,
+            "cache-control": "no-store",
+        },
+    });
+
+const createHtmlResponse = (html: string): Response => createNoStoreResponse(html, "text/html; charset=utf-8");
+
+const createBundledAssetResponse = (asset: InMemoryAsset): Response => createNoStoreResponse(asset.body, asset.contentType);
+
+const pruneDisconnectedClients = (clients: Set<DevClientController>): void => {
+    for (const client of clients) {
+        if (client.desiredSize === null) {
+            clients.delete(client);
+        }
+    }
+};
+
+const createDevEventsResponse = (clients: Set<DevClientController>): Response =>
+    new Response(
+        new ReadableStream<string>({
+            start(controller) {
+                clients.add(controller);
+                controller.enqueue("retry: 1000\n\n");
+            },
+            cancel() {
+                pruneDisconnectedClients(clients);
+            },
+        }),
+        {
+            headers: {
+                "cache-control": "no-store",
+                connection: "keep-alive",
+                "content-type": "text/event-stream; charset=utf-8",
+            },
+        },
+    );
+
+const createSourceAssetResponse = (assetPath: string, loadedConfig: LoadedSolidBuildConfig): Response | undefined => {
+    for (const assetsDir of loadedConfig.config.assetsDirs) {
+        const prefix = `${assetsDir.outputDirName}/`;
+        if (!assetPath.startsWith(prefix)) {
+            continue;
+        }
+
+        const requestedPath = resolve(assetsDir.inputPath, assetPath.slice(prefix.length));
+        const assetsRootPath = safeRealPath(assetsDir.inputPath);
+        const requestedStats = safeStat(requestedPath);
+        const requestedRealPath = safeRealPath(requestedPath);
+        if (
+            !isSameOrSubpath(requestedPath, assetsDir.inputPath) ||
+            !assetsRootPath ||
+            !requestedStats?.isFile() ||
+            !requestedRealPath ||
+            !isSameOrSubpath(requestedRealPath, assetsRootPath)
+        ) {
+            return new Response("Not found", { status: 404 });
+        }
+
+        return new Response(Bun.file(requestedPath));
+    }
+
+    return undefined;
 };
 
 export const startDevServer = async (
@@ -125,7 +226,7 @@ export const startDevServer = async (
     const host = options.host ?? "127.0.0.1";
     const hasExplicitPort = options.port !== undefined;
     const pollIntervalMs = options.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
-    const clients = new Set<ReadableStreamDefaultController<string>>();
+    const clients = new Set<DevClientController>();
     let currentConfig = loadedConfig;
     let currentBuild = await buildDevCompilation(currentConfig);
     let disposed = false;
@@ -193,75 +294,26 @@ export const startDevServer = async (
             const pathname = url.pathname === "/index.html" ? "/" : url.pathname;
 
             if (pathname === "/") {
-                return new Response(currentBuild.html, {
-                    headers: {
-                        "content-type": "text/html; charset=utf-8",
-                        "cache-control": "no-store",
-                    },
-                });
+                return createHtmlResponse(currentBuild.html);
             }
 
             if (pathname === DEV_EVENTS_PATH) {
-                return new Response(
-                    new ReadableStream<string>({
-                        start(controller) {
-                            clients.add(controller);
-                            controller.enqueue("retry: 1000\n\n");
-                        },
-                        cancel() {
-                            for (const client of clients) {
-                                if (client.desiredSize === null) {
-                                    clients.delete(client);
-                                }
-                            }
-                        },
-                    }),
-                    {
-                        headers: {
-                            "cache-control": "no-store",
-                            connection: "keep-alive",
-                            "content-type": "text/event-stream; charset=utf-8",
-                        },
-                    },
-                );
+                return createDevEventsResponse(clients);
             }
 
             const assetPath = pathname.replace(/^\//, "");
             const asset = currentBuild.assets.get(assetPath);
             if (asset) {
-                const body = typeof asset.body === "string" ? asset.body : (asset.body as BodyInit);
-                return new Response(body, {
-                    headers: {
-                        "content-type": asset.contentType,
-                        "cache-control": "no-store",
-                    },
-                });
+                return createBundledAssetResponse(asset);
             }
 
-            for (const assetsDir of currentConfig.config.assetsDirs) {
-                const prefix = `${assetsDir.outputDirName}/`;
-                if (!assetPath.startsWith(prefix)) {
-                    continue;
-                }
-
-                const requestedPath = resolve(assetsDir.inputPath, assetPath.slice(prefix.length));
-                if (
-                    !isSameOrSubpath(requestedPath, assetsDir.inputPath) ||
-                    !existsSync(requestedPath) ||
-                    !statSync(requestedPath).isFile()
-                ) {
-                    return new Response("Not found", { status: 404 });
-                }
-                return new Response(Bun.file(requestedPath));
+            const sourceAssetResponse = createSourceAssetResponse(assetPath, currentConfig);
+            if (sourceAssetResponse) {
+                return sourceAssetResponse;
             }
 
             if (isSpaRequest(request, pathname)) {
-                return new Response(currentBuild.html, {
-                    headers: {
-                        "content-type": "text/html; charset=utf-8",
-                        "cache-control": "no-store",
-                    },
-                });
+                return createHtmlResponse(currentBuild.html);
             }
 
             return new Response("Not found", { status: 404 });

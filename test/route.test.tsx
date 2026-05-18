@@ -520,6 +520,21 @@ describe("anchor navigation", () => {
     expect(getRouteBackPath()).toBe("/search?page=1");
   });
 
+  test("intercepts anchor-like targets without getAttribute", () => {
+    const browser = installBrowser("/search?page=1");
+    Route({ path: "/search", component: () => "search" });
+
+    getRouteBackPath();
+
+    const href = new URL("/search?page=2", browser.location.href).href;
+    const event = browser.createClickEvent({ href });
+    browser.document.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(browser.location.search).toBe("?page=2");
+    expect(getRouteBackPath()).toBe("/search?page=1");
+  });
+
   test("intercepts same-origin anchors when a fallback route is active", () => {
     const browser = installBrowser("/");
     Route({ path: "/*", component: () => "fallback" });
@@ -544,6 +559,28 @@ describe("anchor navigation", () => {
     const event = browser.createClickEvent(anchor);
     browser.document.dispatchEvent(event);
 
+    expect(event.defaultPrevented).toBe(false);
+    expect(browser.location.pathname).toBe("/");
+  });
+
+  test("ignores malformed anchor-like click targets without throwing", () => {
+    const browser = installBrowser("/");
+    Route({ path: "/*", component: () => "fallback" });
+
+    getRouteBackPath();
+
+    const anchor = {
+      href: "http://[",
+      closest: (selector: string) => (selector === "a[href]" ? anchor : null),
+      getAttribute() {
+        return null;
+      },
+    };
+    const event = browser.createClickEvent(anchor);
+
+    expect(() => {
+      browser.document.dispatchEvent(event);
+    }).not.toThrow();
     expect(event.defaultPrevented).toBe(false);
     expect(browser.location.pathname).toBe("/");
   });

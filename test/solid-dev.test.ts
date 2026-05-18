@@ -25,6 +25,40 @@ afterEach(() => {
   }
 });
 
+const writeMinimalApp = (appRoot: string) => {
+  mkdirSync(join(appRoot, "src"), { recursive: true });
+
+  writeFileSync(
+    join(appRoot, "tsconfig.json"),
+    `${JSON.stringify(
+      {
+        compilerOptions: {
+          jsx: "preserve",
+          jsxImportSource: "solid-js",
+          module: "Preserve",
+          moduleResolution: "bundler",
+          target: "ESNext",
+          types: ["bun"],
+          skipLibCheck: true,
+        },
+        include: ["src/**/*.ts", "src/**/*.tsx"],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  writeFileSync(
+    join(appRoot, "src", "_.tsx"),
+    [
+      "export default function App() {",
+      "  return <main>Minimal app</main>;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+};
+
 test("solid-dev serves html, js, css, and sse without writing dist", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-"));
   createdDirs.push(appRoot);
@@ -757,6 +791,50 @@ test("loadConfig rejects outDir inside the source tree when appComponent uses ./
   await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not be inside the app source tree");
 });
 
+test("loadConfig rejects reserved output directories before build deletion can target them", async () => {
+  for (const outDir of [".git", "node_modules"]) {
+    const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-reserved-outdir-"));
+    createdDirs.push(appRoot);
+    writeMinimalApp(appRoot);
+
+    writeFileSync(
+      join(appRoot, "solid-build.config.ts"),
+      [
+        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        "",
+        "export default defineSolidBuildConfig({",
+        `  outDir: ${JSON.stringify(outDir)},`,
+        "});",
+        "",
+      ].join("\n"),
+    );
+
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not target a reserved project directory");
+  }
+});
+
+test("loadConfig rejects output directories that overlap configured assets directories", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-assets-outdir-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+  mkdirSync(join(appRoot, "assets"), { recursive: true });
+
+  writeFileSync(
+    join(appRoot, "solid-build.config.ts"),
+    [
+      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      "",
+      "export default defineSolidBuildConfig({",
+      '  assetsDirs: ["assets"],',
+      '  outDir: "assets",',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not overlap assetsDirs entries");
+});
+
 test("loadConfig rejects appComponent paths outside the project root", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-outside-entry-"));
   createdDirs.push(appRoot);
@@ -977,6 +1055,101 @@ test("loadConfig rejects symlinked assetsDirs whose real target escapes the proj
   }
 });
 
+test("loadConfig rejects the project root as an assets directory", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-root-assets-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+
+  writeFileSync(
+    join(appRoot, "solid-build.config.ts"),
+    [
+      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      "",
+      "export default defineSolidBuildConfig({",
+      '  assetsDirs: ["."],',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not point at the project root");
+});
+
+test("loadConfig rejects assetsDirs symlinks whose real target is a reserved directory", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-reserved-assets-link-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+  mkdirSync(join(appRoot, "node_modules"), { recursive: true });
+  symlinkSync(join(appRoot, "node_modules"), join(appRoot, "assets-link"), "dir");
+
+  writeFileSync(
+    join(appRoot, "solid-build.config.ts"),
+    [
+      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      "",
+      "export default defineSolidBuildConfig({",
+      '  assetsDirs: ["assets-link"],',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not target a reserved project directory");
+});
+
+test("loadConfig rejects nested assets symlinks whose real target escapes the assets directory", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-nested-symlink-assets-"));
+  createdDirs.push(appRoot);
+
+  const outsideAssetPath = join(process.cwd(), ".tmp-solid-config-external-nested-asset.txt");
+  writeFileSync(outsideAssetPath, "outside nested asset\n");
+
+  try {
+    writeMinimalApp(appRoot);
+    mkdirSync(join(appRoot, "assets"), { recursive: true });
+    symlinkSync(outsideAssetPath, join(appRoot, "assets", "outside.txt"));
+
+    writeFileSync(
+      join(appRoot, "solid-build.config.ts"),
+      [
+        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        "",
+        "export default defineSolidBuildConfig({",
+        '  assetsDirs: ["assets"],',
+        "});",
+        "",
+      ].join("\n"),
+    );
+
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not contain symlinks outside the assets directory");
+  } finally {
+    rmSync(outsideAssetPath, { force: true });
+  }
+});
+
+test("loadConfig rejects cyclic directory symlinks inside assets directories", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-cyclic-assets-"));
+  createdDirs.push(appRoot);
+
+  writeMinimalApp(appRoot);
+  mkdirSync(join(appRoot, "assets"), { recursive: true });
+  symlinkSync(".", join(appRoot, "assets", "loop"), "dir");
+
+  writeFileSync(
+    join(appRoot, "solid-build.config.ts"),
+    [
+      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      "",
+      "export default defineSolidBuildConfig({",
+      '  assetsDirs: ["assets"],',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not contain directory symlinks");
+});
+
 test("loadConfig uses the nested src directory as app source root", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-nested-src-"));
   createdDirs.push(appRoot);
@@ -1089,6 +1262,31 @@ test("loadConfig rejects symlinked outDir paths", async () => {
   } finally {
     rmSync(outsideOutDirPath, { force: true, recursive: true });
   }
+});
+
+test("loadConfig rejects outDir paths whose existing parent escapes the project root through a symlink", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-symlink-outdir-parent-"));
+  createdDirs.push(appRoot);
+
+  const outsideOutDirPath = mkdtempSync(join(process.cwd(), ".tmp-solid-config-external-outdir-parent-"));
+  createdDirs.push(outsideOutDirPath);
+
+  writeMinimalApp(appRoot);
+  symlinkSync(outsideOutDirPath, join(appRoot, "out-link"));
+
+  writeFileSync(
+    join(appRoot, "solid-build.config.ts"),
+    [
+      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      "",
+      "export default defineSolidBuildConfig({",
+      '  outDir: "out-link/dist",',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not escape the project root through a symbolic link");
 });
 
 test("loadConfig rejects config helper imports outside the project root", async () => {

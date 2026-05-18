@@ -1,7 +1,16 @@
-import { accessSync, constants, existsSync, lstatSync, mkdirSync, mkdtempSync, realpathSync, rmSync, statSync, symlinkSync } from "node:fs";
-import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { tmpdir } from "node:os";
+import { existsSync, lstatSync, readdirSync, statSync } from "node:fs";
+import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import * as ts from "typescript";
+
+import {
+    findNearestExistingPath,
+    getProjectRelativeSegments,
+    isSameOrSubpath,
+    resolveExistingRealPath,
+    validateExistingPathTarget,
+    validateProjectRootPath,
+} from "./path";
+import { loadUserConfig } from "./config-file";
 
 export interface SolidBuildConfig {
     appComponent?: string;
@@ -46,191 +55,8 @@ const DEFAULT_CONFIG: Required<SolidBuildConfig> = {
 const ALLOWED_CONFIG_KEYS = new Set(["appComponent", "appTitle", "assetsDirs", "devPort", "mountId", "outDir"]);
 const LEGACY_CONFIG_KEYS = new Set(["entry", "html", "naming", "solid", "splitting", "tsconfig"]);
 const DEFAULT_ASSET_DIR = "assets";
+const RESERVED_PROJECT_DIR_NAMES = new Set([".git", "node_modules"]);
 const DOM_ID_PATTERN = /^[A-Za-z][A-Za-z0-9\-_.:]*$/;
-const CONFIG_IMPORT_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"];
-
-const createSourceCacheKey = (source: string): string => {
-    let hash = 0;
-
-    for (let index = 0; index < source.length; index += 1) {
-        hash = (hash * 31 + source.charCodeAt(index)) >>> 0;
-    }
-
-    return hash.toString(16);
-};
-
-const findNearestNodeModulesPath = (startPath: string): string | undefined => {
-    let currentPath = resolve(startPath);
-
-    while (true) {
-        const nodeModulesPath = join(currentPath, "node_modules");
-        if (existsSync(nodeModulesPath) && statSync(nodeModulesPath).isDirectory()) {
-            return nodeModulesPath;
-        }
-
-        const parentPath = dirname(currentPath);
-        if (parentPath === currentPath) {
-            return undefined;
-        }
-        currentPath = parentPath;
-    }
-};
-
-const findWritableAncestorPath = (startPath: string): string | undefined => {
-    let currentPath = resolve(startPath);
-
-    while (true) {
-        try {
-            accessSync(currentPath, constants.W_OK);
-            return currentPath;
-        } catch {}
-
-        const parentPath = dirname(currentPath);
-        if (parentPath === currentPath) {
-            return undefined;
-        }
-        currentPath = parentPath;
-    }
-};
-
-const resolveExistingRealPath = (targetPath: string): string => {
-    return realpathSync.native?.(targetPath) ?? realpathSync(targetPath);
-};
-
-const toFileUrlHref = (filePath: string): string => {
-    const url = new URL("file:///");
-    url.pathname = resolve(filePath).replace(/%/g, "%25").replace(/\\/g, "/");
-    return url.href;
-};
-
-const getScriptKind = (filePath: string): ts.ScriptKind => {
-    switch (extname(filePath)) {
-        case ".tsx":
-        case ".jsx":
-            return ts.ScriptKind.TSX;
-        case ".js":
-        case ".mjs":
-        case ".cjs":
-            return ts.ScriptKind.JS;
-        default:
-            return ts.ScriptKind.TS;
-    }
-};
-
-const getRelativeModuleSpecifiers = (sourceFile: ts.SourceFile): string[] => {
-    const specifiers = new Set<string>();
-
-    const visit = (node: ts.Node): void => {
-        if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
-            const moduleSpecifier = node.moduleSpecifier;
-            if (moduleSpecifier && ts.isStringLiteral(moduleSpecifier) && moduleSpecifier.text.startsWith(".")) {
-                specifiers.add(moduleSpecifier.text);
-            }
-        }
-
-        if (
-            ts.isCallExpression(node) &&
-            node.expression.kind === ts.SyntaxKind.ImportKeyword &&
-            node.arguments.length > 0 &&
-            (() => {
-                const [firstArgument] = node.arguments;
-                return !!firstArgument && ts.isStringLiteral(firstArgument) && firstArgument.text.startsWith(".");
-            })()
-        ) {
-            const [firstArgument] = node.arguments;
-            specifiers.add((firstArgument as ts.StringLiteral).text);
-        }
-
-        ts.forEachChild(node, visit);
-    };
-
-    visit(sourceFile);
-    return Array.from(specifiers);
-};
-
-const resolveRelativeImportPath = (fromPath: string, specifier: string): string => {
-    const basePath = resolve(dirname(fromPath), specifier);
-    const candidates = [
-        basePath,
-        ...CONFIG_IMPORT_EXTENSIONS.map((extension) => `${basePath}${extension}`),
-        ...CONFIG_IMPORT_EXTENSIONS.map((extension) => resolve(basePath, `index${extension}`)),
-    ];
-
-    for (const candidate of candidates) {
-        if (existsSync(candidate) && statSync(candidate).isFile()) {
-            return candidate;
-        }
-    }
-
-    throw new Error(`solid-build config import was not found: ${specifier} from ${fromPath}`);
-};
-
-const collectConfigDependencyPaths = async (configPath: string, cwd: string): Promise<string[]> => {
-    const visited = new Set<string>();
-    const queue = [configPath];
-
-    while (queue.length > 0) {
-        const currentPath = queue.shift()!;
-        if (visited.has(currentPath)) {
-            continue;
-        }
-
-        visited.add(currentPath);
-
-        const source = await Bun.file(currentPath).text();
-        const sourceFile = ts.createSourceFile(currentPath, source, ts.ScriptTarget.Latest, true, getScriptKind(currentPath));
-
-        for (const specifier of getRelativeModuleSpecifiers(sourceFile)) {
-            const dependencyPath = resolveRelativeImportPath(currentPath, specifier);
-            validateProjectRootPath(cwd, dependencyPath, "config imports", specifier);
-            validateExistingPathTarget(cwd, dependencyPath, "config imports", specifier);
-            if (!visited.has(dependencyPath)) {
-                queue.push(dependencyPath);
-            }
-        }
-    }
-
-    return Array.from(visited).sort();
-};
-
-const loadUserConfig = async (
-    configPath: string,
-    cwd: string,
-): Promise<{ config: SolidBuildConfig; dependencyPaths: string[] }> => {
-    const dependencyPaths = await collectConfigDependencyPaths(configPath, cwd);
-    const stagingBasePath = findWritableAncestorPath(cwd) ?? tmpdir();
-    const tempRoot = mkdtempSync(join(stagingBasePath, ".solid-build-config-"));
-    const tempConfigPath = join(tempRoot, relative(cwd, configPath));
-
-    try {
-        for (const dependencyPath of dependencyPaths) {
-            const relativeDependencyPath = relative(cwd, dependencyPath);
-            const stagedPath = join(tempRoot, relativeDependencyPath);
-            mkdirSync(dirname(stagedPath), { recursive: true });
-            await Bun.write(stagedPath, Bun.file(dependencyPath));
-        }
-
-        const nodeModulesPath = findNearestNodeModulesPath(cwd);
-        if (nodeModulesPath) {
-            symlinkSync(nodeModulesPath, join(tempRoot, "node_modules"), "dir");
-        }
-
-        const module = await import(toFileUrlHref(tempConfigPath));
-        const userConfig = module.default as SolidBuildConfig | undefined;
-
-        if (!userConfig) {
-            throw new Error(`solid-build config at ${configPath} must export a default config object`);
-        }
-
-        if (typeof userConfig !== "object" || Array.isArray(userConfig)) {
-            throw new Error(`solid-build config at ${configPath} must export an object`);
-        }
-
-        return { config: userConfig, dependencyPaths };
-    } finally {
-        rmSync(tempRoot, { force: true, recursive: true });
-    }
-};
 
 const hasDefaultExport = (sourceFile: ts.SourceFile): boolean => {
     for (const statement of sourceFile.statements) {
@@ -337,21 +163,15 @@ const getSourceTreePath = (cwd: string, appComponent: string): string | undefine
     return resolve(cwd, ...segments.slice(0, -1));
 };
 
-const isSameOrSubpath = (targetPath: string, basePath: string): boolean => {
-    const relativePath = relative(basePath, targetPath);
-    return relativePath === "" || (!relativePath.startsWith(`..${sep}`) && relativePath !== ".." && !isAbsolute(relativePath));
-};
-
-const validateProjectRootPath = (cwd: string, targetPath: string, label: string, originalPath: string): void => {
-    if (!isSameOrSubpath(targetPath, cwd)) {
-        throw new Error(`solid-build ${label} must stay inside the project root: ${originalPath}`);
+const validateOutDirExistingAncestor = (cwd: string, outDirPath: string): void => {
+    const existingAncestorPath = findNearestExistingPath(outDirPath);
+    if (!existingAncestorPath) {
+        return;
     }
-};
 
-const validateExistingPathTarget = (cwd: string, targetPath: string, label: string, originalPath: string): void => {
-    const realTargetPath = resolveExistingRealPath(targetPath);
-    if (!isSameOrSubpath(realTargetPath, cwd)) {
-        throw new Error(`solid-build ${label} must stay inside the project root: ${originalPath}`);
+    const realAncestorPath = resolveExistingRealPath(existingAncestorPath);
+    if (!isSameOrSubpath(realAncestorPath, cwd)) {
+        throw new Error("solid-build outDir must not escape the project root through a symbolic link");
     }
 };
 
@@ -365,9 +185,13 @@ const validateOutDir = (cwd: string, outDir: string, appComponent: string): stri
     if (relativeOutDir.startsWith(`..${sep}`) || relativeOutDir === ".." || isAbsolute(relativeOutDir)) {
         throw new Error(`solid-build outDir must stay inside the project root: ${outDir}`);
     }
+    if (getProjectRelativeSegments(cwd, outDirPath).some((segment) => RESERVED_PROJECT_DIR_NAMES.has(segment))) {
+        throw new Error(`solid-build outDir must not target a reserved project directory: ${outDir}`);
+    }
     if (existsSync(outDirPath) && lstatSync(outDirPath).isSymbolicLink()) {
         throw new Error(`solid-build outDir must not be a symbolic link: ${outDir}`);
     }
+    validateOutDirExistingAncestor(cwd, outDirPath);
 
     const sourceTreePath = getSourceTreePath(cwd, appComponent);
     if (sourceTreePath && isSameOrSubpath(outDirPath, sourceTreePath)) {
@@ -377,12 +201,61 @@ const validateOutDir = (cwd: string, outDir: string, appComponent: string): stri
     return outDirPath;
 };
 
+const validateAssetSymlink = (assetRootRealPath: string, entryPath: string, originalPath: string): void => {
+    const realEntryPath = resolveExistingRealPath(entryPath);
+    if (!isSameOrSubpath(realEntryPath, assetRootRealPath)) {
+        throw new Error(
+            `solid-build assetsDirs entries must not contain symlinks outside the assets directory: ${originalPath}`,
+        );
+    }
+    if (statSync(realEntryPath).isDirectory()) {
+        throw new Error(`solid-build assetsDirs entries must not contain directory symlinks: ${originalPath}`);
+    }
+};
+
+const validateAssetDirectory = (assetRootRealPath: string, entryPath: string, originalPath: string): void => {
+    const realEntryPath = resolveExistingRealPath(entryPath);
+    if (!isSameOrSubpath(realEntryPath, assetRootRealPath)) {
+        throw new Error(`solid-build assetsDirs entries must stay inside the assets directory: ${originalPath}`);
+    }
+};
+
+const validateAssetTreeSymlinks = (assetRootPath: string, originalPath: string): void => {
+    const assetRootRealPath = resolveExistingRealPath(assetRootPath);
+    const pendingPaths = [assetRootPath];
+
+    while (pendingPaths.length > 0) {
+        const currentPath = pendingPaths.pop()!;
+        validateAssetDirectory(assetRootRealPath, currentPath, originalPath);
+
+        for (const entry of readdirSync(currentPath, { withFileTypes: true })) {
+            const entryPath = join(currentPath, entry.name);
+            const stats = lstatSync(entryPath);
+
+            if (stats.isSymbolicLink()) {
+                validateAssetSymlink(assetRootRealPath, entryPath, originalPath);
+                continue;
+            }
+
+            if (stats.isDirectory()) {
+                pendingPaths.push(entryPath);
+            }
+        }
+    }
+};
+
 const resolveAssetsDirs = (cwd: string, assetDirs: string[]): LoadedAssetDir[] => {
     const resolved: LoadedAssetDir[] = [];
 
     for (const assetDir of assetDirs) {
         const inputPath = resolve(cwd, assetDir);
         validateProjectRootPath(cwd, inputPath, "assetsDirs entries", assetDir);
+        if (inputPath === cwd) {
+            throw new Error(`solid-build assetsDirs entries must not point at the project root: ${assetDir}`);
+        }
+        if (getProjectRelativeSegments(cwd, inputPath).some((segment) => RESERVED_PROJECT_DIR_NAMES.has(segment))) {
+            throw new Error(`solid-build assetsDirs entries must not target a reserved project directory: ${assetDir}`);
+        }
 
         if (!existsSync(inputPath)) {
             if (assetDir === DEFAULT_ASSET_DIR) {
@@ -391,10 +264,19 @@ const resolveAssetsDirs = (cwd: string, assetDirs: string[]): LoadedAssetDir[] =
             throw new Error(`solid-build assets directory was not found at ${inputPath}`);
         }
         validateExistingPathTarget(cwd, inputPath, "assetsDirs entries", assetDir);
+        const realInputPath = resolveExistingRealPath(inputPath);
+
+        if (realInputPath === cwd) {
+            throw new Error(`solid-build assetsDirs entries must not point at the project root: ${assetDir}`);
+        }
+        if (getProjectRelativeSegments(cwd, realInputPath).some((segment) => RESERVED_PROJECT_DIR_NAMES.has(segment))) {
+            throw new Error(`solid-build assetsDirs entries must not target a reserved project directory: ${assetDir}`);
+        }
 
         if (!statSync(inputPath).isDirectory()) {
             throw new Error(`solid-build assets path must be a directory: ${inputPath}`);
         }
+        validateAssetTreeSymlinks(inputPath, assetDir);
 
         const outputDirName = assetDir.replace(/\\/g, "/").split("/").filter(Boolean).at(-1);
         if (!outputDirName) {
@@ -409,6 +291,14 @@ const resolveAssetsDirs = (cwd: string, assetDirs: string[]): LoadedAssetDir[] =
     }
 
     return resolved;
+};
+
+const validateOutDirAssetOverlap = (outDirPath: string, assetsDirs: LoadedAssetDir[], outDir: string): void => {
+    for (const assetsDir of assetsDirs) {
+        if (isSameOrSubpath(outDirPath, assetsDir.inputPath) || isSameOrSubpath(assetsDir.inputPath, outDirPath)) {
+            throw new Error(`solid-build outDir must not overlap assetsDirs entries: ${outDir}`);
+        }
+    }
 };
 
 export const defineSolidBuildConfig = (config: SolidBuildConfig): SolidBuildConfig => config;
@@ -442,6 +332,7 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSol
 
     const outDirPath = validateOutDir(cwd, mergedConfig.outDir, mergedConfig.appComponent);
     const assetsDirs = resolveAssetsDirs(cwd, mergedConfig.assetsDirs);
+    validateOutDirAssetOverlap(outDirPath, assetsDirs, mergedConfig.outDir);
 
     return {
         config: {

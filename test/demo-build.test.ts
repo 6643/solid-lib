@@ -5,8 +5,9 @@ import { join } from "node:path";
 
 test("demo build excludes the TypeScript compiler runtime from browser chunks", async () => {
   const demoRoot = join(import.meta.dir, "..", "demo");
+  const buildEntrypoint = join(import.meta.dir, "..", "src", "builder", "build.ts");
 
-  await $`bun run build`.cwd(demoRoot);
+  await $`${process.execPath} ${buildEntrypoint}`.cwd(demoRoot);
 
   const distRoot = join(demoRoot, "dist");
   const jsFiles = readdirSync(distRoot).filter((entry) => entry.endsWith(".js"));

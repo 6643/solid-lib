@@ -1,112 +1,101 @@
-import { ensureRouteState, getCurrentBackPath, getCurrentInternalPath, getCurrentOrigin, hasActiveExactRoute, hasActiveFallbackRoute, pushBrowserEntry, replaceBrowserEntry } from "./state";
+import {
+    ensureRouteState,
+    getCurrentBackPath,
+    getCurrentInternalPath,
+    getCurrentOrigin,
+    hasActiveExactRoute,
+    hasActiveFallbackRoute,
+    pushBrowserEntry,
+    replaceBrowserEntry,
+} from "./state";
+import { type AnchorLike, type BrowserClickEvent, findAnchor, parseUrl } from "./browser";
 
-type AnchorLike = {
-  download?: string;
-  getAttribute?: (name: string) => string | null;
-  hash?: string;
-  href: string;
-  origin?: string;
-  pathname?: string;
-  search?: string;
-  target?: string;
-};
-
-const isAnchorLike = (value: unknown): value is AnchorLike => !!value && typeof value === "object" && typeof (value as AnchorLike).href === "string";
-
-const findAnchor = (event: any): AnchorLike | undefined => {
-  const path = typeof event?.composedPath === "function" ? event.composedPath() : [];
-
-  for (const entry of path) {
-    if (isAnchorLike(entry)) {
-      return entry;
+const isPrimaryPlainClick = (event: BrowserClickEvent) => {
+    if (event.defaultPrevented) {
+        return false;
     }
 
-    const closest = entry?.closest?.("a[href]");
-    if (isAnchorLike(closest)) {
-      return closest;
+    if (event.button !== undefined && event.button !== 0) {
+        return false;
     }
-  }
 
-  const target = event?.target;
-  if (isAnchorLike(target)) {
-    return target;
-  }
-
-  const closest = target?.closest?.("a[href]");
-  return isAnchorLike(closest) ? closest : undefined;
+    return !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
 };
 
-const shouldHandleAnchorClick = (event: any, anchor: AnchorLike | undefined) => {
-  if (!anchor || event?.defaultPrevented) {
-    return false;
-  }
+const hasBrowserManagedTarget = (anchor: AnchorLike) => {
+    if (anchor.target || anchor.getAttribute?.("target")) {
+        return true;
+    }
 
-  if (event?.button !== 0) {
-    return false;
-  }
+    return typeof anchor.getAttribute === "function" && anchor.getAttribute("download") !== null;
+};
 
-  if (event?.metaKey || event?.ctrlKey || event?.shiftKey || event?.altKey) {
-    return false;
-  }
+const isHashOnlyChange = (nextUrl: URL, currentUrl: URL) =>
+    nextUrl.pathname === currentUrl.pathname && nextUrl.search === currentUrl.search && nextUrl.hash !== currentUrl.hash;
 
-  if (anchor.target || anchor.getAttribute?.("target")) {
-    return false;
-  }
+const getInterceptableAnchorUrl = (event: BrowserClickEvent, anchor: AnchorLike | undefined) => {
+    if (!anchor || event.defaultPrevented) {
+        return undefined;
+    }
 
-  if (anchor.getAttribute?.("download") !== null) {
-    return false;
-  }
+    if (!isPrimaryPlainClick(event) || hasBrowserManagedTarget(anchor)) {
+        return undefined;
+    }
 
-  const currentOrigin = getCurrentOrigin();
-  if (!currentOrigin) {
-    return false;
-  }
+    const currentOrigin = getCurrentOrigin();
+    if (!currentOrigin) {
+        return undefined;
+    }
 
-  const nextUrl = new URL(anchor.href, currentOrigin);
-  if (nextUrl.origin !== currentOrigin) {
-    return false;
-  }
+    const nextUrl = parseUrl(anchor.href, currentOrigin);
+    if (!nextUrl) {
+        return undefined;
+    }
+    if (nextUrl.origin !== currentOrigin) {
+        return undefined;
+    }
 
-  const currentUrl = new URL(getCurrentInternalPath() || "/", `${currentOrigin}/`);
-  if (nextUrl.pathname === currentUrl.pathname && nextUrl.search === currentUrl.search && nextUrl.hash !== currentUrl.hash) {
-    return false;
-  }
+    const currentUrl = parseUrl(getCurrentInternalPath() || "/", `${currentOrigin}/`);
+    if (!currentUrl) {
+        return undefined;
+    }
+    if (isHashOnlyChange(nextUrl, currentUrl)) {
+        return undefined;
+    }
 
-  if (hasActiveExactRoute(nextUrl.pathname)) {
-    return true;
-  }
-
-  return hasActiveFallbackRoute();
+    return nextUrl;
 };
 
 const toInternalPath = (path: string) => path || "/";
 
+const canRouteToPath = (pathname: string) => hasActiveExactRoute(pathname) || hasActiveFallbackRoute();
+
 export const pushRoute = (path: string) => {
-  ensureRouteState(handleAnchorClick);
-  pushBrowserEntry(toInternalPath(path), getCurrentInternalPath());
+    ensureRouteState(handleAnchorClick);
+    pushBrowserEntry(toInternalPath(path), getCurrentInternalPath());
 };
 
 export const replaceRoute = (path: string) => {
-  ensureRouteState(handleAnchorClick);
-  replaceBrowserEntry(toInternalPath(path), getCurrentBackPath());
+    ensureRouteState(handleAnchorClick);
+    replaceBrowserEntry(toInternalPath(path), getCurrentBackPath());
 };
 
 export const getRouteBackPath = () => {
-  ensureRouteState(handleAnchorClick);
-  return getCurrentBackPath();
+    ensureRouteState(handleAnchorClick);
+    return getCurrentBackPath();
 };
 
-export const handleAnchorClick = (event: any) => {
-  const anchor = findAnchor(event);
-  if (!shouldHandleAnchorClick(event, anchor)) {
-    return;
-  }
+export const handleAnchorClick = (event: BrowserClickEvent) => {
+    const anchor = findAnchor(event);
+    const nextUrl = getInterceptableAnchorUrl(event, anchor);
+    if (!nextUrl) {
+        return;
+    }
 
-  if (!anchor) {
-    return;
-  }
+    if (!canRouteToPath(nextUrl.pathname)) {
+        return;
+    }
 
-  event.preventDefault?.();
-  const nextUrl = new URL(anchor.href, `${getCurrentOrigin()}/`);
-  pushRoute(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+    event.preventDefault?.();
+    pushRoute(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
 };
