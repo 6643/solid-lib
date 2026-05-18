@@ -63,7 +63,7 @@ test("demo keeps local build dependencies in devDependencies", async () => {
   }>("demo/package.json");
 
   expect(demoPackageJson.dependencies).toBeUndefined();
-  expect(demoPackageJson.devDependencies["solid-js"]).toBe("2.0.0-beta.6");
+  expect(demoPackageJson.devDependencies["solid-js"]).toBe("next");
   expect(demoPackageJson.devDependencies["solid-lib"]).toBe("link:solid-lib");
 });
 
