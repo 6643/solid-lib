@@ -3,6 +3,7 @@ import { dirname, resolve, sep } from "node:path";
 
 import { transformAsync } from "@babel/core";
 
+const BUN_COMMAND = Bun.which("bun") ?? "bun";
 const SOLID_SOURCE_FILTER = /\.[cm]?[jt]sx$/;
 const TYPESCRIPT_JSX_FILTER = /\.[cm]?tsx$/;
 const SOLID_PRESET = "babel-preset-solid";
@@ -122,8 +123,9 @@ const maybeBuildDeclarations = async (
     const rootDir = getCommonSourceRoot(entrypoints);
 
     const command = [
-        process.execPath,
-        resolve(import.meta.dir, "../../node_modules/typescript/bin/tsc"),
+        BUN_COMMAND,
+        "x",
+        "tsc",
         "--project",
         tsconfigPath,
         "--declaration",

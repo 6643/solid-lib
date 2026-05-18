@@ -1,9 +1,10 @@
 import { expect, test } from "bun:test";
-import { join } from "node:path";
+
+const BUN_COMMAND = Bun.which("bun") ?? "bun";
 
 test("ui source typechecks with tsc", async () => {
   const subprocess = Bun.spawn({
-    cmd: [process.execPath, join(import.meta.dir, "..", "node_modules", "typescript", "bin", "tsc"), "--noEmit", "--pretty", "false"],
+    cmd: [BUN_COMMAND, "x", "tsc", "--noEmit", "--pretty", "false"],
     cwd: `${import.meta.dir}/..`,
     stderr: "pipe",
     stdout: "pipe",

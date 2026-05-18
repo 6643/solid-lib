@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
-const mode = process.argv[2] ?? "local";
+const mode = Bun.argv[2] ?? "local";
 const repoRoot = resolve(import.meta.dir, "..");
 const consumerRoot = mkdtempSync(join(tmpdir(), "solid-local-consumer-"));
 const packRoot = mkdtempSync(join(tmpdir(), "solid-local-pack-"));
