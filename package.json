@@ -35,18 +35,18 @@
         "test:unit": "bun test"
     },
     "dependencies": {
-        "@babel/core": "7.29.0",
-        "@babel/preset-typescript": "7.28.5",
-        "babel-preset-solid": "2.0.0-beta.6",
-        "dom-expressions": "0.40.6",
-        "typescript": "6.0.2"
+        "@babel/core": "latest",
+        "@babel/preset-typescript": "latest",
+        "babel-preset-solid": "next",
+        "dom-expressions": "latest",
+        "typescript": "latest"
     },
     "devDependencies": {
-        "@types/babel__core": "7.20.5",
-        "@types/bun": "1.3.12",
-        "solid-js": "2.0.0-beta.6"
+        "@types/babel__core": "latest",
+        "@types/bun": "latest",
+        "solid-js": "next"
     },
     "peerDependencies": {
-        "solid-js": "2.0.0-beta.6"
+        "solid-js": "next"
     }
 }

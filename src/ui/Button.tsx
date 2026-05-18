@@ -180,7 +180,7 @@ const SharedButton: Component<SharedButtonProps & { variant: ButtonVariant }> = 
 
     const isDisabled = () => !!props.disabled || isRunning();
 
-    const handleClick: JSX.EventHandler<HTMLButtonElement, MouseEvent> = async (event) => {
+    const handleClick = async (event: ButtonClickEvent) => {
         const clickResult = invokeClickHandler(props.onClick, event);
         if (isPromiseLike(clickResult)) {
             await clickResult;

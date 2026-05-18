@@ -34,7 +34,7 @@ export const SvgIcon = (props: { name: string; color?: string; size?: 20 | 24 | 
             height={props.size ?? 24}
             style={{ "--color": props.color }}
         >
-            <For each={extractSvgIconPaths(props.name)}>{(pathData) => <path d={pathData()} />}</For>
+            <For each={extractSvgIconPaths(props.name)}>{(pathData) => <path d={pathData} />}</For>
         </svg>
     );
 };
