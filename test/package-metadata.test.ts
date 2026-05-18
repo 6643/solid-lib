@@ -26,6 +26,11 @@ test("solid-lib groups runtime, dev, and peer dependencies intentionally", async
     };
     peerDependencies: Record<string, string>;
   }>("package.json");
+  const allDependencySpecifiers = [
+    ...Object.values(packageJson.dependencies),
+    ...Object.values(packageJson.devDependencies),
+    ...Object.values(packageJson.peerDependencies),
+  ];
 
   expect(packageJson.exports["."]).toBeUndefined();
   expect(packageJson.exports["./builder"].import).toBe("./src/builder/_.ts");
@@ -36,18 +41,21 @@ test("solid-lib groups runtime, dev, and peer dependencies intentionally", async
   expect(packageJson.exports["./ui"].types).toBe("./src/ui/_.ts");
   expect(packageJson.exports["./ui.css"]).toBe("./src/ui/_.css");
 
-  expect(packageJson.dependencies["babel-preset-solid"]).toBe("next");
-  expect(packageJson.devDependencies["solid-js"]).toBe("next");
-  expect(packageJson.peerDependencies["solid-js"]).toBe("next");
+  expect(packageJson.dependencies["babel-preset-solid"]).toBe("2.0.0-beta.6");
+  expect(packageJson.devDependencies["solid-js"]).toBe("2.0.0-beta.6");
+  expect(packageJson.peerDependencies["solid-js"]).toBe("2.0.0-beta.6");
   expect(packageJson.dependencies["solid-js"]).toBeUndefined();
 
-  expect(packageJson.dependencies["@babel/core"]).toBe("latest");
-  expect(packageJson.dependencies["@babel/preset-typescript"]).toBe("latest");
-  expect(packageJson.dependencies["dom-expressions"]).toBe("latest");
-  expect(packageJson.dependencies["typescript"]).toBe("latest");
-  expect(packageJson.devDependencies["@types/babel__core"]).toBe("latest");
-  expect(packageJson.devDependencies["@types/bun"]).toBe("latest");
+  expect(packageJson.dependencies["@babel/core"]).toBe("7.29.0");
+  expect(packageJson.dependencies["@babel/preset-typescript"]).toBe("7.28.5");
+  expect(packageJson.dependencies["dom-expressions"]).toBe("0.40.6");
+  expect(packageJson.dependencies["typescript"]).toBe("6.0.2");
+  expect(packageJson.devDependencies["@types/babel__core"]).toBe("7.20.5");
+  expect(packageJson.devDependencies["@types/bun"]).toBe("1.3.12");
   expect(packageJson.peerDependencies["@types/bun"]).toBeUndefined();
+
+  expect(allDependencySpecifiers).not.toContain("latest");
+  expect(allDependencySpecifiers).not.toContain("next");
 });
 
 test("demo keeps local build dependencies in devDependencies", async () => {
@@ -57,6 +65,13 @@ test("demo keeps local build dependencies in devDependencies", async () => {
   }>("demo/package.json");
 
   expect(demoPackageJson.dependencies).toBeUndefined();
-  expect(demoPackageJson.devDependencies["solid-js"]).toBe("next");
+  expect(demoPackageJson.devDependencies["solid-js"]).toBe("2.0.0-beta.6");
   expect(demoPackageJson.devDependencies["solid-lib"]).toBe("link:solid-lib");
+});
+
+test("root README matches the exported subproject count", async () => {
+  const readme = await Bun.file(join(import.meta.dir, "..", "README.md")).text();
+
+  expect(readme).toContain("`solid-lib` 当前包含三个核心子项目:");
+  expect(readme).not.toContain("`solid-lib` 当前包含两个核心子项目:");
 });

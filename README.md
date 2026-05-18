@@ -1,6 +1,6 @@
 # solid-lib
 
-`solid-lib` 当前包含两个核心子项目:
+`solid-lib` 当前包含三个核心子项目:
 
 - [builder](./src/builder/README.md)
   面向 Bun + Solid 的最小构建与开发工具链

@@ -30,8 +30,12 @@
   应用打包核心。负责生成 bootstrap 入口、调用 `Bun.build`、收集 JS/CSS 产物并生成 HTML shell。
 - `config.ts`
   配置加载与校验。负责默认值合并、`solid-build.config.ts` 导入、路径边界校验、`assetsDirs` 解析与 `outDir` 约束。
+- `config-file.ts`
+  配置文件导入辅助。负责扫描 `solid-build.config.ts` 的相对依赖、隔离暂存并导入用户配置。
 - `lib.ts`
   构建器共享能力。当前主要包含 Solid Babel 插件接入、`rxcore` shim，以及库构建辅助逻辑。
+- `path.ts`
+  路径安全辅助。负责真实路径解析、项目根目录边界、可写祖先和 `node_modules` 查找。
 
 ## 调用链
 
@@ -69,8 +73,8 @@
 `config.ts` 会拒绝旧字段，并限制以下边界:
 
 - 应用入口必须位于项目根目录内
-- `assetsDirs` 必须位于项目根目录内
-- `outDir` 不能指向项目根目录，也不能位于源码树内
+- `assetsDirs` 必须位于项目根目录内, 不能指向项目根目录或保留目录, 且内部 symlink 不能逃逸资产目录
+- `outDir` 不能指向项目根目录, 保留目录, 源码树内, 与 `assetsDirs` 重叠的位置, 或通过既有 symlink 祖先逃逸项目根目录
 - 入口组件必须有默认导出
 
 ### 运行时依赖

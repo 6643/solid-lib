@@ -10,6 +10,8 @@ export type RouteProps = {
   when?: boolean | (() => boolean);
 };
 
+type RouteRenderer = () => ReturnType<typeof createComponent> | undefined;
+
 export const Route = (props: RouteProps): JSX.Element => {
   const routePath = untrack(() => props.path);
   const RouteComponent = untrack(() => props.component);
@@ -40,7 +42,7 @@ export const Route = (props: RouteProps): JSX.Element => {
     ensureRouteState(handleAnchorClick);
   }
 
-  return (() => {
+  const renderRoute: RouteRenderer = () => {
     if (!readWhen()) {
       rendered = undefined;
       return undefined;
@@ -56,5 +58,7 @@ export const Route = (props: RouteProps): JSX.Element => {
 
     rendered ??= createComponent(RouteComponent, {});
     return rendered;
-  }) as unknown as JSX.Element;
+  };
+
+  return renderRoute as RouteRenderer & JSX.Element;
 };

@@ -1,5 +1,6 @@
 import { createSignal, flush, runWithOwner } from "solid-js";
 
+import type { BrowserClickEvent } from "./browser";
 import { isFallbackRoutePath, matchesExactRoute } from "./match";
 
 const ROUTE_HISTORY_KEY = "__solid_route__";
@@ -16,11 +17,11 @@ type RouteSnapshot = {
 };
 
 type BrowserLike = {
-    addEventListener?: (type: string, listener: (event: any) => void) => void;
-    removeEventListener?: (type: string, listener: (event: any) => void) => void;
+    addEventListener?: (type: string, listener: (event: Event) => void) => void;
+    removeEventListener?: (type: string, listener: (event: Event) => void) => void;
     document?: {
-        addEventListener?: (type: string, listener: (event: any) => void) => void;
-        removeEventListener?: (type: string, listener: (event: any) => void) => void;
+        addEventListener?: (type: string, listener: (event: BrowserClickEvent) => void) => void;
+        removeEventListener?: (type: string, listener: (event: BrowserClickEvent) => void) => void;
     };
     history?: {
         state?: unknown;
@@ -67,7 +68,7 @@ const state = runWithOwner(null, () => {
 
 let activeBrowser: BrowserLike | undefined;
 let cleanupListeners: (() => void) | undefined;
-let clickHandler: ((event: any) => void) | undefined;
+let clickHandler: ((event: BrowserClickEvent) => void) | undefined;
 let latestSnapshot: RouteSnapshot = {
     hash: "",
     href: "",
@@ -156,7 +157,7 @@ const syncFromBrowser = (browser?: BrowserLike) => {
     });
 };
 
-export const ensureRouteState = (clickListener?: (event: any) => void) => {
+export const ensureRouteState = (clickListener?: (event: BrowserClickEvent) => void) => {
     const browser = getBrowser();
 
     if (!browser) {
@@ -184,7 +185,7 @@ export const ensureRouteState = (clickListener?: (event: any) => void) => {
     const handlePopState = () => {
         syncFromBrowser(browser);
     };
-    const handleClick = (event: any) => {
+    const handleClick = (event: BrowserClickEvent) => {
         clickHandler?.(event);
     };
 

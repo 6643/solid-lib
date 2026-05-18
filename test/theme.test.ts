@@ -234,4 +234,88 @@ describe("theme api", () => {
     expect(() => setLightTheme()).not.toThrow();
     expect(() => setDarkTheme()).not.toThrow();
   });
+
+  test("theme setters do not throw when localStorage access is blocked", () => {
+    const documentElement = installDocument();
+    installMatchMedia(false);
+
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      get() {
+        throw new Error("blocked storage");
+      },
+    });
+
+    expect(() => initializeThemeMode()).not.toThrow();
+    expect(getThemeMode()).toBe("system");
+    expect(documentElement.getAttribute("data-theme-mode")).toBe("light");
+
+    expect(() => setThemeMode("dark")).not.toThrow();
+    expect(getThemeMode()).toBe("dark");
+    expect(documentElement.getAttribute("data-theme-mode")).toBe("dark");
+  });
+
+  test("system listener is removed when legacy addListener fails after addEventListener succeeds", () => {
+    const documentElement = installDocument();
+    installStorage();
+    const listeners = new Set<FakeMediaChangeListener>();
+
+    Object.defineProperty(globalThis, "matchMedia", {
+      configurable: true,
+      value: () => ({
+        matches: false,
+        addEventListener(_: "change", listener: FakeMediaChangeListener) {
+          listeners.add(listener);
+        },
+        removeEventListener(_: "change", listener: FakeMediaChangeListener) {
+          listeners.delete(listener);
+        },
+        addListener() {
+          throw new Error("legacy listener unavailable");
+        },
+      }),
+    });
+
+    initializeThemeMode();
+    expect(listeners.size).toBe(1);
+    expect(documentElement.getAttribute("data-theme-mode")).toBe("light");
+
+    setThemeMode("light");
+
+    expect(listeners.size).toBe(0);
+  });
+
+  test("system listener falls back to legacy addListener when addEventListener fails", () => {
+    const documentElement = installDocument();
+    installStorage();
+    let legacyListener: FakeMediaChangeListener | undefined;
+
+    Object.defineProperty(globalThis, "matchMedia", {
+      configurable: true,
+      value: () => ({
+        matches: false,
+        addEventListener() {
+          throw new Error("modern listener unavailable");
+        },
+        addListener(listener: FakeMediaChangeListener) {
+          legacyListener = listener;
+        },
+        removeListener(listener: FakeMediaChangeListener) {
+          if (legacyListener === listener) {
+            legacyListener = undefined;
+          }
+        },
+      }),
+    });
+
+    initializeThemeMode();
+    expect(documentElement.getAttribute("data-theme-mode")).toBe("light");
+    expect(legacyListener).toBeFunction();
+
+    legacyListener?.({ matches: true });
+    expect(documentElement.getAttribute("data-theme-mode")).toBe("dark");
+
+    setThemeMode("light");
+    expect(legacyListener).toBeUndefined();
+  });
 });

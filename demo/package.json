@@ -8,7 +8,7 @@
         "typecheck": "tsc --project ./tsconfig.json --noEmit"
     },
     "devDependencies": {
-        "solid-js": "next",
+        "solid-js": "2.0.0-beta.6",
         "solid-lib": "link:solid-lib"
     }
 }

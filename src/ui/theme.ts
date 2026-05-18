@@ -36,35 +36,85 @@ let systemThemeMediaQueryList: ThemeMediaQueryList | undefined;
 let systemThemeMediaQueryListener: ThemeMediaChangeListener | undefined;
 let currentThemeMode: ThemeMode | undefined;
 
+const readThemeApi = <T>(read: () => T): T | undefined => {
+  try {
+    return read();
+  } catch (_error) {
+    return undefined;
+  }
+};
+
+const writeThemeApi = (write: () => void): boolean => {
+  try {
+    write();
+    return true;
+  } catch (_error) {
+    return false;
+  }
+};
+
 const getThemeDocument = (): ThemeDocument | undefined =>
-  (globalThis as Record<string, unknown>).document as ThemeDocument | undefined;
+  readThemeApi(() => (globalThis as Record<string, unknown>).document as ThemeDocument | undefined);
 
 const getThemeStorage = (): ThemeStorage | undefined =>
-  (globalThis as Record<string, unknown>).localStorage as ThemeStorage | undefined;
+  readThemeApi(() => (globalThis as Record<string, unknown>).localStorage as ThemeStorage | undefined);
 
-const getThemeMediaQueryList = (): ThemeMediaQueryList | undefined => {
-  const matchMedia = (globalThis as Record<string, unknown>).matchMedia as
-    | ((query: string) => ThemeMediaQueryList)
-    | undefined;
+const getThemeMediaQueryList = (): ThemeMediaQueryList | undefined =>
+  readThemeApi(() => {
+    const matchMedia = (globalThis as Record<string, unknown>).matchMedia as
+      | ((query: string) => ThemeMediaQueryList)
+      | undefined;
 
-  return matchMedia?.(SYSTEM_THEME_MEDIA_QUERY);
-};
+    return matchMedia?.(SYSTEM_THEME_MEDIA_QUERY);
+  });
 
 const parseThemeMode = (value: string | null | undefined): ThemeMode | undefined =>
   value && THEME_MODES.has(value as ThemeMode) ? (value as ThemeMode) : undefined;
 
 const readThemeModeFromStorage = (): ThemeMode | undefined =>
-  parseThemeMode(getThemeStorage()?.getItem?.(THEME_MODE_STORAGE_KEY));
+  readThemeApi(() => parseThemeMode(getThemeStorage()?.getItem?.(THEME_MODE_STORAGE_KEY)));
 
 const writeThemeModeToStorage = (mode: ThemeMode) => {
-  getThemeStorage()?.setItem?.(THEME_MODE_STORAGE_KEY, mode);
+  writeThemeApi(() => {
+    getThemeStorage()?.setItem?.(THEME_MODE_STORAGE_KEY, mode);
+  });
 };
 
 const resolveThemeMode = (): Exclude<ThemeMode, "system"> =>
   getThemeMediaQueryList()?.matches ? "dark" : "light";
 
 const writeResolvedThemeModeToRoot = (mode: Exclude<ThemeMode, "system">) => {
-  getThemeDocument()?.documentElement?.setAttribute?.(THEME_MODE_ATTRIBUTE, mode);
+  writeThemeApi(() => {
+    getThemeDocument()?.documentElement?.setAttribute?.(THEME_MODE_ATTRIBUTE, mode);
+  });
+};
+
+const addSystemThemeListener = (
+  mediaQueryList: ThemeMediaQueryList,
+  listener: ThemeMediaChangeListener,
+): boolean => {
+  const addEventListener = mediaQueryList.addEventListener;
+  if (addEventListener && writeThemeApi(() => addEventListener.call(mediaQueryList, "change", listener))) {
+    return true;
+  }
+
+  const addListener = mediaQueryList.addListener;
+  return !!addListener && writeThemeApi(() => addListener.call(mediaQueryList, listener));
+};
+
+const removeSystemThemeListener = (
+  mediaQueryList: ThemeMediaQueryList,
+  listener: ThemeMediaChangeListener,
+) => {
+  const removeEventListener = mediaQueryList.removeEventListener;
+  if (removeEventListener) {
+    writeThemeApi(() => removeEventListener.call(mediaQueryList, "change", listener));
+  }
+
+  const removeListener = mediaQueryList.removeListener;
+  if (removeListener) {
+    writeThemeApi(() => removeListener.call(mediaQueryList, listener));
+  }
 };
 
 const detachSystemThemeListener = () => {
@@ -74,8 +124,7 @@ const detachSystemThemeListener = () => {
     return;
   }
 
-  systemThemeMediaQueryList.removeEventListener?.("change", systemThemeMediaQueryListener);
-  systemThemeMediaQueryList.removeListener?.(systemThemeMediaQueryListener);
+  removeSystemThemeListener(systemThemeMediaQueryList, systemThemeMediaQueryListener);
   systemThemeMediaQueryList = undefined;
   systemThemeMediaQueryListener = undefined;
 };
@@ -96,8 +145,9 @@ const attachSystemThemeListener = () => {
     writeResolvedThemeModeToRoot(event.matches ? "dark" : "light");
   };
 
-  mediaQueryList.addEventListener?.("change", listener);
-  mediaQueryList.addListener?.(listener);
+  if (!addSystemThemeListener(mediaQueryList, listener)) {
+    return;
+  }
 
   systemThemeMediaQueryList = mediaQueryList;
   systemThemeMediaQueryListener = listener;

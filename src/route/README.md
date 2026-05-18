@@ -92,6 +92,8 @@
   Route 组件与渲染控制
 - `navigation.ts`
   原生 `<a>` 拦截与导航 API
+- `browser.ts`
+  浏览器输入辅助。负责 anchor 查找、click 事件形状和安全 URL 解析
 - `params.ts`
   query 参数读取与解析
 - `state.ts`
