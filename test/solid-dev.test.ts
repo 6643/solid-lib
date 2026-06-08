@@ -34,7 +34,7 @@ const writeMinimalApp = (appRoot: string) => {
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -72,7 +72,7 @@ test("solid-dev serves html, js, css, and sse without writing dist", async () =>
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -154,7 +154,7 @@ test("solid-dev serves the app html for SPA route paths", async () => {
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -203,7 +203,7 @@ test("solid-dev rebuilds and emits reload events when source files change", asyn
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -274,7 +274,7 @@ test("solid-dev uses devPort from config when no explicit port override is provi
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -331,7 +331,7 @@ test("solid-dev watches the full app source tree, not only the entry directory",
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -404,7 +404,7 @@ test("solid-dev also watches the full source tree when appComponent uses ./src p
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -476,7 +476,7 @@ test("solid-dev reloads updated config values after config file changes", async 
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -551,7 +551,7 @@ test("solid-dev reloads config values when imported helper modules change", asyn
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -620,7 +620,7 @@ test("solid-dev warns that devPort changes require restart and keeps the current
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -711,7 +711,7 @@ test("loadConfig rejects app components that only mention export default in stri
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -751,7 +751,7 @@ test("loadConfig rejects outDir inside the source tree when appComponent uses ./
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -852,7 +852,7 @@ test("loadConfig rejects appComponent paths outside the project root", async () 
         {
           compilerOptions: {
             jsx: "preserve",
-            jsxImportSource: "solid-js",
+            jsxImportSource: "@solidjs/web",
             module: "Preserve",
             moduleResolution: "bundler",
             target: "ESNext",
@@ -902,7 +902,7 @@ test("loadConfig rejects symlinked appComponent paths whose real target escapes 
         {
           compilerOptions: {
             jsx: "preserve",
-            jsxImportSource: "solid-js",
+            jsxImportSource: "@solidjs/web",
             module: "Preserve",
             moduleResolution: "bundler",
             target: "ESNext",
@@ -952,7 +952,7 @@ test("loadConfig rejects assetsDirs outside the project root", async () => {
         {
           compilerOptions: {
             jsx: "preserve",
-            jsxImportSource: "solid-js",
+            jsxImportSource: "@solidjs/web",
             module: "Preserve",
             moduleResolution: "bundler",
             target: "ESNext",
@@ -1013,7 +1013,7 @@ test("loadConfig rejects symlinked assetsDirs whose real target escapes the proj
         {
           compilerOptions: {
             jsx: "preserve",
-            jsxImportSource: "solid-js",
+            jsxImportSource: "@solidjs/web",
             module: "Preserve",
             moduleResolution: "bundler",
             target: "ESNext",
@@ -1162,7 +1162,7 @@ test("loadConfig uses the nested src directory as app source root", async () => 
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -1222,7 +1222,7 @@ test("loadConfig rejects symlinked outDir paths", async () => {
         {
           compilerOptions: {
             jsx: "preserve",
-            jsxImportSource: "solid-js",
+            jsxImportSource: "@solidjs/web",
             module: "Preserve",
             moduleResolution: "bundler",
             target: "ESNext",
@@ -1306,7 +1306,7 @@ test("loadConfig rejects config helper imports outside the project root", async 
         {
           compilerOptions: {
             jsx: "preserve",
-            jsxImportSource: "solid-js",
+            jsxImportSource: "@solidjs/web",
             module: "Preserve",
             moduleResolution: "bundler",
             target: "ESNext",
@@ -1367,7 +1367,7 @@ test("loadConfig rejects config helper symlinks whose real target escapes the pr
         {
           compilerOptions: {
             jsx: "preserve",
-            jsxImportSource: "solid-js",
+            jsxImportSource: "@solidjs/web",
             module: "Preserve",
             moduleResolution: "bundler",
             target: "ESNext",
@@ -1422,7 +1422,7 @@ test("loadConfig works when the project root is read-only", async () => {
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -1480,7 +1480,7 @@ test("loadConfig works when the project path contains percent-encoded characters
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",
@@ -1532,7 +1532,7 @@ test("solid-dev works when the project root is read-only", async () => {
       {
         compilerOptions: {
           jsx: "preserve",
-          jsxImportSource: "solid-js",
+          jsxImportSource: "@solidjs/web",
           module: "Preserve",
           moduleResolution: "bundler",
           target: "ESNext",

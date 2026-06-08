@@ -1,12 +1,17 @@
 import styles from "./Button.module.css";
-import { createSignal, type Component, type JSX, Show } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { createSignal, type Component, Show } from "solid-js";
 
+import {
+    createButtonStyle,
+    invokeButtonTap,
+    isPromiseLike,
+    type ButtonTapHandler,
+} from "./Button.logic";
 import { joinClassName } from "./className";
 import { SvgIcon } from "./SvgIcon";
 
-type SizeValue = number | string | undefined;
-
-export type ButtonTapHandler = () => void | Promise<void>;
+export { createButtonStyle, invokeButtonTap, type ButtonTapHandler } from "./Button.logic";
 
 export type SharedButtonProps = Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "color"> & {
     bgColor?: string;
@@ -29,7 +34,6 @@ type BoundButtonClickHandler = {
     1: unknown;
 };
 
-type ButtonStyleOptions = Pick<SharedButtonProps, "bgColor" | "borderRadius" | "color" | "height" | "width">;
 type ButtonInternalProps = keyof (SharedButtonProps & { variant: ButtonVariant });
 
 const BUTTON_INTERNAL_PROPS: ButtonInternalProps[] = [
@@ -49,13 +53,6 @@ const BUTTON_INTERNAL_PROPS: ButtonInternalProps[] = [
     "variant",
     "width",
 ];
-
-const toCssSize = (value: SizeValue): string | undefined => (typeof value === "number" ? `${value}px` : value);
-
-const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
-    !!value &&
-    (typeof value === "object" || typeof value === "function") &&
-    typeof (value as PromiseLike<unknown>).then === "function";
 
 const isBoundButtonClickHandler = (handler: unknown): handler is BoundButtonClickHandler =>
     !!handler &&
@@ -134,46 +131,6 @@ const createMergedButtonStyle = (props: SharedButtonProps): string | JSX.CSSProp
             width: props.width,
         }),
     );
-
-export const createButtonStyle = (options: ButtonStyleOptions): JSX.CSSProperties => {
-    const style: JSX.CSSProperties = {};
-    const borderRadius = toCssSize(options.borderRadius);
-    const height = toCssSize(options.height);
-    const width = toCssSize(options.width);
-
-    if (borderRadius) {
-        style["--button-border-radius"] = borderRadius;
-    }
-
-    if (options.color) {
-        style["--button-color"] = options.color;
-    }
-
-    if (options.bgColor) {
-        style["--button-bg-color"] = options.bgColor;
-    }
-
-    if (height) {
-        style["--button-height"] = height;
-    }
-
-    if (width) {
-        style["--button-width"] = width;
-    }
-
-    return style;
-};
-
-export const invokeButtonTap = async (tap?: ButtonTapHandler) => {
-    if (!tap) {
-        return;
-    }
-
-    const result = tap();
-    if (isPromiseLike(result)) {
-        await result;
-    }
-};
 
 const SharedButton: Component<SharedButtonProps & { variant: ButtonVariant }> = (props) => {
     const [isRunning, setRunning] = createSignal(false);

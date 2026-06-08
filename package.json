@@ -42,11 +42,13 @@
         "typescript": "latest"
     },
     "devDependencies": {
+        "@solidjs/web": "next",
         "@types/babel__core": "latest",
         "@types/bun": "latest",
         "solid-js": "next"
     },
     "peerDependencies": {
+        "@solidjs/web": "next",
         "solid-js": "next"
     }
 }

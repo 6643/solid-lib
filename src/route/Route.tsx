@@ -1,4 +1,4 @@
-import { type Component, type JSX, createComponent, getOwner, onCleanup, onSettled, untrack } from "solid-js";
+import { type Component, type Element as SolidElement, createComponent, getOwner, onCleanup, onSettled, untrack } from "solid-js";
 
 import { isFallbackRoutePath, matchesExactRoute } from "./match";
 import { handleAnchorClick } from "./navigation";
@@ -12,7 +12,7 @@ export type RouteProps = {
 
 type RouteRenderer = () => ReturnType<typeof createComponent> | undefined;
 
-export const Route = (props: RouteProps): JSX.Element => {
+export const Route = (props: RouteProps): SolidElement => {
   const routePath = untrack(() => props.path);
   const RouteComponent = untrack(() => props.component);
   const readWhen = () => {
@@ -60,5 +60,5 @@ export const Route = (props: RouteProps): JSX.Element => {
     return rendered;
   };
 
-  return renderRoute as RouteRenderer & JSX.Element;
+  return renderRoute as unknown as SolidElement;
 };

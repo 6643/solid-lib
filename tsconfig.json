@@ -1,16 +1,11 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
         "target": "ESNext",
         "module": "Preserve",
         "jsx": "preserve",
-        "jsxImportSource": "solid-js",
+        "jsxImportSource": "@solidjs/web",
         "ignoreDeprecations": "6.0",
-        "paths": {
-            "solid-js/jsx-dev-runtime": ["src/solid-js/jsx-dev-runtime.d.ts"],
-            "solid-js/jsx-runtime": ["src/solid-js/jsx-runtime.d.ts"]
-        },
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,

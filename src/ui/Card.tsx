@@ -1,5 +1,5 @@
 import styles from "./Card.module.css";
-import type { JSX } from "solid-js";
+import type { JSX } from "@solidjs/web";
 
 import { joinClassName } from "./className";
 

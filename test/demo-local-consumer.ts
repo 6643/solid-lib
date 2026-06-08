@@ -17,7 +17,12 @@ const toFileDependency = (targetPath: string): string => {
   return `file:${relativePath === "" ? "." : relativePath}`;
 };
 
-const solidJsSpecifier = JSON.parse(await Bun.file(join(repoRoot, "package.json")).text()).peerDependencies["solid-js"] as string;
+const peerDependencies = JSON.parse(await Bun.file(join(repoRoot, "package.json")).text()).peerDependencies as Record<
+  string,
+  string
+>;
+const solidJsSpecifier = peerDependencies["solid-js"];
+const solidWebSpecifier = peerDependencies["@solidjs/web"];
 
 try {
   if (mode !== "local" && mode !== "pack") {
@@ -38,6 +43,7 @@ try {
       build: "solid-build",
     },
     dependencies: {
+      "@solidjs/web": solidWebSpecifier,
       "solid-js": solidJsSpecifier,
       "solid-lib": solidLibDependency,
     },
@@ -46,7 +52,7 @@ try {
   writeJson(join(consumerRoot, "tsconfig.json"), {
     compilerOptions: {
       jsx: "preserve",
-      jsxImportSource: "solid-js",
+      jsxImportSource: "@solidjs/web",
       module: "Preserve",
       moduleResolution: "bundler",
       target: "ESNext",

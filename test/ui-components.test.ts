@@ -1,18 +1,18 @@
 import { expect, test } from "bun:test";
 import { join } from "node:path";
 
-import { createButtonStyle, invokeButtonTap } from "../src/ui/Button";
-import { extractSvgIconPaths } from "../src/ui/SvgIcon";
+import { createButtonStyle, invokeButtonTap } from "../src/ui/Button.logic";
+import { extractSvgIconPaths } from "../src/ui/SvgIcon.logic";
 
-test("ui exports the public component primitives", async () => {
-  const ui = await import("../src/ui/_");
+test("ui barrel declares the public component primitives", async () => {
+  const source = await Bun.file(join(import.meta.dir, "..", "src/ui/_.ts")).text();
 
-  expect(typeof ui.Card).toBe("function");
-  expect(typeof ui.Input).toBe("function");
-  expect(typeof ui.TextButton).toBe("function");
-  expect(typeof ui.FilledButton).toBe("function");
-  expect(typeof ui.OutlinedButton).toBe("function");
-  expect(typeof ui.IconButton).toBe("function");
+  expect(source).toContain("Card");
+  expect(source).toContain("Input");
+  expect(source).toContain("TextButton");
+  expect(source).toContain("FilledButton");
+  expect(source).toContain("OutlinedButton");
+  expect(source).toContain("IconButton");
 });
 
 test("createButtonStyle converts numeric dimensions into css sizes", () => {

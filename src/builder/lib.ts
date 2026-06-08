@@ -204,7 +204,7 @@ export const createSolidPlugin = (options: SolidPluginOptions = {}): Bun.BunPlug
                             dev: options.development ?? false,
                             generate: options.generate ?? "dom",
                             hydratable: options.hydratable ?? false,
-                            moduleName: options.moduleName ?? "solid-js/web",
+                            moduleName: options.moduleName ?? "@solidjs/web",
                         },
                     ],
                     ...(TYPESCRIPT_JSX_FILTER.test(path)
@@ -229,7 +229,7 @@ export const createSolidPlugin = (options: SolidPluginOptions = {}): Bun.BunPlug
 export const buildLibrary = async (options: BuildLibraryOptions): Promise<BuildLibraryResult> => {
     const outdir = resolve(options.outdir);
     const entrypoints = options.entrypoints.map((entrypoint) => resolve(entrypoint));
-    const external = Array.from(new Set(["solid-js", "solid-js/web", ...(options.external ?? [])]));
+    const external = Array.from(new Set(["solid-js", "@solidjs/web", ...(options.external ?? [])]));
 
     rmSync(outdir, { force: true, recursive: true });
 

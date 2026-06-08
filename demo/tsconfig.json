@@ -2,7 +2,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "jsx": "preserve",
-        "jsxImportSource": "solid-js",
+        "jsxImportSource": "@solidjs/web",
         "module": "Preserve",
         "moduleResolution": "bundler",
         "ignoreDeprecations": "6.0",

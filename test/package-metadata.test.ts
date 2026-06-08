@@ -43,7 +43,9 @@ test("solid-lib groups runtime, dev, and peer dependencies intentionally", async
   expect(packageJson.dependencies["typescript"]).toBe("latest");
   expect(packageJson.devDependencies["@types/babel__core"]).toBe("latest");
   expect(packageJson.devDependencies["@types/bun"]).toBe("latest");
+  expect(packageJson.devDependencies["@solidjs/web"]).toBe("next");
   expect(packageJson.devDependencies["solid-js"]).toBe("next");
+  expect(packageJson.peerDependencies["@solidjs/web"]).toBe("next");
   expect(packageJson.peerDependencies["solid-js"]).toBe("next");
   expect(packageJson.dependencies["solid-js"]).toBeUndefined();
 
@@ -63,6 +65,7 @@ test("demo keeps local build dependencies in devDependencies", async () => {
   }>("demo/package.json");
 
   expect(demoPackageJson.dependencies).toBeUndefined();
+  expect(demoPackageJson.devDependencies["@solidjs/web"]).toBe("next");
   expect(demoPackageJson.devDependencies["solid-js"]).toBe("next");
   expect(demoPackageJson.devDependencies["solid-lib"]).toBe("link:solid-lib");
 });
