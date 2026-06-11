@@ -81,10 +81,10 @@ export const StringInput: Component<StringInputProps> = (props) => {
     };
 
     return (
-        <label class={`${styles.stringInput} ${error() ? styles.error : ""}`}>
+        <label class={styles.stringInput}>
             <div>
                 <span>{props.label}</span>
-                <span>{error() ?? ""}</span>
+                <span class={error() ? styles.error : ""}>{error() ?? ""}</span>
             </div>
             <div>
                 {props.left}
@@ -130,7 +130,7 @@ export const TextInput: Component<TextInputProps> = (props) => {
         <label class={styles.stringInput}>
             <div>
                 <span>{props.label}</span>
-                <span>{error() ?? ""}</span>
+                <span class={error() ? styles.error : ""}>{error() ?? ""}</span>
             </div>
             <textarea
                 inputmode="text"

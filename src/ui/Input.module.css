@@ -79,7 +79,11 @@
   cursor: not-allowed;
 }
 
-.error input,
-.error textarea {
+.error {
+  color: var(--error-color);
+}
+
+.stringInput:has(.error) input,
+.stringInput:has(.error) textarea {
   outline: 2px solid color-mix(in srgb, var(--error-color) 64%, transparent);
 }
