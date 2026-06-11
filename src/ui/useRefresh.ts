@@ -108,10 +108,10 @@ export const useRefresh = (
             createEffect(
                 () => getPullState(),  // compute
                 (pullState) => {  // apply
-                    el.classList.toggle(styles.pulling, pullState === PullState.Pulling)
-                    el.classList.toggle(styles.ready, pullState === PullState.Ready)
-                    el.classList.toggle(styles.loading, pullState === PullState.Loading)
-                    el.classList.toggle(styles.done, pullState === PullState.Done)
+                    el.classList.toggle(styles.pulling!, pullState === PullState.Pulling)
+                    el.classList.toggle(styles.ready!, pullState === PullState.Ready)
+                    el.classList.toggle(styles.loading!, pullState === PullState.Loading)
+                    el.classList.toggle(styles.done!, pullState === PullState.Done)
                 }
             )
 
@@ -121,7 +121,7 @@ export const useRefresh = (
             )
 
             onSettled(() => {
-                el.classList.add(styles.use_refresh) // Corrected class name
+                el.classList.add(styles.use_refresh!) // Corrected class name
                 el.addEventListener("pointerdown", pointerStart)
                 el.addEventListener("pointermove", pointerMove)
                 el.addEventListener("pointerup", pointerEnd)

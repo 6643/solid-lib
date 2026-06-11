@@ -2,9 +2,8 @@
  * Async primitive for SolidJS 2.0 - replaces createResource-based implementation.
  * Provides createAsync and createAsyncStore for async data fetching.
  */
-import { type Accessor, createRoot, createSignal, createEffect, type Setter, untrack } from "solid-js";
-import { createStore, reconcile, type ReconcileOptions, snapshot } from "solid-js/store";
-import { isServer } from "solid-js/web";
+import { type Accessor, createRoot, createSignal, createEffect, type Setter, untrack, createStore, reconcile, snapshot } from "solid-js";
+import { isServer } from "@solidjs/web";
 
 export type AccessorWithLatest<T> = {
     (): T;
@@ -12,20 +11,20 @@ export type AccessorWithLatest<T> = {
 }
 
 export const createAsync = <T>(fn: (prev: T | undefined) => Promise<T>, options?: { name?: string; initialValue?: T; deferStream?: boolean; }): AccessorWithLatest<T | undefined> => {
-    const [getValue, setValue] = createSignal<T | undefined>(options?.initialValue);
+    const [getValue, setValue] = createSignal<T | undefined>(options?.initialValue as any);
     let latestValue: T | undefined = options?.initialValue;
 
     createEffect(
-        () => subFetch(fn, latestValue),
-        async (promise) => {
+        (prev: Promise<T> | undefined) => subFetch(fn, latestValue),
+        (promise: Promise<T> | undefined) => {
             if (!promise) return;
-            try {
-                const result = await promise;
-                latestValue = result;
-                setValue(() => result);
-            } catch (e) {
-                console.error("createAsync error:", e);
-            }
+            promise.then(
+                (result: T) => {
+                    latestValue = result;
+                    setValue(() => result);
+                },
+                (e: unknown) => console.error("createAsync error:", e)
+            );
         }
     );
 
@@ -39,23 +38,23 @@ export const createAsync = <T>(fn: (prev: T | undefined) => Promise<T>, options?
     return resultAccessor;
 }
 
-export const createAsyncStore = <T>(fn: (prev: T | undefined) => Promise<T>, options: { name?: string; initialValue?: T; deferStream?: boolean; reconcile?: ReconcileOptions; } = {}): AccessorWithLatest<T | undefined> => {
+export const createAsyncStore = <T>(fn: (prev: T | undefined) => Promise<T>, options: { name?: string; initialValue?: T; deferStream?: boolean; } = {}): AccessorWithLatest<T | undefined> => {
     const [store, setStore] = createStore<{ value: T | undefined }>({
         value: options?.initialValue
     });
     let latestValue: T | undefined = options?.initialValue;
 
     createEffect(
-        () => subFetch(fn, latestValue ? snapshot(latestValue) : undefined),
-        async (promise) => {
+        (prev: Promise<T> | undefined) => subFetch(fn, latestValue ? snapshot(latestValue) : undefined),
+        (promise: Promise<T> | undefined) => {
             if (!promise) return;
-            try {
-                const result = await promise;
-                latestValue = result;
-                setStore("value", reconcile(structuredClone(result), options.reconcile));
-            } catch (e) {
-                console.error("createAsyncStore error:", e);
-            }
+            promise.then(
+                (result: T) => {
+                    latestValue = result;
+                    setStore((s) => { reconcile(structuredClone(result), "id")(s.value); });
+                },
+                (e: unknown) => console.error("createAsyncStore error:", e)
+            );
         }
     );
 

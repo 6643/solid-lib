@@ -15,8 +15,8 @@ export const useLoad = <T>(
     threshold = 320
 ) => {
     createEffect(
-        () => typeof ref === "function" ? ref() : ref,  // compute
-        (el) => {  // apply
+        (prev: HTMLElement | undefined) => typeof ref === "function" ? ref() : ref,  // compute
+        (el: HTMLElement | undefined) => {  // apply
             if (!el) return;
 
             // Inlined core logic from createLoadHandler
@@ -51,14 +51,6 @@ export const useLoad = <T>(
 
 
             useScrollEnd(() => el, loadData);
-
-            // Return the controls
-            return {
-                reset,
-                getHasMore,
-                getPage,
-                isLoading
-            };
         }
     );
 };

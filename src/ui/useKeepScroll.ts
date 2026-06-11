@@ -1,5 +1,4 @@
-import { type Accessor, createEffect } from "solid-js"
-import { createStore } from "solid-js/store"
+import { type Accessor, createEffect, createStore } from "solid-js"
 import { useScrollEnd } from "./useScrollEnd.ts"
 
 
@@ -16,12 +15,13 @@ const [scrollPos, setScrollOs] = createStore<ScrollPositionsStore>({})
 export const setPos = (page: string, key: string, value: number) => setScrollOs(store => {
     if (!store[page]) store[page] = {}
     store[page][key] = value
+    return store
 })
 
 
 export const getPos = (page: string, key: string): number => scrollPos[page]?.[key] ?? 0
 
-export const delPos = (page: string) => setScrollOs(store => delete store[page])
+export const delPos = (page: string) => setScrollOs(store => { delete store[page]; return store })
 
 // --- Keep Scroll Hook ---
 export const useKeepScroll = (

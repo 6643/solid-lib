@@ -4,7 +4,7 @@ export const createDebouncedSignal = <T>(
     source: Accessor<T>,
     ms: number
 ): Accessor<T | undefined> => {
-    const [debouncedValue, setDebouncedValue] = createSignal(source());
+    const [debouncedValue, setDebouncedValue] = createSignal(source() as Exclude<T, Function>);
 
     createEffect(
         () => source(),  // compute

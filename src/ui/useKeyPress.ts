@@ -1,5 +1,5 @@
 import { createEffect, onCleanup } from "solid-js";
-import { isServer } from "solid-js/web";
+import { isServer } from "@solidjs/web";
 
 /**
  * A reactive hook that listens for key presses on the window.
