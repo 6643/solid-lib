@@ -1,5 +1,5 @@
 import styles from "./Modal.module.css";
-import { createEffect, createSignal, type Element, Show, onCleanup, children } from "solid-js";
+import { createEffect, createSignal, Show, onCleanup, children } from "solid-js";
 import { Portal } from "@solidjs/web";
 
 
@@ -8,7 +8,7 @@ const newModal = (modeClass: string) => {
     const [isActive, setActive] = createSignal(false)
 
     const Modal = (props: {
-        children: Element,
+        children: any,
         class?: string,
         onClose?: VoidFunction;
     }) => {

@@ -1,10 +1,11 @@
 import styles from "./ListBox.module.css"
-import { children, createEffect, createMemo, createSignal, For, type Element } from "solid-js"
+import { children, createEffect, createMemo, createSignal, For } from "solid-js"
+import type { JSX } from "@solidjs/web"
 import { useScrollEnd } from "./useScrollEnd"
 
 export const ListBox = <T,>(props: {
     items: T[]
-    children: (item: T, index: number) => Element
+    children: (item: T, index: number) => JSX.Element
     filter?: (item: T, index?: number) => boolean
     overscan?: number
     index?: number

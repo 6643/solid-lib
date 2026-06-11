@@ -1,0 +1,10 @@
+.FlexBox {
+    width: inherit;
+    height: inherit;
+    display: flex;
+    flex-direction: var(--dir, row);
+    flex-wrap: var(--wrap, nowrap);
+    align-items: var(--align, stretch);
+    justify-content: var(--justify, flex-start);
+    gap: calc(1px * var(--gap, 4));
+}

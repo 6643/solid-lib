@@ -1,0 +1,19 @@
+.Carousel {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.inner {
+    display: flex;
+}
+
+.item {
+    flex: 0 0 100%;
+    min-width: 100%;
+}
+
+.item img {
+    width: 100%;
+    display: block;
+}

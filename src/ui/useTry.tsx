@@ -1,5 +1,6 @@
 import styles from "./useTry.module.css"
-import { createSignal, For, type Element, Show } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
+import type { JSX } from "@solidjs/web";
 
 
 
@@ -36,7 +37,7 @@ export const useTry = () => {
         };
     };
 
-    const TryCatch = (props: { children: Element }) => <Show when={getErrs().length > 0} fallback={props.children}>
+    const TryCatch = (props: { children: JSX.Element }) => <Show when={getErrs().length > 0} fallback={props.children}>
         <ul class={styles.useTry}>
             <For each={getErrs()}>
                 {({ info }) => <li>{info}</li>}

@@ -1,0 +1,9 @@
+.GridBox {
+    width: inherit;
+    height: inherit;
+    display: grid;
+    grid-template-columns: var(--columns);
+    grid-template-rows: var(--rows);
+    grid-template-areas: var(--areas);
+    gap: calc(1px * var(--gap, 4));
+}

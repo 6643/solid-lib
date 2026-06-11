@@ -1,11 +1,11 @@
 import styles from "./LeftTab.module.css"
-import { createSignal, For, type Element, Match, onSettled, Show, Switch } from "solid-js"
+import { createSignal, For, Match, onSettled, Show, Switch } from "solid-js"
 import { getPos, setPos, useKeepScroll } from "./useKeepScroll"
 import { useDebounce } from "./useDebounce"
 
 export const LeftTab = (props: {
     mode?: "all" | "part" | "memu",
-    children: { name: string, panel: () => Element }[]
+    children: { name: string, panel: () => any }[]
 }) => {
     const key = "left.tab"
     const getTabIndexKey = () => key

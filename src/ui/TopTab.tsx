@@ -1,10 +1,10 @@
 import styles from "./TopTab.module.css"
-import { createSignal, For, type Element, onSettled, Show } from "solid-js"
+import { createSignal, For, onSettled, Show } from "solid-js"
 import { getPos, useKeepScroll, setPos } from "./useKeepScroll.ts"
 
 export const TopTab = (props: {
     mode?: "all" | "part" | "memu",
-    children: { name: string, panel: () => Element }[]
+    children: { name: string, panel: () => any }[]
 }) => {
     const key = "tab.tab"
     const getTabIndexKey = () => key

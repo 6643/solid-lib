@@ -1,5 +1,6 @@
 import styles from "./SortListBox.module.css"
-import { createSignal, For, type Element, onCleanup } from "solid-js"
+import { createSignal, For, onCleanup } from "solid-js"
+import type { JSX } from "@solidjs/web"
 import { SvgIcon, icon_drag_handle } from "./SvgIcon";
 
 type DragState = {
@@ -23,8 +24,8 @@ const calculateAvgItemSize = (itemRects: Map<HTMLElement, DOMRect>): number => {
 export const SortListBox = <T,>(props: {
     items: T[]
     hookChange: (items: T[], oldIndex: number, newIndex: number) => void
-    renderItem: (item: T, index: number) => Element
-    actions?: (item: T, index: number) => Element;
+    renderItem: (item: T, index: number) => JSX.Element
+    actions?: (item: T, index: number) => JSX.Element;
 }) => {
     let containerEl!: HTMLDivElement
     const [dragState, setDragState] = createSignal<DragState | null>(null)

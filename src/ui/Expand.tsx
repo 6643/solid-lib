@@ -1,10 +1,10 @@
 import styles from "./Expand.module.css"
-import { createSignal, Show, type Element, createEffect } from "solid-js"
+import { createSignal, Show, createEffect } from "solid-js"
 import { SvgIcon, icon_chevron_right } from "./SvgIcon"
 
 export const Expand = (props: {
     title: string
-    children: Element
+    children: any
     group?: string
 }) => {
     const [getVis, setVis] = createSignal(false)

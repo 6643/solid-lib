@@ -1,5 +1,6 @@
 import styles from "./CityPicker.module.css"
-import { createEffect, createMemo, createSignal, For, type Element, type Signal } from "solid-js"
+import { createEffect, createMemo, createSignal, For, type Signal } from "solid-js"
+import type { JSX } from "@solidjs/web"
 import { SvgIcon, icon_chevron_right } from "./SvgIcon"
 
 export const CityPicker = (props: {
@@ -7,7 +8,7 @@ export const CityPicker = (props: {
     cityCode?: number
     banCodes?: number[]
     change?: (city?: { code: number, names: string[] }) => void
-    children?: Element
+    children?: JSX.Element
     url: string
 }) => {
     const [getVis, setVis] = props.vis

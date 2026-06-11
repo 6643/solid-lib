@@ -1,8 +1,7 @@
 import styles from "./FlexBox.module.css"
-import { createEffect, type Element, children, createMemo } from "solid-js"
-
+import { createEffect, children, createMemo } from "solid-js"
 export const FlexBox = (props: {
-    children: Element
+    children: any
     dir?: "row" | "row-reverse" | "column" | "column-reverse"
     wrap?: "nowrap" | "wrap" | "wrap-reverse"
     ai?: "flex-start" | "flex-end" | "center" | "baseline" | "stretch"
@@ -47,7 +46,7 @@ export const FlexBox = (props: {
     )
 
     return <div class={get_class()} style={get_style()}>
-        {resolved()}
+        {resolved() as any}
     </div>
 
 }

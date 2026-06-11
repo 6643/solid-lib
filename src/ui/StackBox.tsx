@@ -1,8 +1,7 @@
 import styles from "./StackBox.module.css"
-import { type Element, children, createEffect } from "solid-js"
-
+import { children, createEffect } from "solid-js"
 export const StackBox = (props: {
-    children: Element
+    children: any
     pos?: { x?: number, y?: number }[]
 }) => {
 
@@ -31,7 +30,7 @@ export const StackBox = (props: {
 
 
     return <div class={styles.StackBox}>
-        {resolved()}
+        {resolved() as any}
     </div>
 }
 

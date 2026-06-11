@@ -1,0 +1,13 @@
+.ListBox {
+    display: grid;
+    grid-auto-rows: auto;
+    gap: calc(1px * var(--gap, 4));
+
+    width: inherit;
+    height: inherit;
+    overflow-y: auto;
+
+    >* {
+        content-visibility: auto;
+    }
+}
