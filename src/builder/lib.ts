@@ -12,10 +12,11 @@ const DOM_EXPRESSIONS_CLIENT_MODULE = "dom-expressions/src/client";
 const SOLID_PLUGIN_RUNTIME_NAMESPACE = "solid-plugin-runtime";
 const DOM_EXPRESSIONS_SOLID_CORE_MODULE = "solid-plugin:dom-expressions-solid-core";
 const DOM_EXPRESSIONS_SOLID_CORE_SOURCE = [
-    'import { createComponent, createMemo, createRenderEffect, createRoot, getOwner, sharedConfig, untrack } from "solid-js";',
+    'import { createComponent, createMemo, createRenderEffect, createRoot, flatten, getOwner, merge, runWithOwner, sharedConfig, untrack } from "solid-js";',
     "",
     "export const root = createRoot;",
-    "export { createComponent, getOwner, sharedConfig, untrack };",
+    "export { createComponent, flatten, getOwner, runWithOwner, sharedConfig, untrack };",
+    "export const mergeProps = merge;",
     "",
     "export const effect = (compute, effectOrInitial, initialValue) => {",
     "  if (typeof effectOrInitial === \"function\") {",
@@ -27,8 +28,6 @@ const DOM_EXPRESSIONS_SOLID_CORE_SOURCE = [
     "};",
     "",
     "export const memo = (compute, equal) => createMemo(compute, undefined, equal ? undefined : { equals: false });",
-    "",
-    "export const mergeProps = (...sources) => Object.assign({}, ...sources);",
 ].join("\n");
 
 export interface SolidPluginOptions {

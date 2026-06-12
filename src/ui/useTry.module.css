@@ -1,9 +1,0 @@
-.useTry {
-    background-color: var(--err);
-    color: white;
-    margin-block: 0;
-
-    >li {
-        margin-top: 16px;
-    }
-}

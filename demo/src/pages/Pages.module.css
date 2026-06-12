@@ -1,0 +1,192 @@
+.page {
+  padding: 16px;
+  padding-bottom: 80px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.desc {
+  font-size: 14px;
+  color: var(--grey5-color);
+  margin-bottom: 24px;
+}
+
+.card {
+  padding: 16px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-color);
+}
+
+.subTitle {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  color: var(--grey5-color);
+}
+
+.note {
+  font-size: 12px;
+  color: var(--grey5-color);
+  margin-top: 8px;
+}
+
+.box {
+  padding: 12px 16px;
+  background: var(--theme-color);
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.expandContent {
+  padding: 12px;
+  background: var(--inset-color);
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.modalContent {
+  padding: 24px;
+  min-width: 280px;
+  max-width: 400px;
+  margin: auto;
+}
+
+.modalContent h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.modalContent p {
+  margin-bottom: 16px;
+  color: var(--grey5-color);
+}
+
+.tabPanel {
+  padding: 16px;
+}
+
+.tabPanel h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.tabPanel p {
+  color: var(--grey5-color);
+  margin-bottom: 12px;
+}
+
+.listItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-bottom: 1px solid var(--inset-color);
+}
+
+.listItem strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.listItem span {
+  font-size: 12px;
+  color: var(--grey5-color);
+}
+
+.sortItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+.sortItemId {
+  font-size: 12px;
+  color: var(--grey5-color);
+  font-weight: 500;
+}
+
+.codeBlock {
+  background: var(--inset-color);
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.codeBlock pre {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--text-color);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: var(--raised-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  min-width: 150px;
+  z-index: 10;
+}
+
+.dropdown p {
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown p:hover {
+  background: var(--inset-color);
+}
+
+.resizeBox {
+  background: var(--inset-color);
+  padding: 16px;
+  border-radius: 8px;
+  resize: both;
+  overflow: auto;
+  min-height: 100px;
+}
+
+.resizeBox p {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.visBox {
+  background: var(--inset-color);
+  padding: 16px;
+  border-radius: 8px;
+  min-height: 100px;
+}
+
+.visBox p {
+  font-size: 14px;
+  margin-bottom: 4px;
+}

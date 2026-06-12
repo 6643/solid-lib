@@ -1,0 +1,48 @@
+.SortListBox {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    user-select: none;
+    background-color: var(--base-bg-color);
+
+    >.listItem {
+        position: relative;
+        display: flex;
+        gap: 4px;
+        justify-content: space-between;
+        user-select: none;
+        background-color: var(--disabled-bg-color);
+        transform: translateY(var(--translate-y, 0));
+
+        &.dragging {
+            opacity: 0.9;
+            z-index: 1;
+        }
+
+        &.displaced {
+            transition: transform 0.15s ease-out;
+        }
+
+        >:first-child {
+            flex-grow: 1;
+        }
+
+        >.itemActions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+
+            >:first-child {
+                flex-grow: 1;
+            }
+
+            >:last-child {
+                box-sizing: content-box;
+                border: 16px solid transparent;
+                color: var(--base-text-color);
+            }
+        }
+
+    }
+}

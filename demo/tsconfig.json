@@ -1,20 +1,7 @@
 {
+    "extends": "../tsconfig.json",
     "compilerOptions": {
-        "baseUrl": ".",
-        "jsx": "preserve",
-        "jsxImportSource": "solid-js",
-        "module": "Preserve",
-        "moduleResolution": "bundler",
-        "ignoreDeprecations": "6.0",
-        "paths": {
-            "solid-lib/builder": ["../src/builder/_.ts"],
-            "solid-lib/route": ["../src/route/_.ts"],
-            "solid-lib/ui": ["../src/ui/_.ts"],
-            "solid-lib/ui.css": ["../src/ui/_.css"]
-        },
-        "skipLibCheck": true,
-        "target": "ESNext",
-        "types": ["bun"],
+        "baseUrl": "."
     },
-    "include": ["global.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+    "include": ["global.d.ts", "solid-js-compat.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]
 }

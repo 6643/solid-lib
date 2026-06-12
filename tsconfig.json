@@ -7,10 +7,6 @@
         "jsx": "preserve",
         "jsxImportSource": "solid-js",
         "ignoreDeprecations": "6.0",
-        "paths": {
-            "solid-js/jsx-dev-runtime": ["src/solid-js/jsx-dev-runtime.d.ts"],
-            "solid-js/jsx-runtime": ["src/solid-js/jsx-runtime.d.ts"]
-        },
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
@@ -22,6 +18,6 @@
         "noUncheckedIndexedAccess": true,
         "noImplicitOverride": true,
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/ui/_.css"],
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "src/ui/_.css"],
     "exclude": ["src/**/*.test.ts"],
 }

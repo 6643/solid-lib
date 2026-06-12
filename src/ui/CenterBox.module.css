@@ -1,7 +1,0 @@
-.center-box {
-    display: grid;
-    place-items: center;
-
-    width: var(calc(1px * var(--width)), 100%);
-    height: var(calc(1px * var(--height)), 100%);
-}

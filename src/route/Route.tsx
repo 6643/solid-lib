@@ -1,4 +1,5 @@
-import { type Component, type JSX, createComponent, getOwner, onCleanup, onSettled, untrack } from "solid-js";
+import { type Component, createComponent, getOwner, onCleanup, onSettled, untrack } from "solid-js";
+import type { JSX } from "@solidjs/web";
 
 import { isFallbackRoutePath, matchesExactRoute } from "./match";
 import { handleAnchorClick } from "./navigation";

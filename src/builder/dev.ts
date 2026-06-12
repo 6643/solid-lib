@@ -129,6 +129,12 @@ const createWatchSignature = ({ config, configDependencyPaths, cwd }: LoadedSoli
         ...config.assetsDirs.map((assetDir) => assetDir.inputPath),
     ]);
 
+    // Watch parent src directory when demo imports from ../../src/ui/
+    const parentSrc = resolve(cwd, "../src");
+    if (safeStat(parentSrc)?.isDirectory()) {
+        roots.add(parentSrc);
+    }
+
     return Array.from(roots)
         .flatMap((root) => listFiles(root))
         .sort()
@@ -289,6 +295,7 @@ export const startDevServer = async (
 
     const server = Bun.serve({
         development: true,
+        idleTimeout: 0,
         fetch: (request) => {
             const url = new URL(request.url);
             const pathname = url.pathname === "/index.html" ? "/" : url.pathname;
