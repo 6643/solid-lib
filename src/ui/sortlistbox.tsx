@@ -1,5 +1,5 @@
 import styles from "./sortlistbox.module.css";
-import { createSignal, For, onCleanup } from "solid-js";
+import { createSignal, For, onSettled } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { SvgIcon } from "./svgicon";
 import { icon_drag_handle } from "./svgicons";
@@ -150,10 +150,10 @@ export const SortListBox = <T,>(props: {
         setDragState(null);
     };
 
-    onCleanup(cleanUpDrag);
+    onSettled(() => cleanUpDrag);
 
     return (
-        <div class={styles.SortListBox} ref={containerEl} onPointerDown={handlePointerDown}>
+        <div class={styles.sort_list_box} ref={containerEl} onPointerDown={handlePointerDown}>
             <For each={props.items}>
                 {(item, index) => (
                     <div class={styles.listItem}>

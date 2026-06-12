@@ -4,7 +4,7 @@ export const CenterBox = (props: {
     w?: number
     h?: number
 }) => {
-    return <div class={styles.CenterBox} style={{ "--w": props.w, "--h": props.h }}>
+    return <div class={styles.centerBox} style={{ "--w": props.w, "--h": props.h }}>
         {props.children}
     </div>
 }

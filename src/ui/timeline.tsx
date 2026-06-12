@@ -12,7 +12,7 @@ export const TimeLine = (props: {
     const toggle = () => setEvents(getEvents().length != props.children.length ? props.children : initEvents);
 
     return (
-        <div class={styles.TimeLine}>
+        <div class={styles.time_line}>
             <div>{props.title}</div>
             <For each={getEvents()}>
                 {({ time, info, url }) => (

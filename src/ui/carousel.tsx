@@ -5,7 +5,7 @@ export const Carousel = (props: { imgs: string[] }) => {
     // Note: This is a basic visual structure.
     // For full functionality (like sliding), you'd add signals and event handlers.
     return (
-        <div class={styles.Carousel}>
+        <div class={styles.carousel}>
             <div class={styles.inner}>
                 <For each={props.imgs}>
                     {(imgSrc, i) => (

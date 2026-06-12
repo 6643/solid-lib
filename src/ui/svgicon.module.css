@@ -1,4 +1,4 @@
-.SvgIcon {
+.svg_icon {
     fill: var(--color, currentColor);
     vertical-align: middle;
 }

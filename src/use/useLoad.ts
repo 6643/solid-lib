@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, createSignal, onCleanup } from "solid-js"
+import { type Accessor, createEffect, createSignal } from "solid-js"
 import { useScrollEnd } from "./useScrollEnd.ts"
 
 // Helper function for distance calculation

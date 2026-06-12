@@ -1,5 +1,5 @@
 import styles from "./modal.module.css";
-import { createEffect, createSignal, Show, onCleanup, children } from "solid-js";
+import { createEffect, createSignal, Show, children } from "solid-js";
 import { Portal } from "@solidjs/web";
 
 
@@ -52,7 +52,7 @@ const newModal = (modeClass: string) => {
                         setMounted(false)
                         props.onClose?.();
                     }, 256);
-                    onCleanup(() => clearTimeout(timer));
+                    return () => clearTimeout(timer);
                 }
             }
         );

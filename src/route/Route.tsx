@@ -1,4 +1,4 @@
-import { type Component, createComponent, getOwner, onCleanup, onSettled, untrack } from "solid-js";
+import { type Component, createComponent, getOwner, onSettled, untrack } from "solid-js";
 import type { JSX } from "@solidjs/web";
 
 import { isFallbackRoutePath, matchesExactRoute } from "./match";
@@ -35,9 +35,7 @@ export const Route = (props: RouteProps): JSX.Element => {
   if (getOwner()) {
     onSettled(() => {
       ensureRouteState(handleAnchorClick);
-    });
-    onCleanup(() => {
-      unregisterRoute(routeId);
+      return () => unregisterRoute(routeId);
     });
   } else {
     ensureRouteState(handleAnchorClick);

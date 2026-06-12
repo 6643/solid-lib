@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, createEffect } from 'solid-js';
+import { createSignal, createEffect } from 'solid-js';
 
 /**
  * A hook to manage the Screen Wake Lock API.
@@ -45,7 +45,7 @@ export const useWakeLock = () => {
                 }
             };
             document.addEventListener('visibilitychange', handleVisibilityChange);
-            onCleanup(() => document.removeEventListener('visibilitychange', handleVisibilityChange));
+            return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
         }
     );
 

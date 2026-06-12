@@ -29,7 +29,7 @@ export const StackBox = (props: {
     )
 
 
-    return <div class={styles.StackBox}>
+    return <div class={styles.stack_box}>
         {resolved() as any}
     </div>
 }

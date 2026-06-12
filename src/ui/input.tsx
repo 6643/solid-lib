@@ -1,5 +1,5 @@
 import styles from "./input.module.css";
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, createEffect, Show, untrack } from "solid-js";
 import type { JSX } from "@solidjs/web";
 
 // ── 公共 props ──
@@ -190,7 +190,7 @@ export const NumberInput = (
         unit?: string;
     },
 ) => {
-    const [value, setValue] = createSignal(props.value ?? "");
+    const [value, setValue] = createSignal(untrack(() => props.value) ?? "");
 
     createEffect(
         () => props.value ?? "",

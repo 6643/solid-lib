@@ -1,4 +1,4 @@
-import { onCleanup, createEffect, type Accessor } from "solid-js";
+import { createEffect, type Accessor } from "solid-js";
 
 export const useClickOutside = (
     ref: Accessor<Element | undefined>,
@@ -19,7 +19,7 @@ export const useClickOutside = (
 
             document.body.addEventListener("mousedown", onClick);
 
-            onCleanup(() => document.body.removeEventListener("mousedown", onClick));
+            return () => document.body.removeEventListener("mousedown", onClick);
         }
     );
 };

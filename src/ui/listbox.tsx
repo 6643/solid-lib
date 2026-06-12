@@ -1,5 +1,5 @@
 import styles from "./listbox.module.css"
-import { children, createEffect, createMemo, createSignal, For } from "solid-js"
+import { children, createEffect, createMemo, createSignal, For, untrack } from "solid-js"
 import type { JSX } from "@solidjs/web"
 import { useScrollEnd } from "../use/useScrollEnd"
 
@@ -10,7 +10,7 @@ export const ListBox = <T,>(props: {
     overscan?: number
     index?: number
 }) => {
-    const overscan = props.overscan ?? 16
+    const overscan = untrack(() => props.overscan) ?? 16
 
     const [getEl, setEl] = createSignal<HTMLElement>()
     const [start, setStart] = createSignal(0)

@@ -1,4 +1,4 @@
-.ImagePlayer {
+.image_player {
     position: relative;
     mask-image: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
     margin: 4px 0;

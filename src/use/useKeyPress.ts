@@ -1,4 +1,4 @@
-import { createEffect, onCleanup } from "solid-js";
+import { createEffect } from "solid-js";
 import { isServer } from "@solidjs/web";
 
 /**
@@ -32,9 +32,9 @@ export function useKeyPress(
 
       window.addEventListener("keydown", handleKeyDown, { capture: options.capture });
 
-      onCleanup(() => {
+      return () => {
         window.removeEventListener("keydown", handleKeyDown, { capture: options.capture });
-      });
+      };
     }
   );
 }

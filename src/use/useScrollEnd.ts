@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, onCleanup } from "solid-js"
+import { type Accessor, createEffect } from "solid-js"
 
 // --- Scroll End Hook ---
 export const useScrollEnd = (
@@ -7,11 +7,10 @@ export const useScrollEnd = (
     debounceMs: number = 32
 ) => {
     createEffect(
-        () => typeof ref === "function" ? (ref as Accessor<HTMLElement | undefined>)() : ref,  // compute
-        (el) => {  // apply
+        () => typeof ref === "function" ? (ref as Accessor<HTMLElement | undefined>)() : ref,
+        (el) => {
             if (!el) return;
 
-            // Inlined debounce function
             const debounce = <A extends unknown[]>(
                 f: (...args: A) => void,
                 ms: number,
@@ -29,7 +28,7 @@ export const useScrollEnd = (
             }, debounceMs)
 
             el.addEventListener("scroll", debouncedScroll)
-            onCleanup(() => el.removeEventListener("scroll", debouncedScroll))
+            return () => el.removeEventListener("scroll", debouncedScroll)
         }
     );
 }

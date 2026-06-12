@@ -28,7 +28,7 @@ export const AppTap = (props: { children: { icon: string; panel: () => any }[] }
     onSettled(() => toIndex(getActiveIndex()));
 
     return (
-        <div class={styles.AppTap}>
+        <div class={styles.appTap}>
             <For each={props.children}>
                 {({ panel }, index) => (
                     <Show when={index() == getActiveIndex()}>

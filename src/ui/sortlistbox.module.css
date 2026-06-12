@@ -1,4 +1,4 @@
-.SortListBox {
+.sort_list_box {
     display: flex;
     flex-direction: column;
     gap: 2px;

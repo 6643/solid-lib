@@ -1,6 +1,6 @@
 import styles from "./swiper.module.css"
 
-import { children, createMemo, onCleanup, omit } from "solid-js"
+import { children, createMemo, onSettled, omit } from "solid-js"
 import type { JSX } from "@solidjs/web"
 import { Dynamic, For } from "@solidjs/web"
 import { loadScript } from "./loadscript.ts"
@@ -45,7 +45,7 @@ export const Swiper = <T,>(props: {
             slideChangeHandler();
         });
 
-        onCleanup(() => {
+        onSettled(() => {
             if (!swiper) return;
             allVideos.forEach((video: HTMLVideoElement) => {
                 video.removeEventListener("play", autoplayController);
@@ -65,7 +65,7 @@ export const Swiper = <T,>(props: {
         const resolveChildren = resolved();
         return (Array.isArray(resolveChildren) ? resolveChildren : [resolveChildren]).flat().filter(c => c != null);
     });
-    return <Dynamic component="swiper-container" class={styles.Swiper} ref={init}>
+    return <Dynamic component="swiper-container" class={styles.swiper} ref={init}>
         <For each={resolvedArray()}>{(child) =>
             <Dynamic component="swiper-slide">{child}</Dynamic>
         }</For>

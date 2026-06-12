@@ -35,7 +35,7 @@ export const TopTab = (props: {
 
 
 
-    return <div class={styles.TopTab} part={mode}>
+    return <div class={styles.top_tab} part={mode}>
         <nav ref={el} style={{ "--left": getLeft(), "--width": getWidth() }}>
             <For each={props.children}>{({ name }, index) =>
                 <div onClick={() => toIndex(index())} class={index() == getActiveIndex() ? styles.active! : ""}>

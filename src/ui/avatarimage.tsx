@@ -14,10 +14,12 @@ export const AvatarImage = (props: {
     size?: 32 | 48 | 64 | 128
     color?: "blue" | "pink" | "white" | "gray"
 }) => {
-    let color: string | undefined
-    if (props.color === "blue") color = "#00AEEC"
-    else if (props.color === "pink") color = "#fb7299"
-    else if (props.color === "white") color = "white"
+    const getColor = () => {
+        if (props.color === "blue") return "#00AEEC"
+        if (props.color === "pink") return "#fb7299"
+        if (props.color === "white") return "white"
+        return undefined
+    }
 
-    return <img class={styles.AvatarImage} src={props.children} style={{ "--size": props.size, "--color": color }} />
+    return <img class={styles.avatar_image} src={props.children} style={{ "--size": props.size, "--color": getColor() }} />
 }

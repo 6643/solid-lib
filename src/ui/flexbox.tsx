@@ -18,7 +18,7 @@ export const FlexBox = (props: {
     style?: Record<string, string | number>
 }) => {
 
-    const get_class = createMemo(() => [styles.FlexBox, props.class].filter(Boolean).join(" "))
+    const get_class = createMemo(() => [styles.flex_box, props.class].filter(Boolean).join(" "))
     const get_style = createMemo(() => {
         return {
             "--dir": props.dir,

@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, type Accessor, createMemo } from "solid-js";
+import { createEffect, type Accessor, createMemo } from "solid-js";
 
 
 interface GestureOptions {
@@ -66,13 +66,13 @@ const usePointerEvents = <T extends HTMLElement>(
             el.addEventListener("pointercancel", handlePointerCancel);
             el.addEventListener("pointerleave", handlePointerCancel); // Treat leave as cancel
 
-            onCleanup(() => {
+            return () => {
                 el.removeEventListener("pointerdown", handlePointerDown);
                 el.removeEventListener("pointermove", handlePointerMove);
                 el.removeEventListener("pointerup", handlePointerUp);
                 el.removeEventListener("pointercancel", handlePointerCancel);
                 el.removeEventListener("pointerleave", handlePointerCancel);
-            });
+            };
         }
     );
 };

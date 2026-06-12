@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, type Accessor, createSignal, type Setter } from "solid-js"
+import { createEffect, type Accessor, createSignal, type Setter } from "solid-js"
 
 const resizeObserverStore = new Map<Element, Setter<ResizeObserverEntry | undefined>>();
 const resizeObserver = new ResizeObserver(entries => {
@@ -30,10 +30,10 @@ export const useResize = (
 
             resizeObserverStore.set(el, setEntry);
             resizeObserver.observe(el)
-            onCleanup(() => {
+            return () => {
                 resizeObserver.unobserve(el);
                 resizeObserverStore.delete(el);
-            })
+            }
         }
     );
 };

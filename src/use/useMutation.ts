@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, onCleanup, createSignal, type Setter } from "solid-js";
+import { type Accessor, createEffect, createSignal, type Setter } from "solid-js";
 
 const mutationObserverMap = new Map<string, { observer: MutationObserver, callbacks: Map<Element, Setter<MutationRecord[] | undefined>> }>();
 
@@ -38,7 +38,7 @@ export const useMutation = (
             entry.callbacks.set(el, setMutations);
             entry.observer.observe(el, options);
 
-            onCleanup(() => {
+            return () => {
                 const currentEntry = mutationObserverMap.get(optionsKey);
                 if (!currentEntry) return;
 
@@ -55,7 +55,7 @@ export const useMutation = (
                         currentEntry.observer.observe(targetEl, options);
                     });
                 }
-            });
+            };
         }
     );
 };

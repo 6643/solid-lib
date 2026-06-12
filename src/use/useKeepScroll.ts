@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, createStore } from "solid-js"
+import { type Accessor, createEffect, createRoot, createStore, untrack } from "solid-js"
 import { useScrollEnd } from "./useScrollEnd.ts"
 
 
@@ -19,7 +19,7 @@ export const setPos = (page: string, key: string, value: number) => setScrollOs(
 })
 
 
-export const getPos = (page: string, key: string): number => scrollPos[page]?.[key] ?? 0
+export const getPos = (page: string, key: string): number => untrack(() => scrollPos[page]?.[key] ?? 0)
 
 export const delPos = (page: string) => setScrollOs(store => { delete store[page]; return store })
 
@@ -30,22 +30,21 @@ export const useKeepScroll = (
     key: string,
     debounceMs: number = 32
 ) => {
-    createEffect(
-        () => typeof ref === "function" ? (ref as Accessor<HTMLElement | undefined>)() : ref,  // compute
-        (el) => {  // apply
-            if (!el) return;
+    const el = typeof ref === "function" ? ref() : ref
+    if (!el) return
 
-            // Inlined core logic from createKeepScrollHandler
-            useScrollEnd(() => el, (top) => setPos(page, key, top), debounceMs) // Now calls the new useScrollEnd
+    createRoot((dispose) => {
+        useScrollEnd(el, (top) => setPos(page, key, top), debounceMs)
 
-            createEffect(
-                () => getPos(page, key),  // compute
-                (storedTop) => {  // apply
-                    if (storedTop > 0) setTimeout(() => {
-                        if (el) el.scrollTop = storedTop
-                    }, 0)
-                }
-            )
-        }
-    );
+        createEffect(
+            () => getPos(page, key),
+            (storedTop) => {
+                if (storedTop > 0) setTimeout(() => {
+                    if (el) el.scrollTop = storedTop
+                }, 0)
+            }
+        )
+
+        return dispose
+    })
 }

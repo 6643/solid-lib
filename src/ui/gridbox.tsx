@@ -13,7 +13,7 @@ export const GridBox = (props: {
     style?: CSS.Properties
 }) => {
 
-    const getClass = createMemo(() => [styles.GridBox, props.class].filter(Boolean).join(" "))
+    const getClass = createMemo(() => [styles.grid_box, props.class].filter(Boolean).join(" "))
     const getStyle = createMemo(() => {
         const areas = props.areas ? toArgs(props.areas) : undefined
         return {

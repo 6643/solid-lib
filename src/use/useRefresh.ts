@@ -1,5 +1,5 @@
 import styles from "./useRefresh.module.css"
-import { createEffect, createMemo, createSignal, onCleanup, onSettled, type Accessor } from "solid-js"
+import { createEffect, createMemo, createSignal, onSettled, type Accessor } from "solid-js"
 import { type AsyncVoidFunc } from "../ui/utils"
 
 // 定义下拉刷新状态枚举
@@ -129,12 +129,12 @@ export const useRefresh = (
 
             })
 
-            onCleanup(() => {
+            return () => {
                 el.removeEventListener("pointerdown", pointerStart)
                 el.removeEventListener("pointermove", pointerMove)
                 el.removeEventListener("pointerup", pointerEnd)
                 el.removeEventListener("pointercancel", pointerEnd)
-            })
+            }
         }
     );
 };

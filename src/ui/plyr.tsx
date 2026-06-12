@@ -1,4 +1,4 @@
-import { createEffect, onCleanup } from "solid-js";
+import { createEffect } from "solid-js";
 import { loadScript } from "./loadscript.ts";
 import { loadStyle } from "./loadstyle.ts";
 export const Plyr = (props: { src: string }) => {
@@ -11,7 +11,7 @@ export const Plyr = (props: { src: string }) => {
             (loaded) => {  // apply
                 if (loaded) {
                     const player = new (window as any).Plyr(videoEl, { controls: ["play", "progress", "volume"] });
-                    onCleanup(() => player.destroy())
+                    return () => player.destroy()
                 }
             }
         )

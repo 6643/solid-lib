@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, onCleanup, createSignal, type Setter } from "solid-js"
+import { type Accessor, createEffect, createSignal, type Setter } from "solid-js"
 
 const intersectionObserverStore = new Map<Element, Setter<IntersectionObserverEntry | undefined>>();
 const intersectionObserver = new IntersectionObserver(entries => {
@@ -31,10 +31,10 @@ export const useVis = (
             intersectionObserverStore.set(el, setEntry);
             intersectionObserver.observe(el);
 
-            onCleanup(() => {
+            return () => {
                 intersectionObserver.unobserve(el);
                 intersectionObserverStore.delete(el);
-            });
+            };
         }
     );
 };

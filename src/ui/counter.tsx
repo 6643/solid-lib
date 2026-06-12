@@ -1,5 +1,5 @@
 import styles from "./counter.module.css";
-import { createSignal, createMemo, createEffect, For, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, For, Show, untrack } from "solid-js";
 import { IconButton } from "./button";
 import { icon_remove, icon_add } from "./svgicons";
 
@@ -10,36 +10,30 @@ export const Counter = (props: {
     min?: number;
     max?: number;
 }) => {
-    const [getVal, setVal] = createSignal(props.value || 1);
+    const [getVal, setVal] = createSignal(untrack(() => props.value) || 1);
     const [isMoveUp, setMoveUp] = createSignal(false);
     const getNums = createMemo(() => [...String(Math.abs(getVal()))].map(Number));
 
     createEffect(
-        () => getVal(), // compute
-        (val) => props.change?.(val), // apply
+        () => getVal(),
+        (val) => { props.change?.(val); },
     );
 
-    const increment =
-        props.max !== undefined && getVal() >= props.max
-            ? undefined
-            : () => {
-                  const currentValue = getVal();
-                  if (props.max === undefined || currentValue < props.max) {
-                      setVal(currentValue + 1);
-                      setMoveUp(false);
-                  }
-              };
+    const increment = () => {
+        const currentValue = getVal();
+        if (props.max === undefined || currentValue < props.max) {
+            setVal(currentValue + 1);
+            setMoveUp(false);
+        }
+    };
 
-    const decrement =
-        props.min !== undefined && getVal() <= props.min
-            ? undefined
-            : () => {
-                  const currentValue = getVal();
-                  if (props.min === undefined || currentValue > props.min) {
-                      setVal(currentValue - 1);
-                      setMoveUp(true);
-                  }
-              };
+    const decrement = () => {
+        const currentValue = getVal();
+        if (props.min === undefined || currentValue > props.min) {
+            setVal(currentValue - 1);
+            setMoveUp(true);
+        }
+    };
 
     return (
         <div class={styles.counter}>
