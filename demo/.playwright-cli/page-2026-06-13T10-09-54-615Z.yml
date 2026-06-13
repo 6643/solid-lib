@@ -1,0 +1,76 @@
+- generic [ref=e3]:
+  - main [ref=e262]:
+    - generic [ref=e263]:
+      - heading "布局组件" [level=1] [ref=e264]
+      - paragraph [ref=e265]: 展示 FlexBox、GridBox、StackBox、CenterBox、Block 组件
+      - generic [ref=e266]:
+        - generic [ref=e267]:
+          - heading "FlexBox 弹性布局" [level=2] [ref=e268]
+          - heading "水平排列 (row)" [level=3] [ref=e269]
+          - generic [ref=e270]:
+            - generic [ref=e271]: "1"
+            - generic [ref=e272]: "2"
+            - generic [ref=e273]: "3"
+          - heading "垂直排列 (column)" [level=3] [ref=e274]
+          - generic [ref=e275]:
+            - generic [ref=e276]: A
+            - generic [ref=e277]: B
+            - generic [ref=e278]: C
+          - heading "对齐方式" [level=3] [ref=e279]
+          - generic [ref=e280]:
+            - generic [ref=e281]: Start
+            - generic [ref=e282]: Center
+            - generic [ref=e283]: End
+          - heading "自动换行" [level=3] [ref=e284]
+          - generic [ref=e285]:
+            - generic [ref=e286]: Item 1
+            - generic [ref=e287]: Item 2
+            - generic [ref=e288]: Item 3
+            - generic [ref=e289]: Item 4
+            - generic [ref=e290]: Item 5
+        - generic [ref=e291]:
+          - heading "GridBox 网格布局" [level=2] [ref=e292]
+          - heading "基础网格" [level=3] [ref=e293]
+          - generic [ref=e294]:
+            - generic [ref=e295]: "1"
+            - generic [ref=e296]: "2"
+            - generic [ref=e297]: "3"
+            - generic [ref=e298]: "4"
+            - generic [ref=e299]: "5"
+            - generic [ref=e300]: "6"
+          - heading "自定义区域" [level=3] [ref=e301]
+          - generic [ref=e302]:
+            - generic [ref=e303]: 侧边栏
+            - generic [ref=e304]: 主内容区
+            - generic [ref=e305]: 底部
+      - generic [ref=e306]:
+        - generic [ref=e307]:
+          - heading "StackBox 堆叠布局" [level=2] [ref=e308]
+          - generic [ref=e309]:
+            - generic [ref=e310]: 底层
+            - generic [ref=e311]: 中层
+            - generic [ref=e312]: 顶层
+        - generic [ref=e313]:
+          - heading "CenterBox 居中布局" [level=2] [ref=e314]
+          - generic [ref=e317]: 居中内容
+      - generic [ref=e318]:
+        - heading "Block 区块布局" [level=2] [ref=e319]
+        - generic [ref=e320]:
+          - generic [ref=e321]:
+            - generic [ref=e322]:
+              - generic [ref=e323]: 区块标题
+              - generic [ref=e325]: ...
+            - generic [ref=e327]: 这是 Block 组件的内容区域，支持 header 和 footer。
+            - generic [ref=e328]: 左侧右侧
+          - generic [ref=e329]:
+            - generic [ref=e331]: 无 Footer
+            - generic [ref=e333]: 这个 Block 没有 footer 部分。
+  - navigation [ref=e121]:
+    - img [ref=e123]
+    - img [ref=e126]
+    - img [ref=e129]
+    - img [ref=e132]
+    - img [ref=e135]
+    - img [ref=e138]
+    - img [ref=e141]
+    - img [ref=e144]

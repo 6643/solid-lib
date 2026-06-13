@@ -1,0 +1,71 @@
+- generic [ref=e3]:
+  - main [ref=e640]:
+    - generic [ref=e641]:
+      - heading "Hooks 示例" [level=1] [ref=e642]
+      - paragraph [ref=e643]: 展示常用 Hooks 的使用方式
+      - generic [ref=e644]:
+        - generic [ref=e645]:
+          - heading "useDebounce 防抖" [level=2] [ref=e646]
+          - generic [ref=e647]:
+            - generic [ref=e649]: 搜索（500ms 防抖）
+            - textbox "搜索（500ms 防抖）" [ref=e651]:
+              - /placeholder: " "
+          - paragraph [ref=e652]: 输入停止 500ms 后才会触发搜索
+        - generic [ref=e653]:
+          - heading "useThrottle 节流" [level=2] [ref=e654]
+          - button "点击（1秒节流）" [ref=e655] [cursor=pointer]:
+            - generic [ref=e657]: 点击（1秒节流）
+          - paragraph [ref=e658]: "触发次数: 0（每秒最多1次）"
+      - generic [ref=e659]:
+        - generic [ref=e660]:
+          - heading "useCopy 复制" [level=2] [ref=e661]
+          - button "复制文本" [ref=e662] [cursor=pointer]:
+            - generic [ref=e664]: 复制文本
+          - paragraph [ref=e665]: 点击复制 "Hello, SolidJS!"
+        - generic [ref=e666]:
+          - heading "useClickOutside 点击外部" [level=2] [ref=e667]
+          - button "切换下拉" [ref=e669] [cursor=pointer]:
+            - generic [ref=e671]: 切换下拉
+      - generic [ref=e672]:
+        - generic [ref=e673]:
+          - heading "useKeyPress 按键监听" [level=2] [ref=e674]
+          - paragraph [ref=e675]:
+            - text: "最后按下的键:"
+            - strong [ref=e676]: 无
+          - paragraph [ref=e677]: 按下 Enter、Escape、空格、a/b/c 键测试
+        - generic [ref=e678]:
+          - heading "useResize 尺寸监听" [level=2] [ref=e679]
+          - generic [ref=e680]:
+            - paragraph [ref=e681]: "宽度: 0px"
+            - paragraph [ref=e682]: "高度: 0px"
+            - paragraph [ref=e683]: 调整窗口大小查看变化
+      - generic [ref=e684]:
+        - generic [ref=e685]:
+          - heading "useFullScreen 全屏" [level=2] [ref=e686]
+          - button "进入全屏" [ref=e687] [cursor=pointer]:
+            - generic [ref=e689]: 进入全屏
+          - paragraph [ref=e690]: "当前状态: 正常"
+        - generic [ref=e691]:
+          - heading "useVis 可见性检测" [level=2] [ref=e692]
+          - generic [ref=e693]:
+            - paragraph [ref=e694]:
+              - text: "元素可见:"
+              - strong [ref=e695]: 否
+            - paragraph [ref=e696]: 滚动到此元素查看效果
+      - generic [ref=e697]:
+        - heading "createDebouncedSignal 防抖信号" [level=2] [ref=e698]
+        - generic [ref=e699]:
+          - generic [ref=e701]: 输入内容
+          - textbox "输入内容" [ref=e703]:
+            - /placeholder: " "
+        - paragraph [ref=e704]: "原始值:"
+        - paragraph [ref=e705]: "防抖值 (300ms):"
+  - navigation [ref=e121]:
+    - img [ref=e123]
+    - img [ref=e126]
+    - img [ref=e129]
+    - img [ref=e132]
+    - img [ref=e135]
+    - img [ref=e138]
+    - img [ref=e141]
+    - img [ref=e144]

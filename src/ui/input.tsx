@@ -64,10 +64,10 @@ const Input = (props: FieldProps & { children: any }) => {
                 <span>{props.label}</span>
                 <span class={styles.fieldError}>{checking() ? "校验中..." : (error() ?? "")}</span>
             </div>
-            <div>
-                {props.left as any}
+            <div class={styles.inputWrap}>
+                {props.left && <span class={styles.iconBtn}>{props.left}</span>}
                 {props.children}
-                {props.right as any}
+                {props.right && <span class={styles.iconBtn}>{props.right}</span>}
             </div>
         </label>
     );
@@ -86,7 +86,7 @@ export const RangeInput = (props: {
     left?: JSX.Element;
     right?: JSX.Element;
 }) => {
-    const [value, setValue] = createSignal(props.value ?? props.min ?? 0);
+    const [value, setValue] = createSignal(untrack(() => props.value) ?? untrack(() => props.min) ?? 0);
 
     createEffect(
         () => props.value ?? props.min ?? 0,

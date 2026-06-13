@@ -7,4 +7,6 @@
     align-items: var(--align, stretch);
     justify-content: var(--justify, flex-start);
     gap: calc(1px * var(--gap, 4));
+
+    margin-top: 4px;
 }

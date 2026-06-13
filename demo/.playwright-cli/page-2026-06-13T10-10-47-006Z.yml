@@ -1,0 +1,50 @@
+- generic [ref=e3]:
+  - main [ref=e523]:
+    - generic [ref=e524]:
+      - heading "交互组件" [level=1] [ref=e525]
+      - paragraph [ref=e526]: 展示 Modal、Expand 组件
+      - generic [ref=e527]:
+        - generic [ref=e528]:
+          - heading "Expand 折叠面板" [level=2] [ref=e529]
+          - generic [ref=e530]:
+            - navigation [ref=e532]:
+              - generic [ref=e533]: 基础信息
+              - img [ref=e534]
+            - navigation [ref=e537]:
+              - generic [ref=e538]: 高级设置
+              - img [ref=e539]
+            - navigation [ref=e542]:
+              - generic [ref=e543]: 关于
+              - img [ref=e544]
+        - generic [ref=e546]:
+          - heading "Filled Modal 填充弹窗" [level=2] [ref=e547]
+          - button "打开填充弹窗" [ref=e548] [cursor=pointer]:
+            - generic [ref=e550]: 打开填充弹窗
+      - generic [ref=e551]:
+        - generic [ref=e552]:
+          - heading "Bottom Modal 底部弹窗" [level=2] [ref=e553]
+          - button "打开底部弹窗" [ref=e554] [cursor=pointer]:
+            - generic [ref=e556]: 打开底部弹窗
+        - generic [ref=e557]:
+          - heading "Left Modal 左侧弹窗" [level=2] [ref=e558]
+          - button "打开左侧弹窗" [ref=e559] [cursor=pointer]:
+            - generic [ref=e561]: 打开左侧弹窗
+      - generic [ref=e562]:
+        - generic [ref=e563]:
+          - heading "Right Modal 右侧弹窗" [level=2] [ref=e564]
+          - button "打开右侧弹窗" [ref=e565] [cursor=pointer]:
+            - generic [ref=e567]: 打开右侧弹窗
+        - generic [ref=e568]:
+          - heading "嵌套 Expand" [level=2] [ref=e569]
+          - navigation [ref=e571]:
+            - generic [ref=e572]: 父级面板
+            - img [ref=e573]
+  - navigation [ref=e121]:
+    - img [ref=e123]
+    - img [ref=e126]
+    - img [ref=e129]
+    - img [ref=e132]
+    - img [ref=e135]
+    - img [ref=e138]
+    - img [ref=e141]
+    - img [ref=e144]

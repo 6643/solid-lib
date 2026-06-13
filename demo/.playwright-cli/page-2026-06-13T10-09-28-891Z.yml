@@ -1,0 +1,112 @@
+- generic [ref=e3]:
+  - main [ref=e146]:
+    - generic [ref=e147]:
+      - heading "输入组件" [level=1] [ref=e148]
+      - paragraph [ref=e149]: TextInput、PasswordInput、NumberInput、EmailInput、TelInput、RangeInput
+      - generic [ref=e150]:
+        - generic [ref=e151]:
+          - heading "TextInput 单行" [level=2] [ref=e152]
+          - generic [ref=e153]:
+            - generic [ref=e154]:
+              - generic [ref=e156]: 姓名
+              - textbox "姓名" [ref=e158]:
+                - /placeholder: " "
+                - text: 张三
+            - generic [ref=e159]:
+              - generic [ref=e161]: 只读
+              - textbox "只读" [ref=e163]:
+                - /placeholder: " "
+                - text: 不可编辑
+        - generic [ref=e164]:
+          - heading "TextInput 多行" [level=2] [ref=e165]
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e169]: 简介
+              - textbox "简介" [ref=e171]:
+                - /placeholder: " "
+                - text: 这是一段简介文本...
+            - generic [ref=e172]:
+              - generic [ref=e173]:
+                - generic [ref=e174]: 备注
+                - generic [ref=e175]: 至少输入5个字符
+              - textbox "备注 至少输入5个字符" [ref=e177]:
+                - /placeholder: " "
+      - generic [ref=e178]:
+        - generic [ref=e179]:
+          - heading "PasswordInput" [level=2] [ref=e180]
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - generic [ref=e184]: 密码
+              - textbox "密码" [ref=e186]:
+                - /placeholder: " "
+            - generic [ref=e187]:
+              - generic [ref=e188]:
+                - generic [ref=e189]: 确认密码
+                - generic [ref=e190]: 至少6位
+              - textbox "确认密码 至少6位" [ref=e192]:
+                - /placeholder: " "
+        - generic [ref=e193]:
+          - heading "EmailInput" [level=2] [ref=e194]
+          - generic [ref=e195]:
+            - generic [ref=e196]:
+              - generic [ref=e198]: 邮箱
+              - textbox "邮箱" [ref=e200]:
+                - /placeholder: " "
+            - generic [ref=e201]:
+              - generic [ref=e203]: 备用邮箱
+              - textbox "备用邮箱" [ref=e205]:
+                - /placeholder: " "
+      - generic [ref=e206]:
+        - generic [ref=e207]:
+          - heading "NumberInput" [level=2] [ref=e208]
+          - generic [ref=e209]:
+            - generic [ref=e210]:
+              - generic [ref=e212]: 年龄
+              - generic [ref=e213]:
+                - spinbutton "年龄" [ref=e214]: "25"
+                - button [ref=e215] [cursor=pointer]:
+                  - img [ref=e217]
+            - generic [ref=e219]:
+              - generic [ref=e221]: 数量
+              - spinbutton "数量" [ref=e223]
+        - generic [ref=e224]:
+          - heading "TelInput" [level=2] [ref=e225]
+          - generic [ref=e226]:
+            - generic [ref=e227]:
+              - generic [ref=e229]: 手机号
+              - textbox "手机号" [ref=e231]:
+                - /placeholder: " "
+            - generic [ref=e232]:
+              - generic [ref=e234]: 固定电话
+              - textbox "固定电话" [ref=e236]:
+                - /placeholder: " "
+      - generic [ref=e237]:
+        - heading "RangeInput" [level=2] [ref=e238]
+        - generic [ref=e239]:
+          - generic [ref=e240]:
+            - generic [ref=e241]:
+              - generic [ref=e242]: 音量
+              - generic [ref=e243]: "50"
+            - slider "音量 50" [ref=e245] [cursor=pointer]: "50"
+          - generic [ref=e246]:
+            - generic [ref=e247]:
+              - generic [ref=e248]: 步长为5
+              - generic [ref=e249]: "50"
+            - slider "步长为5 50" [ref=e251] [cursor=pointer]: "50"
+          - generic [ref=e252]:
+            - generic [ref=e253]:
+              - generic [ref=e254]: 只读滑块
+              - generic [ref=e255]: "75"
+            - slider "只读滑块 75" [ref=e257] [cursor=pointer]: "75"
+      - generic [ref=e258]:
+        - heading "当前值" [level=2] [ref=e259]
+        - generic [ref=e261]: "{ \"name\": \"张三\", \"email\": \"\", \"phone\": \"\", \"age\": \"25\", \"bio\": \"这是一段简介文本...\", \"volume\": 50 }"
+  - navigation [ref=e121]:
+    - img [ref=e123]
+    - img [ref=e126]
+    - img [ref=e129]
+    - img [ref=e132]
+    - img [ref=e135]
+    - img [ref=e138]
+    - img [ref=e141]
+    - img [ref=e144]

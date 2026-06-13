@@ -1,5 +1,5 @@
 import styles from "./gridbox.module.css"
-import { children, createMemo } from "solid-js"
+import { children, createMemo, untrack } from "solid-js"
 import type * as CSS from "csstype"
 
 export const GridBox = (props: {
@@ -26,8 +26,10 @@ export const GridBox = (props: {
     })
 
     const resolved = children(() => props.children)
-    resolved.toArray().forEach((child: any, i: number) => {
-        if (child instanceof HTMLElement) child.style.gridArea = toIndex((i + 1).toString())
+    untrack(() => {
+        resolved.toArray().forEach((child: any, i: number) => {
+            if (child instanceof HTMLElement) child.style.gridArea = toIndex((i + 1).toString())
+        })
     })
 
     return <div class={getClass()} style={getStyle()}>
