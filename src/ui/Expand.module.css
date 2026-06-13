@@ -1,0 +1,74 @@
+.expand {
+    display: grid;
+    grid-template-rows: 48px 1fr;
+
+    >nav {
+        user-select: none;
+        padding: 8px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--color);
+        background-color: var(--base-bg);
+        transition-duration: 512ms;
+
+        >:last-child {
+            transition-duration: 512ms;
+        }
+    }
+
+    >main {
+        padding: 8px;
+
+        animation-duration: 512ms;
+    }
+
+    &.active {
+        >nav {
+            background-color: var(--accrnt-color);
+            --color: white;
+
+            >:last-child {
+                transform: rotate(90deg);
+            }
+        }
+
+        >main {
+            background-color: var(--base-bg);
+            animation-name: open;
+        }
+    }
+
+    &:not(.active) {
+        >main {
+            animation-name: close;
+        }
+    }
+
+
+}
+
+@keyframes open {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes close {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}

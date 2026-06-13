@@ -1,0 +1,141 @@
+/* ── 公共样式 ── */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.field > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.field .inputWrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.field .inputWrap > input,
+.field .inputWrap > textarea {
+    flex: 1;
+    min-width: 0;
+}
+
+.field .iconBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--inset-bg);
+    color: var(--inset-fg);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 160ms ease;
+}
+
+.field .iconBtn:hover {
+    background: color-mix(in srgb, var(--inset-fg) 12%, transparent);
+}
+
+.field .iconBtn:active {
+    background: color-mix(in srgb, var(--inset-fg) 20%, transparent);
+}
+
+.field input,
+.field textarea {
+    appearance: none;
+    background: var(--inset-bg);
+    border: 2px solid transparent;
+    border-radius: 9px;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 3px color-mix(in srgb, black 12%, transparent);
+    color: var(--inset-fg);
+    outline: 0;
+    padding: 11px 14px;
+    width: 100%;
+    resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+    color: color-mix(in srgb, var(--inset-fg) 52%, transparent);
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible {
+    border: 2px solid color-mix(in srgb, var(--accrnt-color) 48%, transparent);
+    box-shadow: none;
+}
+
+.field input:disabled,
+.field textarea:disabled {
+    background: var(--disabled-bg);
+    box-shadow: none;
+    color: var(--disabled-fg);
+    cursor: not-allowed;
+}
+
+.field.error input,
+.field.error textarea {
+    border: 2px solid color-mix(in srgb, var(--error-color) 64%, transparent);
+    box-shadow: none;
+}
+
+.fieldError {
+    color: var(--error-color);
+    font-size: 12px;
+}
+
+/* ── RangeInput ── */
+
+.rangeInput {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rangeInput > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rangeInput input[type="range"] {
+    width: 100%;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.rangeInput input[type="range"]::-webkit-slider-runnable-track,
+.rangeInput input[type="range"]::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--inset-bg);
+    box-shadow: inset 0 1px 2px color-mix(in srgb, black 12%, transparent);
+}
+
+.rangeInput input[type="range"]::-webkit-slider-thumb,
+.rangeInput input[type="range"]::-moz-range-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accrnt-color);
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--accrnt-color) 40%, transparent);
+}
+
+.rangeInput input[type="range"]::-webkit-slider-thumb {
+    margin-top: -8px;
+}
+
+.rangeInput input[type="range"]::-moz-range-thumb {
+    border: none;
+}

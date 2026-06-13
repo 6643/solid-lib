@@ -2,65 +2,47 @@
 
 `solid-lib/ui` 提供最小 UI 主题能力:
 
-- 通过 `html[data-theme-mode]` 提供当前实际亮暗结果
+- 通过 `html[theme]` 属性切换亮暗模式
 - 通过 `solid-lib/ui.css` 提供全局主题变量
 - 组件只消费变量, 不直接判断亮暗模式
+
+## 色彩体系
+
+| 层级 | 用途 | 亮色 | 暗色 |
+|------|------|------|------|
+| page | 页面背景/文字 | 偏白/偏黑 | 偏黑/偏白 |
+| base | 卡片、容器 | 浅色/深色 | 深色/浅色 |
+| raised | 按钮、凸起 | 更浅/更深 | 更深/更浅 |
+| inset | 输入框、凹陷 | 更深/更浅 | 更浅/更深 |
+| disabled | 禁用状态 | 灰色 | 灰色 |
+| accrnt | 强调色 | teal | teal |
+| error | 错误色 | firebrick | firebrick |
+
+**全局色**（不区分亮暗）：`--accrnt-color`、`--error-color`
+
+**层级色**（亮暗各一套）：`--page-bg/fg`、`--base-bg/fg`、`--raised-bg/fg`、`--inset-bg/fg`、`--disabled-bg/fg`
 
 ## 导入
 
 ```ts
-import {
-  Card,
-  FilledButton,
-  IconButton,
-  Input,
-  OutlinedButton,
-  TextButton,
-  initializeThemeMode,
-  setThemeMode,
-} from "solid-lib/ui";
+import { Card, FilledButton, TextInput, ThemeToggle } from "solid-lib/ui";
 import "solid-lib/ui.css";
 ```
 
-## 公开变量
-
-```css
---base-bg
---base-fg
-
---raised-bg
---raised-fg
-
---inset-bg
---inset-fg
-
---disabled-bg
---disabled-fg
-
---theme-color
---error-color
-```
-
-## 说明
-
-- `theme-color` 与 `error-color` 是全局单色注入, 默认只在 `:root` 配置一次
-- 用户模式偏好通过 API 与 `localStorage` 管理, 不额外挂第二个 root 属性
-- 默认组件无边框
-- `raised` 表示浮起一层
-- `inset` 表示压入一层
-
 ## 组件映射
 
-- `Card` 使用 `raised`
-- `Input` 使用 `inset`
-- `TextButton` 使用透明背景 + `theme-color`
-- `OutlinedButton` 使用透明背景 + `theme-color` 描边
-- `FilledButton` 使用 `theme-color`
-- `IconButton` 使用中性透明面
-- 组件禁用态统一使用 `disabled`
+- `body` 使用 `--page-bg/fg`
+- `Card` 使用 `--base-bg/fg`
+- `Button` 使用 `--raised-bg/fg`
+- `Input` 使用 `--inset-bg/fg`
+- `FilledButton` 使用 `--accrnt-color`
+- `TextButton` 使用透明背景 + `--accrnt-color`
+- `OutlinedButton` 使用透明背景 + `--accrnt-color` 描边
+- 组件禁用态统一使用 `--disabled-bg/fg`
 
 ## 内部结构
 
-- `SvgIcon.tsx` 只负责 SVG 渲染与 path 数据解析
-- `icons.ts` 保存生成的 icon path 常量
-- `className.ts` 保存组件间共享的 class 拼接辅助
+- `SvgIcon.tsx` 负责 SVG 渲染
+- `svgicons.ts` 保存 icon path 常量
+- `ThemeToggle.tsx` 内置主题切换逻辑（亮/暗，首次跟随系统）
+- `AccentPicker.tsx` 强调色选择器

@@ -1,21 +1,78 @@
 :root {
-    --base-bg-color: #f2ebdf;
-    --base-text-color: #2a241d;
-
-    --raised-bg-color: #fbf6ee;
-    --raised-text-color: #2a241d;
-
-    --inset-bg-color: #e5dbcb;
-    --inset-text-color: #241e18;
-
-    --disabled-bg-color: #e1d8cc;
-    --disabled-text-color: #948675;
-
-    --theme-color: teal;
+    --accrnt-color: teal;
     --error-color: firebrick;
 }
 
-html {
-    background: var(--base-bg-color);
-    color: var(--base-text-color);
+/* ── 亮色 ── */
+:root,
+:root[theme="light"] {
+    --page-bg: #f2ebdf;
+    --page-fg: #2a241d;
+
+    --base-bg: #fbf6ee;
+    --base-fg: #2a241d;
+
+    --raised-bg: #e5dbcb;
+    --raised-fg: #241e18;
+
+    --inset-bg: #e1d8cc;
+    --inset-fg: #948675;
+
+    --disabled-bg: #d4cbbf;
+    --disabled-fg: #948675;
+}
+
+/* ── 暗色 ── */
+:root[theme="dark"] {
+    --page-bg: #1a1a2e;
+    --page-fg: #e0e0e0;
+
+    --base-bg: #252540;
+    --base-fg: #e0e0e0;
+
+    --raised-bg: #2d2d4a;
+    --raised-fg: #c0c0c0;
+
+    --inset-bg: #16162b;
+    --inset-fg: #c0c0c0;
+
+    --disabled-bg: #2a2a45;
+    --disabled-fg: #666680;
+}
+
+/* ── 全局应用 ── */
+body {
+    background: var(--page-bg);
+    color: var(--page-fg);
+    font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    transition:
+        background-color 256ms ease,
+        color 256ms ease;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+::-webkit-scrollbar:horizontal {
+    height: 2px;
+}
+
+::-webkit-scrollbar:vertical {
+    width: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--theme);
+}
+
+::-webkit-scrollbar-track {
+    position: relative;
+    background-color: var(--bg2);
+}
+
+* {
+    box-sizing: border-box;
 }

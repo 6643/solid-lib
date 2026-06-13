@@ -11,6 +11,17 @@ import {
     icon_settings,
     icon_home,
     icon_person,
+    icon_light_mode,
+    icon_dark_mode,
+    icon_computer,
+    icon_brightness_auto,
+    icon_settings_brightness,
+    icon_contrast,
+    icon_desktop_windows,
+    icon_desktop_mac,
+    icon_devices,
+    icon_monitor,
+    icon_laptop_chromebook,
 } from "../../../src/ui/svgicons";
 
 import styles from "./Pages.module.css";
@@ -77,6 +88,23 @@ const ButtonsPage = () => {
                         <IconButton icon={icon_home} />
                         <IconButton icon={icon_person} />
                         <IconButton icon={icon_add} disabled />
+                    </FlexBox>
+                </Card>
+
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>主题 / 设备图标</h2>
+                    <FlexBox gap={8} wrap="wrap">
+                        <IconButton icon={icon_light_mode} />
+                        <IconButton icon={icon_dark_mode} />
+                        <IconButton icon={icon_computer} />
+                        <IconButton icon={icon_brightness_auto} />
+                        <IconButton icon={icon_settings_brightness} />
+                        <IconButton icon={icon_contrast} />
+                        <IconButton icon={icon_desktop_windows} />
+                        <IconButton icon={icon_desktop_mac} />
+                        <IconButton icon={icon_devices} />
+                        <IconButton icon={icon_monitor} />
+                        <IconButton icon={icon_laptop_chromebook} />
                     </FlexBox>
                 </Card>
             </FlexBox>

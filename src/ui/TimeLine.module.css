@@ -1,0 +1,65 @@
+.time_line {
+
+    >main {
+        display: flex;
+
+        >div {
+            padding-bottom: 8px;
+
+            >span {
+                color: var(--disabled-fg);
+            }
+        }
+
+        >span {
+            display: block;
+            width: 9px;
+            margin-right: 8px;
+            position: relative;
+
+            &::before {
+                content: "";
+                display: block;
+                width: 1px;
+                height: 100%;
+                background-color: var(--base-bg);
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 8px;
+            }
+
+            &::after {
+                content: "";
+                display: block;
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+                background-color: var(--accrnt-color);
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 8px;
+            }
+        }
+
+
+        &:last-of-type {
+            >span::before {
+                display: none;
+            }
+
+            >div {
+                display: flex;
+                align-items: center;
+                --color: var(--disabled-fg);
+                color: var(--color);
+            }
+        }
+    }
+
+
+    >div {
+        background-color: antiquewhite;
+    }
+}

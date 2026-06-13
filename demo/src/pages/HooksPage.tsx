@@ -5,13 +5,13 @@ import {
   FilledButton,
   OutlinedButton,
   TextInput,
-  useDebounce,
-  useThrottle,
-  useCopy,
+  createDebounce,
+  createThrottle,
+  createCopy,
   useClickOutside,
   useKeyPress,
   useResize,
-  useFullScreen,
+  createFullscreen,
   useVis,
   createDebouncedSignal,
 } from "../../../src/ui/_";
@@ -19,20 +19,20 @@ import {
 import styles from "./Pages.module.css";
 
 const HooksPage = () => {
-  // useDebounce 示例
+  // createDebounce 示例
   const [searchText, setSearchText] = createSignal("");
-  const debouncedSearch = useDebounce((value: string) => {
+  const debouncedSearch = createDebounce((value: string) => {
     console.log("搜索:", value);
   }, 500);
 
-  // useThrottle 示例
+  // createThrottle 示例
   const [scrollCount, setScrollCount] = createSignal(0);
-  const throttledScroll = useThrottle(() => {
+  const throttledScroll = createThrottle(() => {
     setScrollCount(c => c + 1);
   }, 1000);
 
-  // useCopy 示例
-  const [copied, copy] = useCopy();
+  // createCopy 示例
+  const [copied, copy] = createCopy();
 
   // useClickOutside 示例
   const [showDropdown, setShowDropdown] = createSignal(false);
@@ -55,8 +55,8 @@ const HooksPage = () => {
     });
   });
 
-  // useFullScreen 示例
-  const { isFullscreen, toggleFullScreen } = useFullScreen();
+  // createFullscreen 示例
+  const { isFullscreen, toggleFullScreen } = createFullscreen();
 
   // useVis 示例
   const [isVisible, setIsVisible] = createSignal(false);
@@ -76,7 +76,7 @@ const HooksPage = () => {
 
       <FlexBox gap={16} wrap="wrap">
         <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useDebounce 防抖</h2>
+          <h2 class={styles.cardTitle}>createDebounce 防抖</h2>
           <TextInput
             label="搜索（500ms 防抖）"
             value={searchText()}
@@ -89,7 +89,7 @@ const HooksPage = () => {
         </Card>
 
         <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useThrottle 节流</h2>
+          <h2 class={styles.cardTitle}>createThrottle 节流</h2>
           <FilledButton
             text="点击（1秒节流）"
             tap={throttledScroll}
@@ -100,7 +100,7 @@ const HooksPage = () => {
 
       <FlexBox gap={16} wrap="wrap">
         <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useCopy 复制</h2>
+          <h2 class={styles.cardTitle}>createCopy 复制</h2>
           <FilledButton
             text={copied() ? "已复制!" : "复制文本"}
             tap={() => copy("Hello, SolidJS!")}
@@ -145,7 +145,7 @@ const HooksPage = () => {
 
       <FlexBox gap={16} wrap="wrap">
         <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useFullScreen 全屏</h2>
+          <h2 class={styles.cardTitle}>createFullscreen 全屏</h2>
           <FilledButton
             text={isFullscreen() ? "退出全屏" : "进入全屏"}
             tap={toggleFullScreen}
