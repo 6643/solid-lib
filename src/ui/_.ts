@@ -11,7 +11,7 @@ export {
     type SharedButtonProps,
     type TextButtonProps,
 } from "./Button";
-export { RangeInput, TextInput, PasswordInput, NumberInput, EmailInput, TelInput } from "./Input";
+export { RangeInput, TextInput, TextArea, PasswordInput, NumberInput, EmailInput, TelInput, CheckButton, RadioButton } from "./Input";
 
 // Layout
 export { Block } from "./Box";

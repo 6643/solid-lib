@@ -12,8 +12,8 @@ interface FieldProps {
     changed?: (value: string) => void;
     minLen?: number;
     maxLen?: number;
-    left?: JSX.Element;
-    right?: JSX.Element;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
     validate?: (value: string) => ValidateResult;
 }
 
@@ -65,9 +65,11 @@ const Input = (props: FieldProps & { children: any }) => {
                 <span class={styles.fieldError}>{checking() ? "校验中..." : (error() ?? "")}</span>
             </div>
             <div class={styles.inputWrap}>
-                {props.left && <span class={styles.iconBtn}>{props.left}</span>}
-                {props.children}
-                {props.right && <span class={styles.iconBtn}>{props.right}</span>}
+                {props.left?.()}
+                <div class={styles.inputGrow}>
+                    {props.children}
+                </div>
+                {props.right?.()}
             </div>
         </label>
     );
@@ -83,8 +85,8 @@ export const RangeInput = (props: {
     max?: number;
     step?: number;
     unit?: string;
-    left?: JSX.Element;
-    right?: JSX.Element;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
 }) => {
     const [value, setValue] = createSignal(untrack(() => props.value) ?? untrack(() => props.min) ?? 0);
 
@@ -108,7 +110,7 @@ export const RangeInput = (props: {
                 <span data-unit={props.unit}>{value()}</span>
             </div>
             <div>
-                {props.left}
+                {props.left?.()}
                 <input
                     type="range"
                     min={props.min ?? 0}
@@ -119,47 +121,52 @@ export const RangeInput = (props: {
                     spellcheck={false}
                     readonly={!props.changed}
                 />
-                {props.right}
+                {props.right?.()}
             </div>
         </label>
     );
 };
 
-// ── TextInput (row=1 → input, row>1 → textarea) ──
+// ── TextInput ──
 
-export const TextInput = (props: FieldProps & { row?: number }) => {
-    const row = () => props.row ?? 1;
+export const TextInput = (props: FieldProps) => {
     const value = createMemo(() => props.value ?? "");
 
     return (
         <Input {...props}>
-            <Show
-                when={row() > 1}
-                fallback={
-                    <input
-                        inputmode="text"
-                        value={value()}
-                        onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
-                        placeholder=" "
-                        spellcheck={false}
-                        readonly={!props.changed}
-                        minlength={props.minLen}
-                        maxlength={props.maxLen}
-                    />
-                }
-            >
-                <textarea
-                    inputmode="text"
-                    value={value()}
-                    onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
-                    placeholder=" "
-                    spellcheck={false}
-                    readonly={!props.changed}
-                    minlength={props.minLen}
-                    maxlength={props.maxLen}
-                    rows={row()}
-                />
-            </Show>
+            <input
+                inputmode="text"
+                value={value()}
+                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
+                placeholder=" "
+                spellcheck={false}
+                readonly={!props.changed}
+                minlength={props.minLen}
+                maxlength={props.maxLen}
+            />
+        </Input>
+    );
+};
+
+// ── TextArea ──
+
+export const TextArea = (props: Omit<FieldProps, "left" | "right"> & { row?: number }) => {
+    const row = () => props.row ?? 3;
+    const value = createMemo(() => props.value ?? "");
+
+    return (
+        <Input {...props}>
+            <textarea
+                inputmode="text"
+                value={value()}
+                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
+                placeholder=" "
+                spellcheck={false}
+                readonly={!props.changed}
+                minlength={props.minLen}
+                maxlength={props.maxLen}
+                rows={row()}
+            />
         </Input>
     );
 };
@@ -210,7 +217,7 @@ export const NumberInput = (
     };
 
     return (
-        <Input {...props}>
+        <Input label={props.label} value={props.value} changed={props.changed} validate={props.validate} left={props.left} right={props.right}>
             <input
                 type="number"
                 value={value()}
@@ -233,7 +240,10 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const EmailInput = (props: FieldProps) => {
     const value = createMemo(() => props.value ?? "");
     return (
-        <Input {...props} validate={props.validate ?? ((v: string) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined))}>
+        <Input
+            {...props}
+            validate={props.validate ?? ((v: string) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined))}
+        >
             <input
                 type="email"
                 value={value()}
@@ -266,5 +276,51 @@ export const TelInput = (props: FieldProps & { pattern?: string }) => {
                 maxlength={props.maxLen}
             />
         </Input>
+    );
+};
+
+// ── CheckButton ──
+
+export const CheckButton = (props: {
+    label: string;
+    checked?: boolean;
+    changed?: (checked: boolean) => void;
+    disabled?: boolean;
+}) => {
+    return (
+        <label class={styles.checkBtn}>
+            <input
+                type="checkbox"
+                checked={props.checked ?? false}
+                onChange={(e: Event) => props.changed?.((e.target as HTMLInputElement).checked)}
+                disabled={props.disabled}
+            />
+            <span>{props.label}</span>
+        </label>
+    );
+};
+
+// ── RadioButton ──
+
+export const RadioButton = (props: {
+    label: string;
+    value: string;
+    checked?: boolean;
+    changed?: (value: string) => void;
+    disabled?: boolean;
+    name?: string;
+}) => {
+    return (
+        <label class={styles.radioBtn}>
+            <input
+                type="radio"
+                value={props.value}
+                checked={props.checked ?? false}
+                onChange={() => props.changed?.(props.value)}
+                disabled={props.disabled}
+                name={props.name}
+            />
+            <span>{props.label}</span>
+        </label>
     );
 };

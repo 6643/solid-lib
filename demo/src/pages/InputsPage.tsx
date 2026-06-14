@@ -3,11 +3,14 @@ import {
     Card,
     FlexBox,
     TextInput,
+    TextArea,
     PasswordInput,
     NumberInput,
     EmailInput,
     TelInput,
     RangeInput,
+    CheckButton,
+    RadioButton,
     IconButton,
     SvgIcon,
 } from "../../../src/ui/_";
@@ -24,6 +27,8 @@ const InputsPage = () => {
     const [volume, setVolume] = createSignal(50);
     const [search, setSearch] = createSignal("");
     const [qty, setQty] = createSignal("1");
+    const [agree, setAgree] = createSignal(false);
+    const [gender, setGender] = createSignal("male");
 
     const validateEmail = (value: string) => {
         if (!value) return "邮箱不能为空";
@@ -55,10 +60,9 @@ const InputsPage = () => {
                 <Card class={styles.card}>
                     <h2 class={styles.cardTitle}>TextInput 多行</h2>
                     <FlexBox gap={16} dir="column">
-                        <TextInput label="简介" row={4} value={bio()} changed={setBio} minLen={10} maxLen={200} />
+                        <TextArea label="简介" row={4} value={bio()} changed={setBio} minLen={10} maxLen={200} />
                         <TextInput
                             label="备注"
-                            row={3}
                             changed={(v) => console.log("备注:", v)}
                             validate={(v) => (v.length < 5 ? "至少输入5个字符" : undefined)}
                         />
@@ -95,7 +99,7 @@ const InputsPage = () => {
                             min={0}
                             max={150}
                             step={1}
-                            right={<IconButton icon={icon_add} />}
+                            right={() => <IconButton icon={icon_add} />}
                         />
                         <NumberInput label="数量" min={0} max={999} step={10} />
                     </FlexBox>
@@ -126,8 +130,8 @@ const InputsPage = () => {
                         label="搜索"
                         value={search()}
                         changed={setSearch}
-                        left={<SvgIcon name={icon_search} size={20} />}
-                        right={<SvgIcon name={icon_close} size={20} />}
+                        left={() => <SvgIcon name={icon_search} size={20} />}
+                        right={() => <SvgIcon name={icon_close} size={20} />}
                     />
                     <NumberInput
                         label="数量"
@@ -135,11 +139,24 @@ const InputsPage = () => {
                         max={99}
                         value={qty()}
                         changed={setQty}
-                        left={<IconButton icon={icon_remove} />}
-                        right={<SvgIcon name={icon_add} size={20} />}
+                        left={() => <IconButton icon={icon_remove} />}
+                        right={() => <SvgIcon name={icon_add} size={20} />}
                     />
-                    <TextInput label="仅左侧图标" left={<SvgIcon name={icon_search} size={20} />} />
-                    <TextInput label="仅右侧图标" right={<SvgIcon name={icon_close} size={20} />} />
+                    <TextInput label="仅左侧图标" left={() => <IconButton icon={icon_search} />} />
+                    <TextInput label="仅右侧图标" right={() => <IconButton icon={icon_close} />} />
+                </FlexBox>
+            </Card>
+
+            <Card class={styles.card}>
+                <h2 class={styles.cardTitle}>CheckButton & RadioButton</h2>
+                <FlexBox gap={16} dir="column">
+                    <CheckButton label="同意用户协议" checked={agree()} changed={setAgree} />
+                    <CheckButton label="禁用选项" disabled />
+                    <FlexBox gap={16}>
+                        <RadioButton label="男" value="male" name="gender" checked={gender() === "male"} changed={setGender} />
+                        <RadioButton label="女" value="female" name="gender" checked={gender() === "female"} changed={setGender} />
+                        <RadioButton label="其他" value="other" name="gender" checked={gender() === "other"} changed={setGender} />
+                    </FlexBox>
                 </FlexBox>
             </Card>
 
@@ -148,7 +165,7 @@ const InputsPage = () => {
                 <div class={styles.codeBlock}>
                     <pre>
                         {JSON.stringify(
-                            { name: name(), email: email(), phone: phone(), age: age(), bio: bio(), volume: volume() },
+                            { name: name(), email: email(), phone: phone(), age: age(), bio: bio(), volume: volume(), agree: agree(), gender: gender() },
                             null,
                             2,
                         )}

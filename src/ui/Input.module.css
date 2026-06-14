@@ -6,7 +6,7 @@
     gap: 4px;
 }
 
-.field > div {
+.field > div:first-child {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,48 +17,38 @@
     align-items: center;
     gap: 4px;
     width: 100%;
+    background: var(--inset-bg);
+    border: 2px solid transparent;
+    border-radius: 9px;
+    box-shadow: inset 0 1px 3px color-mix(in srgb, black 12%, transparent);
+    padding: 0 6px;
+    transition: border-color 160ms ease;
 }
 
-.field .inputWrap > input,
-.field .inputWrap > textarea {
+.field .inputWrap:focus-within {
+    border: 2px solid color-mix(in srgb, var(--accrnt-color) 48%, transparent);
+    box-shadow: none;
+}
+
+.field.error .inputWrap {
+    border: 2px solid color-mix(in srgb, var(--error-color) 64%, transparent);
+    box-shadow: none;
+}
+
+.field .inputGrow {
     flex: 1;
     min-width: 0;
-}
-
-.field .iconBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: var(--inset-bg);
-    color: var(--inset-fg);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: background-color 160ms ease;
-}
-
-.field .iconBtn:hover {
-    background: color-mix(in srgb, var(--inset-fg) 12%, transparent);
-}
-
-.field .iconBtn:active {
-    background: color-mix(in srgb, var(--inset-fg) 20%, transparent);
 }
 
 .field input,
 .field textarea {
     appearance: none;
-    background: var(--inset-bg);
-    border: 2px solid transparent;
-    border-radius: 9px;
-    box-sizing: border-box;
-    box-shadow: inset 0 1px 3px color-mix(in srgb, black 12%, transparent);
+    background: transparent;
+    border: none;
+    box-shadow: none;
     color: var(--inset-fg);
     outline: 0;
-    padding: 11px 14px;
+    padding: 11px 8px;
     width: 100%;
     resize: vertical;
 }
@@ -68,29 +58,14 @@
     color: color-mix(in srgb, var(--inset-fg) 52%, transparent);
 }
 
-.field input:focus-visible,
-.field textarea:focus-visible {
-    border: 2px solid color-mix(in srgb, var(--accrnt-color) 48%, transparent);
-    box-shadow: none;
-}
-
 .field input:disabled,
 .field textarea:disabled {
-    background: var(--disabled-bg);
-    box-shadow: none;
     color: var(--disabled-fg);
     cursor: not-allowed;
 }
 
-.field.error input,
-.field.error textarea {
-    border: 2px solid color-mix(in srgb, var(--error-color) 64%, transparent);
-    box-shadow: none;
-}
-
 .fieldError {
     color: var(--error-color);
-    font-size: 12px;
 }
 
 /* ── RangeInput ── */
@@ -138,4 +113,57 @@
 
 .rangeInput input[type="range"]::-moz-range-thumb {
     border: none;
+}
+
+/* ── CheckButton & RadioButton ── */
+
+.checkBtn,
+.radioBtn {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 6px 12px;
+    border: 2px solid var(--inset-fg);
+    border-radius: 9px;
+    transition: border-color 160ms ease;
+}
+
+.checkBtn input,
+.radioBtn input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.checkBtn span,
+.radioBtn span {
+    color: var(--inset-fg);
+    font-size: 14px;
+}
+
+.checkBtn:has(input:checked),
+.radioBtn:has(input:checked) {
+    border-color: var(--accrnt-color);
+    opacity: 1;
+}
+
+.checkBtn:has(input:checked) span,
+.radioBtn:has(input:checked) span {
+    color: var(--accrnt-color);
+}
+
+.checkBtn:has(input:disabled),
+.radioBtn:has(input:disabled) {
+    border-color: var(--disabled-fg);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.checkBtn:has(input:disabled) span,
+.radioBtn:has(input:disabled) span {
+    color: var(--disabled-fg);
 }
