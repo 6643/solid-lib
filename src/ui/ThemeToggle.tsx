@@ -7,16 +7,12 @@ type Theme = "light" | "dark";
 
 const icons = { light: icon_light_mode, dark: icon_dark_mode };
 
-    window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
 export const ThemeToggle = () => {
     const [theme, setTheme] = createStorage<Theme>("theme", "light");
 
     createEffect(
         () => theme(),
-        (current) => {
-            document.documentElement.setAttribute("theme", current);
-        }
+        (current) => document.documentElement.setAttribute("theme", current),
     );
 
     const toggle = () => setTheme(prev => (prev === "light" ? "dark" : "light"));

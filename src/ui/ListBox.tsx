@@ -17,7 +17,7 @@ export const ListBox = <T,>(props: {
     const getItems = createMemo(() => (props.filter ? props.items.filter(props.filter) : props.items));
 
     const updateSlice = (index: number) => {
-        const items = getItems();
+        const items = untrack(getItems);
 
         const _index = Math.max(0, Math.min(index, items.length - 1));
         const strat = Math.max(0, _index - overscan);
@@ -26,7 +26,7 @@ export const ListBox = <T,>(props: {
         setSlice(items.slice(strat, end).map((item, i) => ({ item, absIndex: strat + i })));
 
         queueMicrotask(() => {
-            const el = getEl();
+            const el = untrack(getEl);
             if (!el) return;
             const _index = getFirstVerticalUnobscuredChildIndex(el);
             if (index !== -1 && _index !== index) el.querySelector(`[data-index="${index}"]`)?.scrollIntoView();
@@ -52,20 +52,20 @@ export const ListBox = <T,>(props: {
     );
 
     useScrollEnd(getEl, () => {
-        const el = getEl();
+        const el = untrack(getEl);
         if (!el) return;
 
         const index = getFirstVerticalUnobscuredChildIndex(el);
         if (index !== -1) updateSlice(index);
     });
 
-    const renderChildren = (item: T, index: number) => {
+    const renderChildren = (item: T, index: number) => untrack(() => {
         const resolved = children(() => props.children(item, index));
         const list = resolved.toArray().filter((child) => child instanceof HTMLElement);
         if (list.length === 0) return null;
         list[0]!.dataset.index = index.toString();
         return resolved();
-    };
+    });
 
     return (
         <div class={styles.listBox} ref={setEl}>

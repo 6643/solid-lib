@@ -1,0 +1,88 @@
+.bottomTab {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+
+.bottomTab > main {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    animation-duration: 512ms;
+}
+
+.bottomTab > main.moveLeft {
+    animation-name: moveLeft;
+}
+
+.bottomTab > main.moveRight {
+    animation-name: moveRight;
+}
+
+.bottomTab > nav {
+    user-select: none;
+    width: 100%;
+    height: 64px;
+    display: grid;
+    grid-template-columns: repeat(var(--len), 1fr);
+    background-color: var(--base-bg);
+    box-shadow: 0 -4px 4px -4px var(--base-bg);
+}
+
+/* 六边形指示器 */
+.bottomTab > nav::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: calc(100% / var(--len) * var(--index, 0));
+    height: 64px;
+    width: calc(100% / var(--len));
+    z-index: 0;
+    --svg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'><path d='M62 10.619a16 16 0 0 1 16 0l39.426 22.762a16 16 0 0 1 8 13.856v45.525a16 16 0 0 1-8 13.856L78 129.381a16 16 0 0 1-16 0l-39.426-22.762a16 16 0 0 1-8-13.856V47.238a16 16 0 0 1 8-13.856' /></svg>");
+    mask: var(--svg) no-repeat center;
+    background-color: var(--accrnt-color);
+    opacity: 0.2;
+    transform: rotate(calc(var(--spin, 0) * 360deg));
+    transition: left 512ms linear, transform 512ms linear;
+}
+
+/* 线条指示器 */
+.bottomTab > nav::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: calc(100% / var(--len) * var(--index, 0));
+    width: calc(100% / var(--len));
+    height: 2px;
+    z-index: 2;
+    background-color: var(--accrnt-color);
+    transition: left 512ms linear;
+}
+
+/* 图标 */
+.bottomTab > nav > div {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--disabled-fg);
+    cursor: pointer;
+    transition: color 200ms ease;
+}
+
+.bottomTab > nav > div.active {
+    color: var(--accrnt-color);
+}
+
+@keyframes moveLeft {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes moveRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}

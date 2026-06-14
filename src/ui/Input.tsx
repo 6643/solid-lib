@@ -1,5 +1,5 @@
 import styles from "./Input.module.css";
-import { createSignal, createEffect, Show, untrack } from "solid-js";
+import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
 import type { JSX } from "@solidjs/web";
 
 // ── 公共 props ──
@@ -129,6 +129,7 @@ export const RangeInput = (props: {
 
 export const TextInput = (props: FieldProps & { row?: number }) => {
     const row = () => props.row ?? 1;
+    const value = createMemo(() => props.value ?? "");
 
     return (
         <Input {...props}>
@@ -137,7 +138,7 @@ export const TextInput = (props: FieldProps & { row?: number }) => {
                 fallback={
                     <input
                         inputmode="text"
-                        value={props.value ?? ""}
+                        value={value()}
                         onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
                         placeholder=" "
                         spellcheck={false}
@@ -149,7 +150,7 @@ export const TextInput = (props: FieldProps & { row?: number }) => {
             >
                 <textarea
                     inputmode="text"
-                    value={props.value ?? ""}
+                    value={value()}
                     onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
                     placeholder=" "
                     spellcheck={false}
@@ -165,20 +166,23 @@ export const TextInput = (props: FieldProps & { row?: number }) => {
 
 // ── PasswordInput ──
 
-export const PasswordInput = (props: FieldProps) => (
-    <Input {...props}>
-        <input
-            type="password"
-            value={props.value ?? ""}
-            onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
-            placeholder=" "
-            spellcheck={false}
-            readonly={!props.changed}
-            minlength={props.minLen}
-            maxlength={props.maxLen}
-        />
-    </Input>
-);
+export const PasswordInput = (props: FieldProps) => {
+    const value = createMemo(() => props.value ?? "");
+    return (
+        <Input {...props}>
+            <input
+                type="password"
+                value={value()}
+                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
+                placeholder=" "
+                spellcheck={false}
+                readonly={!props.changed}
+                minlength={props.minLen}
+                maxlength={props.maxLen}
+            />
+        </Input>
+    );
+};
 
 // ── NumberInput ──
 
@@ -227,16 +231,12 @@ export const NumberInput = (
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const EmailInput = (props: FieldProps) => {
-    const merged: FieldProps = {
-        ...props,
-        validate: props.validate ?? ((v) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined)),
-    };
-
+    const value = createMemo(() => props.value ?? "");
     return (
-        <Input {...merged}>
+        <Input {...props} validate={props.validate ?? ((v: string) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined))}>
             <input
                 type="email"
-                value={props.value ?? ""}
+                value={value()}
                 onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
                 placeholder=" "
                 spellcheck={false}
@@ -250,18 +250,21 @@ export const EmailInput = (props: FieldProps) => {
 
 // ── TelInput ──
 
-export const TelInput = (props: FieldProps & { pattern?: string }) => (
-    <Input {...props}>
-        <input
-            type="tel"
-            value={props.value ?? ""}
-            onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
-            placeholder=" "
-            spellcheck={false}
-            readonly={!props.changed}
-            pattern={props.pattern}
-            minlength={props.minLen}
-            maxlength={props.maxLen}
-        />
-    </Input>
-);
+export const TelInput = (props: FieldProps & { pattern?: string }) => {
+    const value = createMemo(() => props.value ?? "");
+    return (
+        <Input {...props}>
+            <input
+                type="tel"
+                value={value()}
+                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
+                placeholder=" "
+                spellcheck={false}
+                readonly={!props.changed}
+                pattern={props.pattern}
+                minlength={props.minLen}
+                maxlength={props.maxLen}
+            />
+        </Input>
+    );
+};

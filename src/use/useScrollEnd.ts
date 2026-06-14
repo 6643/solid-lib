@@ -1,6 +1,6 @@
 import { type Accessor, createEffect } from "solid-js"
+import { createDebounce } from "./createDebounce"
 
-// --- Scroll End Hook ---
 export const useScrollEnd = (
     ref: HTMLElement | Accessor<HTMLElement | undefined>,
     hook: (top: number) => void,
@@ -11,20 +11,8 @@ export const useScrollEnd = (
         (el) => {
             if (!el) return;
 
-            const debounce = <A extends unknown[]>(
-                f: (...args: A) => void,
-                ms: number,
-            ): ((...args: A) => void) => {
-                let timer: ReturnType<typeof setTimeout>
-                return (...args: A) => {
-                    clearTimeout(timer)
-                    timer = setTimeout(() => f(...args), ms)
-                }
-            }
-
-            const debouncedScroll = debounce((event: Event) => {
-                const targetEl = (event.target as HTMLElement)
-                hook(targetEl.scrollTop)
+            const debouncedScroll = createDebounce((event: Event) => {
+                hook((event.target as HTMLElement).scrollTop)
             }, debounceMs)
 
             el.addEventListener("scroll", debouncedScroll)
@@ -32,5 +20,3 @@ export const useScrollEnd = (
         }
     );
 }
-
-

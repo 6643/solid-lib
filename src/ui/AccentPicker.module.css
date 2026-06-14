@@ -1,0 +1,38 @@
+.root {
+    display: inline-flex;
+    align-items: center;
+}
+
+.picker {
+    display: flex;
+    gap: 6px;
+    line-height: 40px;
+    margin-left: 8px;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(-16px);
+    transition: visibility 0s 300ms, opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.picker.open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0);
+    transition: visibility 0s, opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: transform 160ms ease;
+}
+
+.swatch.selected {
+    border-color: var(--base-fg);
+    transform: scale(1.15);
+}

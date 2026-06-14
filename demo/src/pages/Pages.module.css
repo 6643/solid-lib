@@ -190,3 +190,41 @@
   font-size: 14px;
   margin-bottom: 4px;
 }
+
+/* 色彩层级 */
+.colorSwatch {
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+
+/* 容器 */
+.container400 { height: 400px; }
+.container300 { height: 300px; }
+.container200 { height: 200px; }
+.container600 { height: 600px; }
+
+/* 固定宽 */
+.fixedW120 { width: 120px; }
+
+/* 堆叠色块 */
+.stackBlock {
+    width: 120px;
+    height: 80px;
+}
+
+/* 内边距 */
+.pad16 { padding: 16px; }
+
+/* 下拉容器 */
+.dropdownWrap {
+    position: relative;
+    display: inline-block;
+}
+
+/* FlexBox demo */
+.flexDemo {
+    height: 80px;
+    background-color: var(--inset-bg);
+    padding: 8px;
+    border-radius: 8px;
+}

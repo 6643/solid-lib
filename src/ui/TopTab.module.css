@@ -1,108 +1,96 @@
-.top_tab {
-    width: inherit;
-    height: inherit;
+.topTab {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     display: grid;
     grid-template-rows: auto 1fr;
-
-    >nav {
-        user-select: none;
-        width: inherit;
-        position: relative;
-        box-shadow: 0 4px 4px -4px lightgray;
-        transition-duration: 512ms;
-
-        &::before {
-            content: "";
-            border-bottom: 2px solid var(--accrnt-color);
-            transition-duration: 512ms;
-            background-color: var(--base-bg);
-            height: calc(100% - 2px);
-            width: calc(1px * var(--width));
-            position: absolute;
-            left: calc(1px * var(--left));
-        }
-
-        >div {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            transition-duration: 512ms;
-            color: var(--color);
-
-            &.active {
-                --color: var(--accrnt-color);
-            }
-        }
-    }
-
-    &[part=all]>nav {
-        height: 64px;
-        display: flex;
-
-        align-items: stretch;
-
-        >div {
-            flex: 1;
-        }
-    }
-
-
-
-    &[part=part]>nav {
-        height: 40px;
-        display: flex;
-        overflow-y: auto;
-        gap: 4px;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-
-        >div {
-            padding: 4px;
-        }
-    }
-
-    >main {
-        width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
-        animation-duration: 512ms;
-
-        &.moveLeft {
-            animation-name: moveLeft;
-        }
-
-        &.moveRight {
-            animation-name: moveRight;
-        }
-    }
 }
 
+.topTab > nav {
+    user-select: none;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 4px 0 4px -4px var(--disabled-bg);
+    background-color: var(--base-bg);
+    transition-duration: 512ms;
+}
+
+/* 滑动指示器 */
+.topTab > nav::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: calc(1px * var(--left, 0));
+    width: calc(1px * var(--width, 0));
+    height: 2px;
+    background-color: var(--accrnt-color);
+    transition: left 512ms ease, width 512ms ease;
+}
+
+.topTab > nav > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition-duration: 512ms;
+    color: var(--disabled-fg);
+    cursor: pointer;
+}
+
+.topTab > nav > div.active {
+    color: var(--accrnt-color);
+}
+
+/* mode=all: 固定高度 */
+.topTab[part=all] > nav {
+    height: 64px;
+    display: flex;
+    align-items: stretch;
+}
+
+.topTab[part=all] > nav > div {
+    flex: 1;
+}
+
+/* mode=part: 可滚动 */
+.topTab[part=part] > nav {
+    height: 40px;
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+}
+
+.topTab[part=part] > nav::-webkit-scrollbar {
+    display: none;
+}
+
+.topTab[part=part] > nav > div {
+    padding: 4px;
+}
+
+/* 内容区 */
+.topTab > main {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    animation-duration: 512ms;
+}
+
+.topTab > main.moveLeft {
+    animation-name: moveLeft;
+}
+
+.topTab > main.moveRight {
+    animation-name: moveRight;
+}
 
 @keyframes moveLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-100%);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes moveRight {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
 }

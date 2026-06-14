@@ -26,7 +26,9 @@ export { Expand } from "./Expand";
 export { Carousel } from "./Carousel";
 export { Swiper } from "./Swiper";
 export { LeftTab } from "./LeftTab";
+export { NavTab } from "./NavTab";
 export { TopTab } from "./TopTab";
+export { MenuTab } from "./MenuTab";
 
 // Display
 export { AvatarImage } from "./AvatarImage";
@@ -39,7 +41,7 @@ export { SortListBox } from "./SortListBox";
 export { SvgIcon } from "./SvgIcon";
 
 // Functional
-export { AppTap } from "./AppTap";
+export { BottomTab } from "./BottomTab";
 export { CityPicker, initCities } from "./CityPicker";
 export { LoadMore } from "./LoadMore";
 export { Plyr } from "./Plyr";

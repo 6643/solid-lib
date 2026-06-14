@@ -110,7 +110,7 @@ const HooksPage = () => {
 
         <Card class={styles.card}>
           <h2 class={styles.cardTitle}>useClickOutside 点击外部</h2>
-          <div ref={dropdownRef} style={{ position: "relative", display: "inline-block" }}>
+          <div ref={dropdownRef} class={styles.dropdownWrap}>
             <OutlinedButton
               text="切换下拉"
               tap={() => { setShowDropdown(!showDropdown()); }}

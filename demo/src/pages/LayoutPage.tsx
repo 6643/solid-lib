@@ -34,7 +34,7 @@ const LayoutPage = () => {
           </FlexBox>
 
           <h3 class={styles.subTitle}>对齐方式</h3>
-          <FlexBox gap={8} jc="space-between" ai="center" style={{ height: "80px", "background-color": "var(--inset-color)", padding: "8px", "border-radius": "8px" }}>
+          <FlexBox gap={8} jc="space-between" ai="center" class={styles.flexDemo}>
             <div class={styles.box}>Start</div>
             <div class={styles.box}>Center</div>
             <div class={styles.box}>End</div>
@@ -42,11 +42,11 @@ const LayoutPage = () => {
 
           <h3 class={styles.subTitle}>自动换行</h3>
           <FlexBox gap={8} wrap="wrap">
-            <div class={styles.box} style={{ width: "120px" }}>Item 1</div>
-            <div class={styles.box} style={{ width: "120px" }}>Item 2</div>
-            <div class={styles.box} style={{ width: "120px" }}>Item 3</div>
-            <div class={styles.box} style={{ width: "120px" }}>Item 4</div>
-            <div class={styles.box} style={{ width: "120px" }}>Item 5</div>
+            <div class={styles.box} class={styles.fixedW120}>Item 1</div>
+            <div class={styles.box} class={styles.fixedW120}>Item 2</div>
+            <div class={styles.box} class={styles.fixedW120}>Item 3</div>
+            <div class={styles.box} class={styles.fixedW120}>Item 4</div>
+            <div class={styles.box} class={styles.fixedW120}>Item 5</div>
           </FlexBox>
         </Card>
 
@@ -89,7 +89,7 @@ const LayoutPage = () => {
 
         <Card class={styles.card}>
           <h2 class={styles.cardTitle}>CenterBox 居中布局</h2>
-          <div style={{ height: "200px", background: "var(--inset-color)", "border-radius": "8px" }}>
+          <div class={styles.container200}>
             <CenterBox>
               <div class={styles.box}>居中内容</div>
             </CenterBox>
@@ -101,12 +101,12 @@ const LayoutPage = () => {
         <h2 class={styles.cardTitle}>Block 区块布局</h2>
         <FlexBox gap={16} wrap="wrap">
           <Block headerTitle="区块标题" headerActions={<span>...</span>} footerLeft="左侧" footerRight="右侧">
-            <div style={{ padding: "16px" }}>
+            <div class={styles.pad16}>
               这是 Block 组件的内容区域，支持 header 和 footer。
             </div>
           </Block>
           <Block headerTitle="无 Footer">
-            <div style={{ padding: "16px" }}>
+            <div class={styles.pad16}>
               这个 Block 没有 footer 部分。
             </div>
           </Block>

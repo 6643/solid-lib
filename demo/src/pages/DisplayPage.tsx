@@ -121,7 +121,7 @@ const DisplayPage = () => {
 
       <Card class={styles.card}>
         <h2 class={styles.cardTitle}>ListBox 虚拟列表（1000项）</h2>
-        <div style={{ height: "300px" }}>
+        <div class={styles.container300}>
           <ListBox items={listItems} overscan={10}>
             {(item) => (
               <div class={styles.listItem}>

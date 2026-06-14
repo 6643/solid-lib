@@ -1,6 +1,6 @@
 import "../../src/ui/_.css";
 
-import { AppTap, AccentPicker } from "../../src/ui/_";
+import { NavTab } from "../../src/ui/_";
 
 import ButtonsPage from "./pages/ButtonsPage";
 import InputsPage from "./pages/InputsPage";
@@ -10,29 +10,24 @@ import InteractivePage from "./pages/InteractivePage";
 import TabsPage from "./pages/TabsPage";
 import HooksPage from "./pages/HooksPage";
 import ValidatePage from "./pages/ValidatePage";
-
-import { icon_home, icon_palette, icon_text_fields, icon_dashboard, icon_widgets, icon_touch_app, icon_code, icon_security } from "../../src/ui/svgicons";
+import ThemePage from "./pages/ThemePage";
 
 const App = () => {
-  return (
-    <>
-      <div style={{ position: "fixed", top: "8px", right: "8px", "z-index": 100 }}>
-        <AccentPicker />
-      </div>
-      <AppTap>
-        {[
-          { icon: icon_home, panel: () => <ButtonsPage /> },
-          { icon: icon_palette, panel: () => <InputsPage /> },
-          { icon: icon_text_fields, panel: () => <LayoutPage /> },
-          { icon: icon_dashboard, panel: (): any => <DisplayPage /> },
-          { icon: icon_widgets, panel: () => <InteractivePage /> },
-          { icon: icon_touch_app, panel: () => <TabsPage /> },
-          { icon: icon_code, panel: () => <HooksPage /> },
-          { icon: icon_security, panel: () => <ValidatePage /> },
-        ]}
-      </AppTap>
-    </>
-  );
+    return (
+        <NavTab>
+            {[
+                { name: "按钮", panel: () => <ButtonsPage /> },
+                { name: "输入", panel: () => <InputsPage /> },
+                { name: "布局", panel: () => <LayoutPage /> },
+                // { name: "展示", panel: (): any => <DisplayPage /> },
+                // { name: "交互", panel: () => <InteractivePage /> },
+                // { name: "标签", panel: () => <TabsPage /> },
+                { name: "Hooks", panel: () => <HooksPage /> },
+                { name: "校验", panel: () => <ValidatePage /> },
+                { name: "主题", panel: () => <ThemePage /> },
+            ]}
+        </NavTab>
+    );
 };
 
 export default App;

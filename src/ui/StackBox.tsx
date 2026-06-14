@@ -15,12 +15,12 @@ export const StackBox = (props: {
     const resolved = children(() => props.children)
 
     createEffect(
-        () => resolved.toArray(),
-        (childNodes) => childNodes.forEach((child: any, i: number) => {
+        () => ({ nodes: resolved.toArray(), pos: props.pos }),
+        ({ nodes, pos }) => nodes.forEach((child: any, i: number) => {
             if (!(child instanceof HTMLElement)) return
-            const pos = props.pos?.[i]
-            if (!pos) return
-            const style = getStyle(pos.x, pos.y)
+            const p = pos?.[i]
+            if (!p) return
+            const style = getStyle(p.x, p.y)
             style.forEach(s => {
                 const parts = s.split(":") as [string, string]
                 child.style.setProperty(parts[0], parts[1])

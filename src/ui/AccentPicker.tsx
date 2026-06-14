@@ -1,7 +1,10 @@
-import { createEffect } from "solid-js";
+import { createSignal, createEffect, For } from "solid-js";
+import { IconButton } from "./Button";
 import { createStorage } from "../use/createStorage";
+import { icon_palette } from "./svgicons";
+import styles from "./AccentPicker.module.css";
 
-const presets = [
+const accents = [
     { name: "teal", value: "teal" },
     { name: "blue", value: "#2196f3" },
     { name: "purple", value: "#9c27b0" },
@@ -14,31 +17,34 @@ const presets = [
 
 export const AccentPicker = () => {
     const [accent, setAccent] = createStorage("accent", "teal");
+    const [open, setOpen] = createSignal(false);
 
     createEffect(
         () => accent(),
-        (color) => {
-            document.documentElement.style.setProperty("--accrnt-color", color);
-        }
+        (color) => document.documentElement.style.setProperty("--accrnt-color", color),
     );
 
     return (
-        <div style={{ display: "flex", gap: "6px", "flex-wrap": "wrap" }}>
-            {presets.map(p => (
-                <button
-                    onClick={() => setAccent(p.value)}
-                    title={p.name}
-                    style={{
-                        width: "24px",
-                        height: "24px",
-                        "border-radius": "50%",
-                        background: p.value,
-                        border: accent() === p.value ? "3px solid var(--base-text-color)" : "2px solid transparent",
-                        cursor: "pointer",
-                        padding: 0,
-                    }}
-                />
-            ))}
+        <div class={styles.root}>
+            <IconButton
+                icon={icon_palette}
+                tap={() => {
+                    setOpen((v) => !v);
+                }}
+            />
+
+            <div class={`${styles.picker} ${open() ? styles.open : ""}`}>
+                <For each={accents}>
+                    {(item) => (
+                        <button
+                            onClick={() => setAccent(item.value)}
+                            title={item.name}
+                            class={`${styles.swatch} ${accent() === item.value ? styles.selected : ""}`}
+                            style={{ background: item.value }}
+                        />
+                    )}
+                </For>
+            </div>
         </div>
     );
 };

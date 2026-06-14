@@ -33,14 +33,20 @@ export const FlexBox = (props: {
 
     const resolved = children(() => props.children)
     createEffect(
-        () => resolved.toArray(),
-        (childNodes) => {
-            childNodes.forEach((child: any, i: number) => {
+        () => ({
+            nodes: resolved.toArray(),
+            as: props.as,
+            fg: props.fg,
+            fs: props.fs,
+            order: props.order,
+        }),
+        ({ nodes, as, fg, fs, order }) => {
+            nodes.forEach((child: any, i: number) => {
                 if (!(child instanceof HTMLElement)) return
-                if (props.as) child.style.alignSelf = props.as[i]!
-                if (props.fg) child.style.flexGrow = String(props.fg[i])
-                if (props.fs) child.style.flexShrink = String(props.fs[i])
-                if (props.order) child.style.order = String(props.order[i])
+                if (as) child.style.alignSelf = as[i]!
+                if (fg) child.style.flexGrow = String(fg[i])
+                if (fs) child.style.flexShrink = String(fs[i])
+                if (order) child.style.order = String(order[i])
             })
         }
     )

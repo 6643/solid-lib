@@ -1,116 +1,61 @@
-import styles from "./LeftTab.module.css"
-import { createSignal, For, Match, onSettled, Show, Switch } from "solid-js"
-import { getPos, setPos, useKeepScroll } from "../use/useKeepScroll"
-import { createDebounce } from "../use/createDebounce"
+import styles from "./LeftTab.module.css";
+import { createSignal, For, onSettled, Show } from "solid-js";
+import { getPos, setPos, useKeepScroll } from "../use/useKeepScroll";
 
-export const LeftTab = (props: {
-    mode?: "all" | "part" | "memu",
-    children: { name: string, panel: () => any }[]
-}) => {
-    const key = "left.tab"
-    const getTabIndexKey = () => key
-    const getTabScrollKey = (index: number = -1) => (index === -1 ? key : `${key}.${index}`)
+const useLeftTab = (key: string) => {
+    const [getActiveIndex, setActiveIndex] = createSignal(getPos(location.pathname, key));
+    const [isToUp, setToUp] = createSignal(false);
+    const [getTop, setTop] = createSignal(0);
+    const [getNavEl, setNavEl] = createSignal<HTMLElement>();
 
-
-    const mode = props.mode ?? "all"
-
-    const [getActiveIndex, setActiveIndex] = createSignal(getPos(location.pathname, getTabIndexKey()))
-    const [isToUp, setToUp] = createSignal(false)
-
-
-    const [getActives, setActives] = createSignal<boolean[]>([])
-    const [getTop, setTop] = createSignal(0)
-    const [getHeight, setHeight] = createSignal(mode == "all" ? 64 : 0)
-
-
-    let el: HTMLElement | undefined
     const toIndex = (index: number) => {
-        if (!el) return
-        el.firstElementChild!.children[index]!.scrollIntoView({ behavior: "smooth", block: "center" })
-        if (mode == "all") {
-            setTop(68 * index)
-            setToUp(index > getActiveIndex())
-        } else if (mode == "part") {
-            (el.lastElementChild! as HTMLElement).children[index]!.scrollIntoView()
-            computed(el.lastElementChild! as HTMLElement)
-        }
-        setActiveIndex(index)
-        setPos(location.pathname, getTabIndexKey(), index)
-    }
+        const navEl = getNavEl();
+        if (!navEl || index === getActiveIndex()) return;
+        navEl.children[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTop(68 * index);
+        setToUp(index > getActiveIndex());
+        setActiveIndex(index);
+        setPos(location.pathname, key, index);
+    };
 
-    const computed = (ele: HTMLElement) => {
-        const childsVis = getChildsVis(ele)
-        const ratios = childsVis.reduce((a, b) => a + b)
-        if (ratios == 0) return
+    const navRef = (el: HTMLElement) => setNavEl(el);
+    const mainRef = (index: number) => (el: HTMLElement) => useKeepScroll(el, location.pathname, `${key}.${index}`);
 
-        setActives(childsVis.map(e => e > 0))
-        setTop(68 * childsVis.findIndex(e => e > 0))
-        setHeight(ratios * 64 + (Math.ceil(ratios) - 1) * 4)
-    }
+    return { getActiveIndex, isToUp, getTop, toIndex, navRef, mainRef };
+};
 
-    const scrollEnd = createDebounce((e: Event) => {
-        if (mode == "part") computed(e.target as HTMLElement)
-    }, 32)
+export const LeftTab = (props: { children: { name: string; panel: () => any }[] }) => {
+    const { getActiveIndex, isToUp, getTop, toIndex, navRef, mainRef } = useLeftTab("left.tab");
 
+    onSettled(() => toIndex(getPos(location.pathname, "left.tab")));
 
-    const getChildsVis = (boxEl: HTMLElement): number[] => {
-        const containerRect = boxEl.getBoundingClientRect()
-        const containerY = containerRect.y
-        const containerHeight = containerRect.height
-        const children = Array.from(boxEl.children)
+    return (
+        <div class={styles.leftTab}>
+            <nav ref={navRef} style={{ "--top": getTop() }}>
+                <For each={props.children}>
+                    {({ name }, index) => (
+                        <div
+                            onClick={() => toIndex(index())}
+                            class={index() === getActiveIndex() ? styles.active : ""}
+                        >
+                            {name}
+                        </div>
+                    )}
+                </For>
+            </nav>
 
-        const vis: number[] = new Array(children.length).fill(0)
-
-
-        children.forEach((child, index) => {
-            const childRect = child.getBoundingClientRect()
-            const childHeight = childRect.height
-            if (childHeight === 0) return
-
-            const childTopInContainer = childRect.y - containerY
-            const childBottomInContainer = childRect.bottom - containerY
-
-            const visibleChildTop = Math.max(childTopInContainer, 0)
-            const visibleChildBottom = Math.min(childBottomInContainer, containerHeight)
-
-            const visiblePixelHeight = Math.max(0, visibleChildBottom - visibleChildTop)
-
-            const ratio = visiblePixelHeight / childHeight
-            vis[index] = ratio
-        })
-
-        return vis
-    }
-
-    onSettled(() => toIndex(getActiveIndex()))
-
-
-    return <div ref={(ele: HTMLElement) => el = ele} class={styles.leftTab} part={mode} >
-        <nav style={{ "--top": getTop(), "--height": getHeight() }}>
-            <For each={props.children}>{({ name }, index) =>
-                <div onClick={() => toIndex(index())} class={index() == getActiveIndex() ? styles.active! : ""}>
-                    {name}
-                </div>
-            }</For>
-        </nav>
-
-
-        <Switch>
-            <Match when={mode == "all"}>
-                <For each={props.children}>{({ panel }, index) =>
-                    <Show when={index() == getActiveIndex()}>
-                        <main ref={(el: HTMLElement) => useKeepScroll(el, location.pathname, getTabScrollKey(index()))} class={isToUp() ? styles.moveUp : styles.moveDown}>{panel()}</main>
+            <For each={props.children}>
+                {({ panel }, index) => (
+                    <Show when={index() === getActiveIndex()}>
+                        <main
+                            ref={mainRef(index())}
+                            class={isToUp() ? styles.moveUp : styles.moveDown}
+                        >
+                            {panel()}
+                        </main>
                     </Show>
-                }</For>
-            </Match>
-
-            <Match when={mode == "part"}>
-                <main ref={(el: HTMLElement) => useKeepScroll(el, location.pathname, getTabScrollKey())} onScroll={scrollEnd}>
-                    <For each={props.children}>{({ panel }, index) =>
-                        <div class={getActives()[index()] ? styles.active! : ""}>{panel()}</div>
-                    }</For>
-                </main>
-            </Match>
-        </Switch>
-    </div>
-}
+                )}
+            </For>
+        </div>
+    );
+};
