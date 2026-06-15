@@ -1,0 +1,2 @@
+[      53ms] [WARNING] [STRICT_READ_UNTRACKED] Reactive value read directly in <MenuTab> will not update. Move it into a tracking scope (JSX, a memo, or an effect's compute function). @ http://localhost:3000/y8be0dz4.js:2064
+[     100ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0

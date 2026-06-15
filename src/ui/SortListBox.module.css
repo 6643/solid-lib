@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 2px;
     user-select: none;
-    background-color: var(--base-bg);
+    background-color: var(--bg-base);
 
     >.listItem {
         position: relative;
@@ -11,7 +11,7 @@
         gap: 4px;
         justify-content: space-between;
         user-select: none;
-        background-color: var(--disabled-bg);
+        background-color: var(--disabled-color);
         transform: translateY(var(--translate-y, 0));
 
         &.dragging {
@@ -40,7 +40,7 @@
             >:last-child {
                 box-sizing: content-box;
                 border: 16px solid transparent;
-                color: var(--base-fg);
+                color: var(--fg-primary);
             }
         }
 

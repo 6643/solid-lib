@@ -79,18 +79,17 @@ test("ui component css modules map to the public theme tokens", async () => {
     Bun.file(join(import.meta.dir, "..", "src/ui/Input.module.css")).text(),
   ]);
 
-  expect(buttonCss).toContain("var(--base-bg)");
-  expect(buttonCss).toContain("var(--theme-color)");
-  expect(buttonCss).toContain("var(--disabled-bg)");
+  expect(buttonCss).toContain("var(--bg-base)");
+  expect(buttonCss).toContain("var(--disabled-color)");
   expect(buttonCss).not.toContain("--pf-color");
   expect(buttonCss).not.toContain("--sf-color");
   expect(buttonCss).not.toContain("--sb-color");
 
-  expect(cardCss).toContain("var(--raised-bg)");
-  expect(cardCss).toContain("var(--raised-fg)");
+  expect(cardCss).toContain("var(--bg-raised)");
+  expect(cardCss).toContain("var(--fg-primary)");
 
-  expect(inputCss).toContain("var(--inset-bg)");
-  expect(inputCss).toContain("var(--inset-fg)");
-  expect(inputCss).toContain("var(--disabled-bg)");
-  expect(inputCss).toContain("var(--disabled-fg)");
+  expect(inputCss).toContain("var(--bg-inset)");
+  expect(inputCss).toContain("var(--fg-secondary)");
+  expect(inputCss).toContain("var(--disabled-color)");
+  expect(inputCss).toContain("var(--fg-secondary)");
 });

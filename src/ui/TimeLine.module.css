@@ -7,7 +7,7 @@
             padding-bottom: 8px;
 
             >span {
-                color: var(--disabled-fg);
+                color: var(--fg-secondary);
             }
         }
 
@@ -22,7 +22,7 @@
                 display: block;
                 width: 1px;
                 height: 100%;
-                background-color: var(--base-bg);
+                background-color: var(--bg-base);
                 position: absolute;
                 left: 50%;
                 transform: translateX(-50%);
@@ -52,7 +52,7 @@
             >div {
                 display: flex;
                 align-items: center;
-                --color: var(--disabled-fg);
+                --color: var(--fg-secondary);
                 color: var(--color);
             }
         }

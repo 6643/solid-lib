@@ -4,16 +4,17 @@
     overflow: hidden;
     display: grid;
     grid-template-rows: auto 1fr;
+    gap: 4px;
 }
 
 .menuTab > nav {
     user-select: none;
     width: 100%;
-    height: 40px;
+    height: 48px;
     display: flex;
-    overflow-x: auto;
-    gap: 4px;
-    background-color: var(--base-bg);
+    align-items: center;
+    position: relative;
+    background-color: var(--bg-raised);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
@@ -21,33 +22,64 @@
     display: none;
 }
 
-.menuTab > nav > div {
+.navList {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.navList::-webkit-scrollbar {
+    display: none;
+}
+
+.navList > div {
     padding: 4px 12px;
     white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--disabled-fg);
+    color: var(--fg-primary);
     cursor: pointer;
     transition: color 200ms ease;
 }
 
-.menuTab > nav > div.active {
+.navList > div.active {
     color: var(--accrnt-color);
 }
 
+/* 线条指示器 */
+.menuTab > nav::before {
+    content: "";
+    position: absolute;
+    bottom: 0px;
+    left: calc(1px * var(--left, 0));
+    width: calc(1px * var(--width, 0));
+    height: 2px;
+    background-color: var(--accrnt-color);
+    transition:
+        left 512ms ease,
+        width 512ms ease;
+}
+/* 滑块指示器 */
+.menuTab > nav::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(1px * var(--left, 0));
+    width: calc(1px * var(--width, 0));
+    background-color: color-mix(in srgb, var(--accrnt-color) 12%, transparent);
+    transition:
+        left 512ms ease,
+        width 512ms ease;
+}
 .menuTab > main {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-}
-
-.menuTab > main > div {
-    opacity: 0.4;
-    transition: opacity 200ms ease;
-}
-
-.menuTab > main > div.active {
-    opacity: 1;
 }

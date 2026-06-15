@@ -45,8 +45,7 @@ export { BottomTab } from "./BottomTab";
 export { CityPicker, initCities } from "./CityPicker";
 export { LoadMore } from "./LoadMore";
 export { Plyr } from "./Plyr";
-export { ThemeToggle } from "./ThemeToggle";
-export { AccentPicker } from "./AccentPicker";
+export { ThemeSwitch, AccentSelector } from "./Theme";
 
 // Hooks & Utils
 export { createDebouncedSignal } from "./createDebouncedSignal";
@@ -68,6 +67,7 @@ export { useRefresh } from "../use/useRefresh";
 export { useResize } from "../use/useResize";
 export { useScrollEnd } from "../use/useScrollEnd";
 export { createStorage } from "../use/createStorage";
+export { initTheme, useTheme, initAccent, useAccent } from "./Theme";
 export { createThrottle } from "../use/createThrottle";
 export { getChinaTimestamp } from "../use/createTime";
 export { createTry } from "../use/createTry";

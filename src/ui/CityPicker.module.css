@@ -11,7 +11,7 @@
            align-items: center;
 
            >div {
-               background-color: var(--base-bg);
+               background-color: var(--bg-base);
 
                &:last-of-type {
                    color: white;
@@ -20,7 +20,7 @@
            }
 
            >span {
-               color: var(--disabled-fg);
+               color: var(--fg-secondary);
                font-size: smaller;
            }
        }
@@ -33,7 +33,7 @@
            scroll-snap-type: y mandatory;
 
            >div {
-               background-color: var(--base-bg);
+               background-color: var(--bg-base);
                margin-bottom: 4px;
                display: flex;
                justify-content: space-between;

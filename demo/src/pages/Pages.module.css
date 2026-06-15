@@ -9,12 +9,12 @@
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: var(--text-color);
+  color: var(--fg-primary);
 }
 
 .desc {
   font-size: 14px;
-  color: var(--grey5-color);
+  color: var(--fg-secondary);
   margin-bottom: 24px;
 }
 
@@ -28,7 +28,7 @@
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: var(--text-color);
+  color: var(--fg-primary);
 }
 
 .subTitle {
@@ -36,18 +36,18 @@
   font-weight: 500;
   margin-top: 16px;
   margin-bottom: 8px;
-  color: var(--grey5-color);
+  color: var(--fg-secondary);
 }
 
 .note {
   font-size: 12px;
-  color: var(--grey5-color);
+  color: var(--fg-secondary);
   margin-top: 8px;
 }
 
 .box {
   padding: 12px 16px;
-  background: var(--theme-color);
+  background: var(--accrnt-color);
   color: white;
   border-radius: 8px;
   text-align: center;
@@ -57,7 +57,7 @@
 
 .expandContent {
   padding: 12px;
-  background: var(--inset-color);
+  background: var(--bg-inset);
   border-radius: 8px;
   margin: 8px 0;
 }
@@ -77,7 +77,7 @@
 
 .modalContent p {
   margin-bottom: 16px;
-  color: var(--grey5-color);
+  color: var(--fg-secondary);
 }
 
 .tabPanel {
@@ -91,7 +91,7 @@
 }
 
 .tabPanel p {
-  color: var(--grey5-color);
+  color: var(--fg-secondary);
   margin-bottom: 12px;
 }
 
@@ -100,7 +100,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 12px;
-  border-bottom: 1px solid var(--inset-color);
+  border-bottom: 1px solid var(--bg-inset);
 }
 
 .listItem strong {
@@ -110,7 +110,7 @@
 
 .listItem span {
   font-size: 12px;
-  color: var(--grey5-color);
+  color: var(--fg-secondary);
 }
 
 .sortItem {
@@ -122,12 +122,12 @@
 
 .sortItemId {
   font-size: 12px;
-  color: var(--grey5-color);
+  color: var(--fg-secondary);
   font-weight: 500;
 }
 
 .codeBlock {
-  background: var(--inset-color);
+  background: var(--bg-inset);
   padding: 12px;
   border-radius: 8px;
   overflow-x: auto;
@@ -136,7 +136,7 @@
 .codeBlock pre {
   font-family: monospace;
   font-size: 12px;
-  color: var(--text-color);
+  color: var(--fg-primary);
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -146,7 +146,7 @@
   top: 100%;
   left: 0;
   margin-top: 8px;
-  background: var(--raised-color);
+  background: var(--bg-raised);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 8px;
@@ -162,11 +162,11 @@
 }
 
 .dropdown p:hover {
-  background: var(--inset-color);
+  background: var(--bg-inset);
 }
 
 .resizeBox {
-  background: var(--inset-color);
+  background: var(--bg-inset);
   padding: 16px;
   border-radius: 8px;
   resize: both;
@@ -180,7 +180,7 @@
 }
 
 .visBox {
-  background: var(--inset-color);
+  background: var(--bg-inset);
   padding: 16px;
   border-radius: 8px;
   min-height: 100px;
@@ -224,7 +224,7 @@
 /* FlexBox demo */
 .flexDemo {
     height: 80px;
-    background-color: var(--inset-bg);
+    background-color: var(--bg-inset);
     padding: 8px;
     border-radius: 8px;
 }

@@ -32,7 +32,7 @@ const TabsPage = () => {
         <div style={{ height: "300px" }}>
           <MenuTab>
             {[
-              { name: "分类 A", panel: () => <div class={styles.tabPanel}><h3>分类 A</h3><p>菜单标签页，内容区自动追踪可见性。</p><div style={{ height: "400px", background: "var(--inset-bg)", borderRadius: "8px", padding: "16px" }}><p>长内容区域...</p></div></div> },
+              { name: "分类 A", panel: () => <div class={styles.tabPanel}><h3>分类 A</h3><p>菜单标签页，内容区自动追踪可见性。</p><div style={{ height: "400px", background: "var(--bg-inset)", borderRadius: "8px", padding: "16px" }}><p>长内容区域...</p></div></div> },
               { name: "分类 B", panel: () => <div class={styles.tabPanel}><h3>分类 B</h3><p>分类 B 的内容。</p></div> },
               { name: "分类 C", panel: () => <div class={styles.tabPanel}><h3>分类 C</h3><p>分类 C 的内容。</p></div> },
             ]}
@@ -58,7 +58,7 @@ const TabsPage = () => {
         <div style={{ height: "400px" }}>
           <NavTab>
             {[
-              { name: "分类 1", panel: () => <div class={styles.tabPanel}><h3>分类 1</h3><p>滚动内容会自动高亮对应的左侧标签。</p><div style={{ height: "600px", background: "var(--inset-bg)", borderRadius: "8px", padding: "16px" }}><p>长内容区域...</p></div></div> },
+              { name: "分类 1", panel: () => <div class={styles.tabPanel}><h3>分类 1</h3><p>滚动内容会自动高亮对应的左侧标签。</p><div style={{ height: "600px", background: "var(--bg-inset)", borderRadius: "8px", padding: "16px" }}><p>长内容区域...</p></div></div> },
               { name: "分类 2", panel: () => <div class={styles.tabPanel}><h3>分类 2</h3><p>分类 2 的内容。</p></div> },
               { name: "分类 3", panel: () => <div class={styles.tabPanel}><h3>分类 3</h3><p>分类 3 的内容。</p></div> },
             ]}

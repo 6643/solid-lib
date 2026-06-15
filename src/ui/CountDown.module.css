@@ -29,7 +29,7 @@
     }
 
     >span {
-        color: var(--disabled-fg);
+        color: var(--fg-secondary);
     }
 }
 

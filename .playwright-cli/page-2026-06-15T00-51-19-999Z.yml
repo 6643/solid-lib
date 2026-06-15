@@ -1,0 +1,491 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5] [cursor=pointer]: 按钮
+    - generic [ref=e6] [cursor=pointer]: 输入
+    - generic [ref=e7] [cursor=pointer]: 布局
+    - generic [ref=e8] [cursor=pointer]: Hooks
+    - generic [ref=e9] [cursor=pointer]: 校验
+    - generic [ref=e10] [cursor=pointer]: 主题
+  - main [ref=e11]:
+    - generic [ref=e13]:
+      - heading "按钮组件" [level=1] [ref=e14]
+      - paragraph [ref=e15]: 展示所有按钮变体：FilledButton、OutlinedButton、TextButton、IconButton
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - heading "Filled Buttons" [level=2] [ref=e18]
+          - generic [ref=e19]:
+            - button "默认" [ref=e20] [cursor=pointer]:
+              - generic [ref=e22]: 默认
+            - button "禁用" [disabled]:
+              - generic:
+                - generic: 禁用
+            - button "自定义颜色" [ref=e23] [cursor=pointer]:
+              - generic [ref=e25]: 自定义颜色
+            - button "圆角" [ref=e26] [cursor=pointer]:
+              - generic [ref=e28]: 圆角
+            - button "带图标" [ref=e29] [cursor=pointer]:
+              - generic [ref=e30]:
+                - img [ref=e31]
+                - generic [ref=e33]: 带图标
+            - button "点击 0" [ref=e34] [cursor=pointer]:
+              - generic [ref=e36]: 点击 0
+        - generic [ref=e37]:
+          - heading "Outlined Buttons" [level=2] [ref=e38]
+          - generic [ref=e39]:
+            - button "默认" [ref=e40] [cursor=pointer]:
+              - generic [ref=e42]: 默认
+            - button "禁用" [disabled]:
+              - generic:
+                - generic: 禁用
+            - button "自定义颜色" [ref=e43] [cursor=pointer]:
+              - generic [ref=e45]: 自定义颜色
+            - button "圆角" [ref=e46] [cursor=pointer]:
+              - generic [ref=e48]: 圆角
+            - button "带图标" [ref=e49] [cursor=pointer]:
+              - generic [ref=e50]:
+                - img [ref=e51]
+                - generic [ref=e53]: 带图标
+            - button "异步操作" [ref=e54] [cursor=pointer]:
+              - generic [ref=e56]: 异步操作
+        - generic [ref=e57]:
+          - heading "Text Buttons" [level=2] [ref=e58]
+          - generic [ref=e59]:
+            - button "默认" [ref=e60] [cursor=pointer]:
+              - generic [ref=e62]: 默认
+            - button "禁用" [disabled]:
+              - generic:
+                - generic: 禁用
+            - button "自定义颜色" [ref=e63] [cursor=pointer]:
+              - generic [ref=e65]: 自定义颜色
+            - button "带图标" [ref=e66] [cursor=pointer]:
+              - generic [ref=e67]:
+                - img [ref=e68]
+                - generic [ref=e70]: 带图标
+        - generic [ref=e71]:
+          - heading "Icon Buttons" [level=2] [ref=e72]
+          - generic [ref=e73]:
+            - button [ref=e74] [cursor=pointer]:
+              - img [ref=e76]
+            - button [ref=e78] [cursor=pointer]:
+              - img [ref=e80]
+            - button [ref=e82] [cursor=pointer]:
+              - img [ref=e84]
+            - button [ref=e86] [cursor=pointer]:
+              - img [ref=e88]
+            - button [ref=e90] [cursor=pointer]:
+              - img [ref=e92]
+            - button [ref=e94] [cursor=pointer]:
+              - img [ref=e96]
+            - button [ref=e98] [cursor=pointer]:
+              - img [ref=e100]
+            - button [ref=e102] [cursor=pointer]:
+              - img [ref=e104]
+            - button [ref=e106] [cursor=pointer]:
+              - img [ref=e108]
+            - button [ref=e110] [cursor=pointer]:
+              - img [ref=e112]
+            - button [disabled]:
+              - generic:
+                - img
+        - generic [ref=e114]:
+          - heading "主题 / 设备图标" [level=2] [ref=e115]
+          - generic [ref=e116]:
+            - button [ref=e117] [cursor=pointer]:
+              - img [ref=e119]
+            - button [ref=e121] [cursor=pointer]:
+              - img [ref=e123]
+            - button [ref=e125] [cursor=pointer]:
+              - img [ref=e127]
+            - button [ref=e129] [cursor=pointer]:
+              - img [ref=e131]
+            - button [ref=e133] [cursor=pointer]:
+              - img [ref=e135]
+            - button [ref=e137] [cursor=pointer]:
+              - img [ref=e139]
+            - button [ref=e141] [cursor=pointer]:
+              - img [ref=e143]
+            - button [ref=e145] [cursor=pointer]:
+              - img [ref=e147]
+            - button [ref=e149] [cursor=pointer]:
+              - img [ref=e151]
+            - button [ref=e153] [cursor=pointer]:
+              - img [ref=e155]
+            - button [ref=e157] [cursor=pointer]:
+              - img [ref=e159]
+      - generic [ref=e161]:
+        - heading "按钮尺寸" [level=2] [ref=e162]
+        - generic [ref=e163]:
+          - button "小" [ref=e164] [cursor=pointer]:
+            - generic [ref=e166]: 小
+          - button "默认" [ref=e167] [cursor=pointer]:
+            - generic [ref=e169]: 默认
+          - button "大" [ref=e170] [cursor=pointer]:
+            - generic [ref=e172]: 大
+          - button "宽按钮" [ref=e173] [cursor=pointer]:
+            - generic [ref=e175]: 宽按钮
+    - generic [ref=e177]:
+      - heading "输入组件" [level=1] [ref=e178]
+      - paragraph [ref=e179]: TextInput、PasswordInput、NumberInput、EmailInput、TelInput、RangeInput
+      - generic [ref=e180]:
+        - generic [ref=e181]:
+          - heading "TextInput 单行" [level=2] [ref=e182]
+          - generic [ref=e183]:
+            - generic [ref=e184]:
+              - generic [ref=e186]: 姓名
+              - textbox "姓名" [ref=e189]:
+                - /placeholder: " "
+                - text: 张三
+            - generic [ref=e190]:
+              - generic [ref=e192]: 只读
+              - textbox "只读" [ref=e195]:
+                - /placeholder: " "
+                - text: 不可编辑
+        - generic [ref=e196]:
+          - heading "TextInput 多行" [level=2] [ref=e197]
+          - generic [ref=e198]:
+            - generic [ref=e199]:
+              - generic [ref=e201]: 简介
+              - textbox "简介" [ref=e204]:
+                - /placeholder: " "
+                - text: 这是一段简介文本...
+            - generic [ref=e205]:
+              - generic [ref=e206]:
+                - generic [ref=e207]: 备注
+                - generic [ref=e208]: 至少输入5个字符
+              - textbox "备注 至少输入5个字符" [ref=e211]:
+                - /placeholder: " "
+      - generic [ref=e212]:
+        - generic [ref=e213]:
+          - heading "PasswordInput" [level=2] [ref=e214]
+          - generic [ref=e215]:
+            - generic [ref=e216]:
+              - generic [ref=e218]: 密码
+              - textbox "密码" [ref=e221]:
+                - /placeholder: " "
+            - generic [ref=e222]:
+              - generic [ref=e223]:
+                - generic [ref=e224]: 确认密码
+                - generic [ref=e225]: 至少6位
+              - textbox "确认密码 至少6位" [ref=e228]:
+                - /placeholder: " "
+        - generic [ref=e229]:
+          - heading "EmailInput" [level=2] [ref=e230]
+          - generic [ref=e231]:
+            - generic [ref=e232]:
+              - generic [ref=e234]: 邮箱
+              - textbox "邮箱" [ref=e237]:
+                - /placeholder: " "
+            - generic [ref=e238]:
+              - generic [ref=e240]: 备用邮箱
+              - textbox "备用邮箱" [ref=e243]:
+                - /placeholder: " "
+      - generic [ref=e244]:
+        - generic [ref=e245]:
+          - heading "NumberInput" [level=2] [ref=e246]
+          - generic [ref=e247]:
+            - generic [ref=e248]:
+              - generic [ref=e250]: 年龄
+              - generic [ref=e251]:
+                - spinbutton "年龄" [ref=e253]: "25"
+                - button [ref=e254] [cursor=pointer]:
+                  - img [ref=e256]
+            - generic [ref=e258]:
+              - generic [ref=e260]: 数量
+              - spinbutton "数量" [ref=e263]
+        - generic [ref=e264]:
+          - heading "TelInput" [level=2] [ref=e265]
+          - generic [ref=e266]:
+            - generic [ref=e267]:
+              - generic [ref=e269]: 手机号
+              - textbox "手机号" [ref=e272]:
+                - /placeholder: " "
+            - generic [ref=e273]:
+              - generic [ref=e275]: 固定电话
+              - textbox "固定电话" [ref=e278]:
+                - /placeholder: " "
+      - generic [ref=e279]:
+        - heading "RangeInput" [level=2] [ref=e280]
+        - generic [ref=e281]:
+          - generic [ref=e282]:
+            - generic [ref=e283]:
+              - generic [ref=e284]: 音量
+              - generic [ref=e285]: "50"
+            - slider "音量 50" [ref=e287] [cursor=pointer]: "50"
+          - generic [ref=e288]:
+            - generic [ref=e289]:
+              - generic [ref=e290]: 步长为5
+              - generic [ref=e291]: "50"
+            - slider "步长为5 50" [ref=e293] [cursor=pointer]: "50"
+          - generic [ref=e294]:
+            - generic [ref=e295]:
+              - generic [ref=e296]: 只读滑块
+              - generic [ref=e297]: "75"
+            - slider "只读滑块 75" [ref=e299] [cursor=pointer]: "75"
+      - generic [ref=e300]:
+        - heading "内联图标按钮" [level=2] [ref=e301]
+        - generic [ref=e302]:
+          - generic [ref=e303]:
+            - generic [ref=e305]: 搜索
+            - generic [ref=e306]:
+              - img [ref=e307]
+              - textbox "搜索" [ref=e310]:
+                - /placeholder: " "
+              - img [ref=e311]
+          - generic [ref=e313]:
+            - generic [ref=e315]: 数量
+            - generic [ref=e316]:
+              - button "数量" [ref=e317] [cursor=pointer]:
+                - img [ref=e319]
+              - spinbutton [ref=e322]: "1"
+              - img [ref=e323]
+          - generic [ref=e325]:
+            - generic [ref=e327]: 仅左侧图标
+            - generic [ref=e328]:
+              - button "仅左侧图标" [ref=e329] [cursor=pointer]:
+                - img [ref=e331]
+              - textbox [ref=e334]:
+                - /placeholder: " "
+          - generic [ref=e335]:
+            - generic [ref=e337]: 仅右侧图标
+            - generic [ref=e338]:
+              - textbox "仅右侧图标" [ref=e340]:
+                - /placeholder: " "
+              - button [ref=e341] [cursor=pointer]:
+                - img [ref=e343]
+      - generic [ref=e345]:
+        - heading "CheckButton & RadioButton" [level=2] [ref=e346]
+        - generic [ref=e347]:
+          - generic [ref=e348] [cursor=pointer]:
+            - checkbox "同意用户协议"
+            - generic [ref=e349]: 同意用户协议
+          - generic [ref=e350]:
+            - checkbox "禁用选项" [disabled]
+            - generic [ref=e351]: 禁用选项
+          - generic [ref=e352]:
+            - generic [ref=e353] [cursor=pointer]:
+              - radio "男" [checked]
+              - generic [ref=e354]: 男
+            - generic [ref=e355] [cursor=pointer]:
+              - radio "女"
+              - generic [ref=e356]: 女
+            - generic [ref=e357] [cursor=pointer]:
+              - radio "其他"
+              - generic [ref=e358]: 其他
+      - generic [ref=e359]:
+        - heading "当前值" [level=2] [ref=e360]
+        - generic [ref=e362]: "{ \"name\": \"张三\", \"email\": \"\", \"phone\": \"\", \"age\": \"25\", \"bio\": \"这是一段简介文本...\", \"volume\": 50, \"agree\": false, \"gender\": \"male\" }"
+    - generic [ref=e364]:
+      - heading "布局组件" [level=1] [ref=e365]
+      - paragraph [ref=e366]: 展示 FlexBox、GridBox、StackBox、CenterBox、Block 组件
+      - generic [ref=e367]:
+        - generic [ref=e368]:
+          - heading "FlexBox 弹性布局" [level=2] [ref=e369]
+          - heading "水平排列 (row)" [level=3] [ref=e370]
+          - generic [ref=e371]:
+            - generic [ref=e372]: "1"
+            - generic [ref=e373]: "2"
+            - generic [ref=e374]: "3"
+          - heading "垂直排列 (column)" [level=3] [ref=e375]
+          - generic [ref=e376]:
+            - generic [ref=e377]: A
+            - generic [ref=e378]: B
+            - generic [ref=e379]: C
+          - heading "对齐方式" [level=3] [ref=e380]
+          - generic [ref=e381]:
+            - generic [ref=e382]: Start
+            - generic [ref=e383]: Center
+            - generic [ref=e384]: End
+          - heading "自动换行" [level=3] [ref=e385]
+          - generic [ref=e386]:
+            - generic [ref=e387]: Item 1
+            - generic [ref=e388]: Item 2
+            - generic [ref=e389]: Item 3
+            - generic [ref=e390]: Item 4
+            - generic [ref=e391]: Item 5
+        - generic [ref=e392]:
+          - heading "GridBox 网格布局" [level=2] [ref=e393]
+          - heading "基础网格" [level=3] [ref=e394]
+          - generic [ref=e395]:
+            - generic [ref=e396]: "1"
+            - generic [ref=e397]: "2"
+            - generic [ref=e398]: "3"
+            - generic [ref=e399]: "4"
+            - generic [ref=e400]: "5"
+            - generic [ref=e401]: "6"
+          - heading "自定义区域" [level=3] [ref=e402]
+          - generic [ref=e403]:
+            - generic [ref=e404]: 侧边栏
+            - generic [ref=e405]: 主内容区
+            - generic [ref=e406]: 底部
+      - generic [ref=e407]:
+        - generic [ref=e408]:
+          - heading "StackBox 堆叠布局" [level=2] [ref=e409]
+          - generic [ref=e410]:
+            - generic [ref=e411]: 底层
+            - generic [ref=e412]: 中层
+            - generic [ref=e413]: 顶层
+        - generic [ref=e414]:
+          - heading "CenterBox 居中布局" [level=2] [ref=e415]
+          - generic [ref=e418]: 居中内容
+      - generic [ref=e419]:
+        - heading "Block 区块布局" [level=2] [ref=e420]
+        - generic [ref=e421]:
+          - generic [ref=e422]:
+            - generic [ref=e423]:
+              - generic [ref=e424]: 区块标题
+              - generic [ref=e426]: ...
+            - generic [ref=e428]: 这是 Block 组件的内容区域，支持 header 和 footer。
+            - generic [ref=e429]: 左侧右侧
+          - generic [ref=e430]:
+            - generic [ref=e432]: 无 Footer
+            - generic [ref=e434]: 这个 Block 没有 footer 部分。
+    - generic [ref=e436]:
+      - heading "Hooks 示例" [level=1] [ref=e437]
+      - paragraph [ref=e438]: 展示常用 Hooks 的使用方式
+      - generic [ref=e439]:
+        - generic [ref=e440]:
+          - heading "createDebounce 防抖" [level=2] [ref=e441]
+          - generic [ref=e442]:
+            - generic [ref=e444]: 搜索（500ms 防抖）
+            - textbox "搜索（500ms 防抖）" [ref=e447]:
+              - /placeholder: " "
+          - paragraph [ref=e448]: 输入停止 500ms 后才会触发搜索
+        - generic [ref=e449]:
+          - heading "createThrottle 节流" [level=2] [ref=e450]
+          - button "点击（1秒节流）" [ref=e451] [cursor=pointer]:
+            - generic [ref=e453]: 点击（1秒节流）
+          - paragraph [ref=e454]: "触发次数: 0（每秒最多1次）"
+      - generic [ref=e455]:
+        - generic [ref=e456]:
+          - heading "createCopy 复制" [level=2] [ref=e457]
+          - button "复制文本" [ref=e458] [cursor=pointer]:
+            - generic [ref=e460]: 复制文本
+          - paragraph [ref=e461]: 点击复制 "Hello, SolidJS!"
+        - generic [ref=e462]:
+          - heading "useClickOutside 点击外部" [level=2] [ref=e463]
+          - button "切换下拉" [ref=e465] [cursor=pointer]:
+            - generic [ref=e467]: 切换下拉
+      - generic [ref=e468]:
+        - generic [ref=e469]:
+          - heading "useKeyPress 按键监听" [level=2] [ref=e470]
+          - paragraph [ref=e471]:
+            - text: "最后按下的键:"
+            - strong [ref=e472]: 无
+          - paragraph [ref=e473]: 按下 Enter、Escape、空格、a/b/c 键测试
+        - generic [ref=e474]:
+          - heading "useResize 尺寸监听" [level=2] [ref=e475]
+          - generic [ref=e476]:
+            - paragraph [ref=e477]: "宽度: 0px"
+            - paragraph [ref=e478]: "高度: 0px"
+            - paragraph [ref=e479]: 调整窗口大小查看变化
+      - generic [ref=e480]:
+        - generic [ref=e481]:
+          - heading "createFullscreen 全屏" [level=2] [ref=e482]
+          - button "进入全屏" [ref=e483] [cursor=pointer]:
+            - generic [ref=e485]: 进入全屏
+          - paragraph [ref=e486]: "当前状态: 正常"
+        - generic [ref=e487]:
+          - heading "useVis 可见性检测" [level=2] [ref=e488]
+          - generic [ref=e489]:
+            - paragraph [ref=e490]:
+              - text: "元素可见:"
+              - strong [ref=e491]: 否
+            - paragraph [ref=e492]: 滚动到此元素查看效果
+      - generic [ref=e493]:
+        - heading "createDebouncedSignal 防抖信号" [level=2] [ref=e494]
+        - generic [ref=e495]:
+          - generic [ref=e497]: 输入内容
+          - textbox "输入内容" [ref=e500]:
+            - /placeholder: " "
+        - paragraph [ref=e501]: "原始值:"
+        - paragraph [ref=e502]: "防抖值 (300ms):"
+    - generic [ref=e504]:
+      - heading "校验演示" [level=1] [ref=e505]
+      - paragraph [ref=e506]: 本地同步校验 + 远程异步校验
+      - generic [ref=e507]:
+        - generic [ref=e508]:
+          - heading "本地校验" [level=2] [ref=e509]
+          - generic [ref=e510]:
+            - generic [ref=e511]:
+              - generic [ref=e512]:
+                - generic [ref=e513]: 用户名
+                - generic [ref=e514]: 用户名不能为空
+              - textbox "用户名 用户名不能为空" [ref=e517]:
+                - /placeholder: " "
+            - generic [ref=e518]:
+              - generic [ref=e520]: 密码
+              - textbox "密码" [ref=e523]:
+                - /placeholder: " "
+            - generic [ref=e524]:
+              - generic [ref=e525]:
+                - generic [ref=e526]: 确认密码
+                - generic [ref=e527]: 请确认密码
+              - textbox "确认密码 请确认密码" [ref=e530]:
+                - /placeholder: " "
+        - generic [ref=e531]:
+          - heading "远程校验" [level=2] [ref=e532]
+          - generic [ref=e533]:
+            - generic [ref=e534]:
+              - generic [ref=e536]: 用户名（远程查重）
+              - textbox "用户名（远程查重）" [ref=e539]:
+                - /placeholder: " "
+            - generic [ref=e540]:
+              - generic [ref=e542]: 邮箱（远程查重）
+              - textbox "邮箱（远程查重）" [ref=e545]:
+                - /placeholder: " "
+            - generic [ref=e546]:
+              - generic [ref=e548]: 手机号
+              - textbox "手机号" [ref=e551]:
+                - /placeholder: " "
+      - generic [ref=e552]:
+        - heading "当前值" [level=2] [ref=e553]
+        - generic [ref=e555]: "{ \"username\": \"\", \"email\": \"\", \"password\": \"\", \"confirm\": \"\", \"phone\": \"\" }"
+    - generic [ref=e557]:
+      - heading "主题设置" [level=1] [ref=e558]
+      - paragraph [ref=e559]: 切换亮暗模式，选择强调色
+      - generic [ref=e560]:
+        - heading "亮暗模式" [level=2] [ref=e561]
+        - generic [ref=e562]:
+          - button [ref=e563] [cursor=pointer]:
+            - img [ref=e565]
+          - generic [ref=e567]: 点击切换
+      - generic [ref=e568]:
+        - heading "强调色" [level=2] [ref=e569]
+        - button [ref=e572] [cursor=pointer]:
+          - img [ref=e574]
+      - generic [ref=e576]:
+        - heading "组件预览" [level=2] [ref=e577]
+        - generic [ref=e578]:
+          - generic [ref=e579]:
+            - button "强调按钮" [ref=e580] [cursor=pointer]:
+              - generic [ref=e582]: 强调按钮
+            - button "描边按钮" [ref=e583] [cursor=pointer]:
+              - generic [ref=e585]: 描边按钮
+            - button "文字按钮" [ref=e586] [cursor=pointer]:
+              - generic [ref=e588]: 文字按钮
+          - generic [ref=e589]:
+            - generic [ref=e591]: 输入框
+            - textbox "输入框" [ref=e594]:
+              - /placeholder: " "
+              - text: 示例文本
+          - generic [ref=e595]:
+            - button [ref=e596] [cursor=pointer]:
+              - img [ref=e598]
+            - main [ref=e600]:
+              - generic [ref=e601]: "5"
+              - generic [ref=e602]: "4"
+              - generic [ref=e603]: "4"
+            - main [ref=e604]:
+              - generic [ref=e605]: "3"
+              - generic [ref=e606]: "2"
+              - generic [ref=e607]: "2"
+            - button [ref=e608] [cursor=pointer]:
+              - img [ref=e610]
+      - generic [ref=e612]:
+        - heading "色彩层级" [level=2] [ref=e613]
+        - generic [ref=e614]:
+          - generic [ref=e615]: page — 页面背景
+          - generic [ref=e616]: base — 卡片、容器
+          - generic [ref=e617]: raised — 按钮、凸起
+          - generic [ref=e618]: inset — 输入框、凹陷
+          - generic [ref=e619]: disabled — 禁用状态

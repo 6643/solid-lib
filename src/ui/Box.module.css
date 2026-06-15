@@ -3,12 +3,12 @@
     flex-direction: column;
     gap: 4px;
     user-select: none;
-    color: var(--disabled-fg);
+    color: var(--fg-secondary);
     padding: 8px 0;
 
     >div {
         overflow: hidden;
-        background-color: var(--disabled-bg);
+        background-color: var(--disabled-color);
 
         &:first-child {
             border-top-left-radius: 9px;

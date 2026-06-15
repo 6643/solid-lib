@@ -1,0 +1,4 @@
+[     129ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[ 1541309ms] [LOG] 1233 @ http://localhost:3000/b0ybkc4w.js:5583
+[ 4995742ms] [ERROR] Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING @ http://localhost:3000/__solid_dev/events:0
+[ 4996741ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/__solid_dev/events:0

@@ -1,6 +1,7 @@
 import "../../src/ui/_.css";
 
-import { NavTab } from "../../src/ui/_";
+import { MenuTab, NavTab, TopTab, BottomTab, initTheme, initAccent } from "../../src/ui/_";
+import { icon_dashboard, icon_edit, icon_grid_view, icon_code, icon_check, icon_palette } from "../../src/ui/svgicons";
 
 import ButtonsPage from "./pages/ButtonsPage";
 import InputsPage from "./pages/InputsPage";
@@ -12,21 +13,22 @@ import HooksPage from "./pages/HooksPage";
 import ValidatePage from "./pages/ValidatePage";
 import ThemePage from "./pages/ThemePage";
 
+// 应用启动时立即初始化主题和强调色副作用
+initTheme();
+initAccent();
+
 const App = () => {
     return (
-        <NavTab>
+        <BottomTab>
             {[
-                { name: "按钮", panel: () => <ButtonsPage /> },
-                { name: "输入", panel: () => <InputsPage /> },
-                { name: "布局", panel: () => <LayoutPage /> },
-                // { name: "展示", panel: (): any => <DisplayPage /> },
-                // { name: "交互", panel: () => <InteractivePage /> },
-                // { name: "标签", panel: () => <TabsPage /> },
-                { name: "Hooks", panel: () => <HooksPage /> },
-                { name: "校验", panel: () => <ValidatePage /> },
-                { name: "主题", panel: () => <ThemePage /> },
+                { icon: icon_dashboard, panel: () => <ButtonsPage /> },
+                { icon: icon_edit, panel: () => <InputsPage /> },
+                { icon: icon_grid_view, panel: () => <LayoutPage /> },
+                { icon: icon_code, panel: () => <HooksPage /> },
+                { icon: icon_check, panel: () => <ValidatePage /> },
+                { icon: icon_palette, panel: () => <ThemePage /> },
             ]}
-        </NavTab>
+        </BottomTab>
     );
 };
 

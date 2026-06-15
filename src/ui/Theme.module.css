@@ -11,14 +11,20 @@
     visibility: hidden;
     opacity: 0;
     transform: translateX(-16px);
-    transition: visibility 0s 300ms, opacity 300ms ease-out, transform 300ms ease-out;
+    transition:
+        visibility 0s 300ms,
+        opacity 300ms ease-out,
+        transform 300ms ease-out;
 }
 
 .picker.open {
     visibility: visible;
     opacity: 1;
     transform: translateX(0);
-    transition: visibility 0s, opacity 300ms ease-out, transform 300ms ease-out;
+    transition:
+        visibility 0s,
+        opacity 300ms ease-out,
+        transform 300ms ease-out;
 }
 
 .swatch {
@@ -33,6 +39,6 @@
 }
 
 .swatch.selected {
-    border-color: var(--base-fg);
+    border-color: var(--fg-primary);
     transform: scale(1.15);
 }

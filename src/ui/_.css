@@ -1,56 +1,39 @@
 :root {
     --accrnt-color: teal;
     --error-color: firebrick;
+    --disabled-color: #757575;
+
+    --bg-page: #e0e0e0;
+    --bg-inset: #d0d0d0;
+    --bg-base: #eeeeee;
+    --bg-raised: #fcfcfc;
+
+    --fg-primary: #212121;
+    --fg-secondary: #555555;
+}
+[theme="dark"] {
+    --bg-page: #121212;
+    --bg-inset: #262626;
+    --bg-base: #333333;
+    --bg-raised: #404040;
+
+    --fg-primary: #eeeeee;
+    --fg-secondary: #b0b0b0;
 }
 
-/* ── 亮色 ── */
-:root,
-:root[theme="light"] {
-    --page-bg: #f2ebdf;
-    --page-fg: #2a241d;
-
-    --base-bg: #fbf6ee;
-    --base-fg: #2a241d;
-
-    --raised-bg: #e5dbcb;
-    --raised-fg: #241e18;
-
-    --inset-bg: #e1d8cc;
-    --inset-fg: #241e18;
-
-    --disabled-bg: #d4cbbf;
-    --disabled-fg: #948675;
-}
-
-/* ── 暗色 ── */
-:root[theme="dark"] {
-    --page-bg: #1a1a2e;
-    --page-fg: #e0e0e0;
-
-    --base-bg: #252540;
-    --base-fg: #e0e0e0;
-
-    --raised-bg: #2d2d4a;
-    --raised-fg: #c0c0c0;
-
-    --inset-bg: #16162b;
-    --inset-fg: #c0c0c0;
-
-    --disabled-bg: #2a2a45;
-    --disabled-fg: #666680;
-}
-
-/* ── 全局应用 ── */
 body {
-    background: var(--page-bg);
-    color: var(--page-fg);
+    background-color: var(--bg-page);
+    color: var(--fg-primary);
     margin: 0;
-    font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
+    font-family: system-ui, sans-serif;
     transition:
         background-color 256ms ease,
         color 256ms ease;
+    height: 100vh;
+}
+
+#app {
+    height: 100%;
 }
 
 ::-webkit-scrollbar {
@@ -66,12 +49,11 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--theme);
+    background-color: var(--disabled-color);
 }
 
 ::-webkit-scrollbar-track {
-    position: relative;
-    background-color: var(--bg2);
+    background-color: var(--bg-inset);
 }
 
 * {

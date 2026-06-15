@@ -154,8 +154,20 @@ const InputsPage = () => {
                     <CheckButton label="禁用选项" disabled />
                     <FlexBox gap={16}>
                         <RadioButton label="男" value="male" name="gender" checked={gender() === "male"} changed={setGender} />
-                        <RadioButton label="女" value="female" name="gender" checked={gender() === "female"} changed={setGender} />
-                        <RadioButton label="其他" value="other" name="gender" checked={gender() === "other"} changed={setGender} />
+                        <RadioButton
+                            label="女"
+                            value="female"
+                            name="gender"
+                            checked={gender() === "female"}
+                            changed={setGender}
+                        />
+                        <RadioButton
+                            label="其他"
+                            value="other"
+                            name="gender"
+                            checked={gender() === "other"}
+                            changed={setGender}
+                        />
                     </FlexBox>
                 </FlexBox>
             </Card>
@@ -165,7 +177,16 @@ const InputsPage = () => {
                 <div class={styles.codeBlock}>
                     <pre>
                         {JSON.stringify(
-                            { name: name(), email: email(), phone: phone(), age: age(), bio: bio(), volume: volume(), agree: agree(), gender: gender() },
+                            {
+                                name: name(),
+                                email: email(),
+                                phone: phone(),
+                                age: age(),
+                                bio: bio(),
+                                volume: volume(),
+                                agree: agree(),
+                                gender: gender(),
+                            },
                             null,
                             2,
                         )}
