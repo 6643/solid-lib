@@ -1,14 +1,5 @@
 import { createSignal } from "solid-js";
-import {
-    Card,
-    FilledButton,
-    IconButton,
-    OutlinedButton,
-    TextButton,
-    Block,
-    FlexBox,
-    SvgIcon,
-} from "../../../src/ui/_";
+import { Card, FilledButton, IconButton, OutlinedButton, TextButton, Block, FlexBox, SvgIcon } from "../../../src/ui/_";
 import {
     icon_add,
     icon_remove,
@@ -57,7 +48,8 @@ const ButtonsPage = () => {
                             tap={() => {
                                 setCount((c) => c + 1);
                             }}
-                        />
+                        />{" "}
+                        <FilledButton text="异步操作" tap={() => new Promise((r) => setTimeout(r, 1000))} />
                     </FlexBox>
                 </Card>
 
@@ -72,7 +64,7 @@ const ButtonsPage = () => {
                         <OutlinedButton text="异步操作" tap={() => new Promise((r) => setTimeout(r, 1000))} />
                     </FlexBox>
                 </Card>
-
+                <hr />
                 <Card class={styles.card}>
                     <h2 class={styles.cardTitle}>Text Buttons</h2>
                     <FlexBox gap={8} wrap="wrap">

@@ -57,7 +57,9 @@ export const AccentSelector = () => {
         <div class={styles.root}>
             <IconButton
                 icon={icon_palette}
-                tap={() => { setOpen((v) => !v); }}
+                tap={() => {
+                    setOpen((v) => !v);
+                }}
             />
             <div class={`${styles.picker} ${open() ? styles.open : ""}`}>
                 <For each={accents}>

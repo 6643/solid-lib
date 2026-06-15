@@ -8,7 +8,6 @@ export {
     type FilledButtonProps,
     type IconButtonProps,
     type OutlinedButtonProps,
-    type SharedButtonProps,
     type TextButtonProps,
 } from "./Button";
 export { RangeInput, TextInput, TextArea, PasswordInput, NumberInput, EmailInput, TelInput, CheckButton, RadioButton } from "./Input";

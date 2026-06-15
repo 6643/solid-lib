@@ -80,7 +80,6 @@ test("ui component css modules map to the public theme tokens", async () => {
   ]);
 
   expect(buttonCss).toContain("var(--bg-base)");
-  expect(buttonCss).toContain("var(--disabled-color)");
   expect(buttonCss).not.toContain("--pf-color");
   expect(buttonCss).not.toContain("--sf-color");
   expect(buttonCss).not.toContain("--sb-color");

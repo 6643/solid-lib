@@ -1,5 +1,5 @@
 .card {
-    background: var(--bg-raised);
+    background: var(--bg-base);
     border-radius: 28px;
     box-shadow: 0 20px 48px color-mix(in srgb, var(--fg-primary) 10%, transparent);
     color: var(--fg-primary);

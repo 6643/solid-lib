@@ -4,8 +4,9 @@
     --disabled-color: #757575;
 
     --bg-page: #e0e0e0;
-    --bg-inset: #d0d0d0;
     --bg-base: #eeeeee;
+
+    --bg-inset: #d0d0d0;
     --bg-raised: #fcfcfc;
 
     --fg-primary: #212121;
@@ -13,8 +14,9 @@
 }
 [theme="dark"] {
     --bg-page: #121212;
-    --bg-inset: #262626;
     --bg-base: #333333;
+
+    --bg-inset: #0d0d0d;
     --bg-raised: #404040;
 
     --fg-primary: #eeeeee;
@@ -58,4 +60,8 @@ body {
 
 * {
     box-sizing: border-box;
+}
+
+hr {
+    border-color: var(--disabled-color);
 }

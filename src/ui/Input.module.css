@@ -127,7 +127,7 @@
     user-select: none;
     padding: 6px 12px;
     border: 2px solid var(--fg-secondary);
-    border-radius: 9px;
+    border-radius: 3px;
     transition: border-color 160ms ease;
 }
 
@@ -158,12 +158,11 @@
 
 .checkBtn:has(input:disabled),
 .radioBtn:has(input:disabled) {
-    border-color: var(--fg-secondary);
-    opacity: 0.5;
+    border-color: var(--disabled-color);
     cursor: not-allowed;
 }
 
 .checkBtn:has(input:disabled) span,
 .radioBtn:has(input:disabled) span {
-    color: var(--fg-secondary);
+    color: var(--disabled-color);
 }
