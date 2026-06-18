@@ -1,0 +1,121 @@
+- generic [ref=e3]:
+  - main [ref=e502]:
+    - generic [ref=e503]:
+      - heading "按钮组件" [level=1] [ref=e504]
+      - paragraph [ref=e505]: 展示所有按钮变体：FilledButton、OutlinedButton、TextButton、IconButton
+      - generic [ref=e506]:
+        - generic [ref=e507]:
+          - heading "Filled Buttons" [level=2] [ref=e508]
+          - generic [ref=e509]:
+            - button "默认" [ref=e510] [cursor=pointer]:
+              - generic [ref=e511]: 默认
+            - button "禁用" [disabled]:
+              - generic: 禁用
+            - button "自定义颜色" [ref=e512] [cursor=pointer]:
+              - generic [ref=e513]: 自定义颜色
+            - button "圆角" [ref=e514] [cursor=pointer]:
+              - generic [ref=e515]: 圆角
+            - button "带图标" [ref=e516] [cursor=pointer]:
+              - img [ref=e517]
+              - generic [ref=e519]: 带图标
+            - button "点击 0" [ref=e520] [cursor=pointer]:
+              - generic [ref=e521]: 点击 0
+            - button "异步操作" [ref=e522] [cursor=pointer]:
+              - generic [ref=e523]: 异步操作
+        - generic [ref=e524]:
+          - heading "Outlined Buttons" [level=2] [ref=e525]
+          - generic [ref=e526]:
+            - button "默认" [ref=e527] [cursor=pointer]:
+              - generic [ref=e528]: 默认
+            - button "禁用" [disabled]:
+              - generic: 禁用
+            - button "自定义颜色" [ref=e529] [cursor=pointer]:
+              - generic [ref=e530]: 自定义颜色
+            - button "圆角" [ref=e531] [cursor=pointer]:
+              - generic [ref=e532]: 圆角
+            - button "带图标" [ref=e533] [cursor=pointer]:
+              - img [ref=e534]
+              - generic [ref=e536]: 带图标
+            - button "异步操作" [ref=e537] [cursor=pointer]:
+              - generic [ref=e538]: 异步操作
+        - separator [ref=e539]
+        - generic [ref=e540]:
+          - heading "Text Buttons" [level=2] [ref=e541]
+          - generic [ref=e542]:
+            - button "默认" [ref=e543] [cursor=pointer]:
+              - generic [ref=e544]: 默认
+            - button "禁用" [disabled]:
+              - generic: 禁用
+            - button "自定义颜色" [ref=e545] [cursor=pointer]:
+              - generic [ref=e546]: 自定义颜色
+            - button "带图标" [ref=e547] [cursor=pointer]:
+              - img [ref=e548]
+              - generic [ref=e550]: 带图标
+        - generic [ref=e551]:
+          - heading "Icon Buttons" [level=2] [ref=e552]
+          - generic [ref=e553]:
+            - button [ref=e554] [cursor=pointer]:
+              - img [ref=e555]
+            - button [ref=e557] [cursor=pointer]:
+              - img [ref=e558]
+            - button [ref=e560] [cursor=pointer]:
+              - img [ref=e561]
+            - button [ref=e563] [cursor=pointer]:
+              - img [ref=e564]
+            - button [ref=e566] [cursor=pointer]:
+              - img [ref=e567]
+            - button [ref=e569] [cursor=pointer]:
+              - img [ref=e570]
+            - button [ref=e572] [cursor=pointer]:
+              - img [ref=e573]
+            - button [ref=e575] [cursor=pointer]:
+              - img [ref=e576]
+            - button [ref=e578] [cursor=pointer]:
+              - img [ref=e579]
+            - button [ref=e581] [cursor=pointer]:
+              - img [ref=e582]
+            - button [disabled]:
+              - img
+        - generic [ref=e584]:
+          - heading "主题 / 设备图标" [level=2] [ref=e585]
+          - generic [ref=e586]:
+            - button [ref=e587] [cursor=pointer]:
+              - img [ref=e588]
+            - button [ref=e590] [cursor=pointer]:
+              - img [ref=e591]
+            - button [ref=e593] [cursor=pointer]:
+              - img [ref=e594]
+            - button [ref=e596] [cursor=pointer]:
+              - img [ref=e597]
+            - button [ref=e599] [cursor=pointer]:
+              - img [ref=e600]
+            - button [ref=e602] [cursor=pointer]:
+              - img [ref=e603]
+            - button [ref=e605] [cursor=pointer]:
+              - img [ref=e606]
+            - button [ref=e608] [cursor=pointer]:
+              - img [ref=e609]
+            - button [ref=e611] [cursor=pointer]:
+              - img [ref=e612]
+            - button [ref=e614] [cursor=pointer]:
+              - img [ref=e615]
+            - button [ref=e617] [cursor=pointer]:
+              - img [ref=e618]
+      - generic [ref=e620]:
+        - heading "按钮尺寸" [level=2] [ref=e621]
+        - generic [ref=e622]:
+          - button "小" [ref=e623] [cursor=pointer]:
+            - generic [ref=e624]: 小
+          - button "默认" [ref=e625] [cursor=pointer]:
+            - generic [ref=e626]: 默认
+          - button "大" [ref=e627] [cursor=pointer]:
+            - generic [ref=e628]: 大
+          - button "宽按钮" [ref=e629] [cursor=pointer]:
+            - generic [ref=e630]: 宽按钮
+  - navigation [ref=e133]:
+    - img [ref=e135] [cursor=pointer]
+    - img [ref=e138] [cursor=pointer]
+    - img [ref=e141] [cursor=pointer]
+    - img [ref=e144] [cursor=pointer]
+    - img [ref=e147] [cursor=pointer]
+    - img [ref=e150] [cursor=pointer]

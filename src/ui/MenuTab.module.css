@@ -14,8 +14,8 @@
     display: flex;
     align-items: center;
     position: relative;
-    background-color: var(--bg-raised);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    background-color: var(--secondary-bg);
+    box-shadow: 0 2px 4px var(--primary-bg);
 }
 
 .menuTab > nav::-webkit-scrollbar {
@@ -42,7 +42,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--fg-primary);
+    color: var(--primary-fg);
     cursor: pointer;
     transition: color 200ms ease;
 }
@@ -72,7 +72,8 @@
     bottom: 0;
     left: calc(1px * var(--left, 0));
     width: calc(1px * var(--width, 0));
-    background-color: color-mix(in srgb, var(--accrnt-color) 12%, transparent);
+    background-color: var(--accrnt-color);
+    opacity: 0.12;
     transition:
         left 512ms ease,
         width 512ms ease;

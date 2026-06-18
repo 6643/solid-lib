@@ -1,0 +1,160 @@
+- generic [ref=e3]:
+  - main [ref=e631]:
+    - generic [ref=e632]:
+      - heading "输入组件" [level=1] [ref=e633]
+      - paragraph [ref=e634]: TextInput、PasswordInput、NumberInput、EmailInput、TelInput、RangeInput
+      - generic [ref=e635]:
+        - generic [ref=e636]:
+          - heading "TextInput 单行" [level=2] [ref=e637]
+          - generic [ref=e638]:
+            - generic [ref=e639]:
+              - generic [ref=e641]: 姓名
+              - textbox "姓名" [ref=e644]:
+                - /placeholder: " "
+                - text: 张三
+            - generic [ref=e645]:
+              - generic [ref=e647]: 只读
+              - textbox "只读" [ref=e650]:
+                - /placeholder: " "
+                - text: 不可编辑
+        - generic [ref=e651]:
+          - heading "TextInput 多行" [level=2] [ref=e652]
+          - generic [ref=e653]:
+            - generic [ref=e654]:
+              - generic [ref=e656]: 简介
+              - textbox "简介" [ref=e659]:
+                - /placeholder: " "
+                - text: 这是一段简介文本...
+            - generic [ref=e660]:
+              - generic [ref=e661]:
+                - generic [ref=e662]: 备注
+                - generic [ref=e663]: 至少输入5个字符
+              - textbox "备注 至少输入5个字符" [ref=e666]:
+                - /placeholder: " "
+      - generic [ref=e667]:
+        - generic [ref=e668]:
+          - heading "PasswordInput" [level=2] [ref=e669]
+          - generic [ref=e670]:
+            - generic [ref=e671]:
+              - generic [ref=e673]: 密码
+              - textbox "密码" [ref=e676]:
+                - /placeholder: " "
+            - generic [ref=e677]:
+              - generic [ref=e678]:
+                - generic [ref=e679]: 确认密码
+                - generic [ref=e680]: 至少6位
+              - textbox "确认密码 至少6位" [ref=e683]:
+                - /placeholder: " "
+        - generic [ref=e684]:
+          - heading "EmailInput" [level=2] [ref=e685]
+          - generic [ref=e686]:
+            - generic [ref=e687]:
+              - generic [ref=e689]: 邮箱
+              - textbox "邮箱" [ref=e692]:
+                - /placeholder: " "
+            - generic [ref=e693]:
+              - generic [ref=e695]: 备用邮箱
+              - textbox "备用邮箱" [ref=e698]:
+                - /placeholder: " "
+      - generic [ref=e699]:
+        - generic [ref=e700]:
+          - heading "NumberInput" [level=2] [ref=e701]
+          - generic [ref=e702]:
+            - generic [ref=e703]:
+              - generic [ref=e705]: 年龄
+              - generic [ref=e706]:
+                - spinbutton "年龄" [ref=e708]: "25"
+                - button [ref=e709] [cursor=pointer]:
+                  - img [ref=e710]
+            - generic [ref=e712]:
+              - generic [ref=e714]: 数量
+              - spinbutton "数量" [ref=e717]
+        - generic [ref=e718]:
+          - heading "TelInput" [level=2] [ref=e719]
+          - generic [ref=e720]:
+            - generic [ref=e721]:
+              - generic [ref=e723]: 手机号
+              - textbox "手机号" [ref=e726]:
+                - /placeholder: " "
+            - generic [ref=e727]:
+              - generic [ref=e729]: 固定电话
+              - textbox "固定电话" [ref=e732]:
+                - /placeholder: " "
+      - generic [ref=e733]:
+        - heading "RangeInput" [level=2] [ref=e734]
+        - generic [ref=e735]:
+          - generic [ref=e736]:
+            - generic [ref=e737]:
+              - generic [ref=e738]: 音量
+              - generic [ref=e739]: "50"
+            - slider "音量 50" [ref=e741] [cursor=pointer]: "50"
+          - generic [ref=e742]:
+            - generic [ref=e743]:
+              - generic [ref=e744]: 步长为5
+              - generic [ref=e745]: "50"
+            - slider "步长为5 50" [ref=e747] [cursor=pointer]: "50"
+          - generic [ref=e748]:
+            - generic [ref=e749]:
+              - generic [ref=e750]: 只读滑块
+              - generic [ref=e751]: "75"
+            - slider "只读滑块 75" [ref=e753] [cursor=pointer]: "75"
+      - generic [ref=e754]:
+        - heading "内联图标按钮" [level=2] [ref=e755]
+        - generic [ref=e756]:
+          - generic [ref=e757]:
+            - generic [ref=e759]: 搜索
+            - generic [ref=e760]:
+              - img [ref=e761]
+              - textbox "搜索" [ref=e764]:
+                - /placeholder: " "
+              - img [ref=e765]
+          - generic [ref=e767]:
+            - generic [ref=e769]: 数量
+            - generic [ref=e770]:
+              - button "数量" [ref=e771] [cursor=pointer]:
+                - img [ref=e772]
+              - spinbutton [ref=e775]: "1"
+              - img [ref=e776]
+          - generic [ref=e778]:
+            - generic [ref=e780]: 仅左侧图标
+            - generic [ref=e781]:
+              - button "仅左侧图标" [ref=e782] [cursor=pointer]:
+                - img [ref=e783]
+              - textbox [ref=e786]:
+                - /placeholder: " "
+          - generic [ref=e787]:
+            - generic [ref=e789]: 仅右侧图标
+            - generic [ref=e790]:
+              - textbox "仅右侧图标" [ref=e792]:
+                - /placeholder: " "
+              - button [ref=e793] [cursor=pointer]:
+                - img [ref=e794]
+      - generic [ref=e796]:
+        - heading "CheckButton & RadioButton" [level=2] [ref=e797]
+        - generic [ref=e798]:
+          - generic [ref=e799] [cursor=pointer]:
+            - checkbox "同意用户协议"
+            - generic [ref=e800]: 同意用户协议
+          - generic [ref=e801]:
+            - checkbox "禁用选项" [disabled]
+            - generic [ref=e802]: 禁用选项
+          - generic [ref=e803]:
+            - generic [ref=e804] [cursor=pointer]:
+              - radio "男" [checked]
+              - generic [ref=e805]: 男
+            - generic [ref=e806] [cursor=pointer]:
+              - radio "女"
+              - generic [ref=e807]: 女
+            - generic [ref=e808] [cursor=pointer]:
+              - radio "其他"
+              - generic [ref=e809]: 其他
+      - generic [ref=e810]:
+        - heading "当前值" [level=2] [ref=e811]
+        - generic [ref=e813]: "{ \"name\": \"张三\", \"email\": \"\", \"phone\": \"\", \"age\": \"25\", \"bio\": \"这是一段简介文本...\", \"volume\": 50, \"agree\": false, \"gender\": \"male\" }"
+  - navigation [ref=e133]:
+    - img [ref=e135] [cursor=pointer]
+    - img [ref=e138] [cursor=pointer]
+    - img [ref=e141] [cursor=pointer]
+    - img [ref=e144] [cursor=pointer]
+    - img [ref=e147] [cursor=pointer]
+    - img [ref=e150] [cursor=pointer]

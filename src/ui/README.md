@@ -2,7 +2,7 @@
 
 `solid-lib/ui` 提供最小 UI 主题能力:
 
-- 通过 `html[theme]` 属性切换亮暗模式
+- 通过 `html[data-theme-mode]` 属性切换亮暗模式
 - 通过 `solid-lib/ui.css` 提供全局主题变量
 - 组件只消费变量, 不直接判断亮暗模式
 

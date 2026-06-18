@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 2px;
     user-select: none;
-    background-color: var(--bg-base);
+    background-color: var(--secondary-bg);
 
     >.listItem {
         position: relative;
@@ -40,7 +40,7 @@
             >:last-child {
                 box-sizing: content-box;
                 border: 16px solid transparent;
-                color: var(--fg-primary);
+                color: var(--primary-fg);
             }
         }
 

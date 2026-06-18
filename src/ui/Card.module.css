@@ -1,7 +1,6 @@
 .card {
-    background: var(--bg-base);
-    border-radius: 28px;
-    box-shadow: 0 20px 48px color-mix(in srgb, var(--fg-primary) 10%, transparent);
-    color: var(--fg-primary);
-    padding: 24px;
+    background: var(--primary-bg);
+    border-radius: 3px;
+    color: var(--primary-fg);
+    padding: 8px;
 }

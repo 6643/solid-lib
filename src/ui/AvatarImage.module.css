@@ -2,5 +2,5 @@
     border-radius: 50%;
     width: calc(1px * var(--size, 48));
     width: calc(1px * var(--size, 48));
-    border: 3px solid var(--color, var(--bg-base));
+    border: 3px solid var(--color, var(--secondary-bg));
 }

@@ -1,12 +1,21 @@
 import { createEffect, type Accessor, createSignal, type Setter } from "solid-js"
 
 const resizeObserverStore = new Map<Element, Setter<ResizeObserverEntry | undefined>>();
-const resizeObserver = new ResizeObserver(entries => {
-    for (const entry of entries) {
-        const setEntry = resizeObserverStore.get(entry.target);
-        if (setEntry) setEntry(entry);
-    }
-});
+let resizeObserver: ResizeObserver | undefined;
+
+const getResizeObserver = () => {
+    if (resizeObserver) return resizeObserver;
+    if (!("ResizeObserver" in globalThis)) return;
+
+    resizeObserver = new ResizeObserver(entries => {
+        for (const entry of entries) {
+            const setEntry = resizeObserverStore.get(entry.target);
+            if (setEntry) setEntry(entry);
+        }
+    });
+
+    return resizeObserver;
+};
 
 // The single functional useResize hook
 export const useResize = (
@@ -17,6 +26,8 @@ export const useResize = (
         () => typeof ref === "function" ? ref() : ref,  // compute
         (el) => {  // apply
             if (!el) return; // If element is not available, do nothing
+            const observer = getResizeObserver();
+            if (!observer) return;
 
             // Inlined core logic from createResizeHandler
             const [getEntry, setEntry] = createSignal<ResizeObserverEntry>();
@@ -29,9 +40,9 @@ export const useResize = (
             );
 
             resizeObserverStore.set(el, setEntry);
-            resizeObserver.observe(el)
+            observer.observe(el)
             return () => {
-                resizeObserver.unobserve(el);
+                observer.unobserve(el);
                 resizeObserverStore.delete(el);
             }
         }

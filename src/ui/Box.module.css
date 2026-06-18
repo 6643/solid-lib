@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 4px;
     user-select: none;
-    color: var(--fg-secondary);
+    color: var(--secondary-fg);
     padding: 8px 0;
 
     >div {

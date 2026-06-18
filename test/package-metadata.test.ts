@@ -39,7 +39,7 @@ test("solid-lib groups runtime, dev, and peer dependencies intentionally", async
   expect(packageJson.dependencies["@babel/core"]).toBe("latest");
   expect(packageJson.dependencies["@babel/preset-typescript"]).toBe("latest");
   expect(packageJson.dependencies["babel-preset-solid"]).toBe("next");
-  expect(packageJson.dependencies["dom-expressions"]).toBe("latest");
+  expect(packageJson.dependencies["dom-expressions"]).toBe("0.50.0-next.11");
   expect(packageJson.dependencies["typescript"]).toBe("latest");
   expect(packageJson.devDependencies["@types/babel__core"]).toBe("latest");
   expect(packageJson.devDependencies["@types/bun"]).toBe("latest");
@@ -53,7 +53,7 @@ test("solid-lib groups runtime, dev, and peer dependencies intentionally", async
     ...Object.values(packageJson.dependencies),
     ...Object.values(packageJson.devDependencies),
     ...Object.values(packageJson.peerDependencies),
-  ])].sort()).toEqual(["latest", "next"]);
+  ])].sort()).toEqual(["0.50.0-next.11", "latest", "next"]);
 });
 
 test("demo keeps local build dependencies in devDependencies", async () => {
@@ -64,7 +64,7 @@ test("demo keeps local build dependencies in devDependencies", async () => {
 
   expect(demoPackageJson.dependencies).toBeUndefined();
   expect(demoPackageJson.devDependencies["solid-js"]).toBe("next");
-  expect(demoPackageJson.devDependencies["solid-lib"]).toBe("link:solid-lib");
+  expect(demoPackageJson.devDependencies["solid-lib"]).toBe("link:..");
 });
 
 test("root README matches the exported subproject count", async () => {

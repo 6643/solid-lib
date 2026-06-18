@@ -5,7 +5,6 @@
     border: 0;
     border-radius: var(--radius, 3px);
     box-sizing: border-box;
-    color: var(--color, var(--fg-primary));
     cursor: pointer;
     align-items: center;
     display: inline-flex;
@@ -22,27 +21,28 @@
 
 .button::before {
     content: "";
-    width: 100%;
-    height: 100%;
     position: absolute;
-    top: 0;
-    left: 0;
-    background-image: radial-gradient(circle, currentColor 10%, transparent 10%);
-    background-size: 1000% 1000%;
-    background-position: 50%;
+    top: 50%;
+    left: 50%;
+    width: 160%;
+    height: 160%;
+    background: currentColor;
+    border-radius: 999px;
     pointer-events: none;
-    transition: 512ms;
     opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+    transition:
+        transform 512ms ease-out,
+        opacity 512ms ease-out;
 }
 
 .button:active::before {
-    background-size: 0 0;
-    opacity: 0.3;
-    transition: none;
+    opacity: 0.16;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .button:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--accrnt-color) 48%, transparent);
+    outline: 2px solid var(--accrnt-color);
     outline-offset: 2px;
 }
 
@@ -58,32 +58,35 @@
     border-radius: 40px;
     height: 40px;
     width: 40px;
+    color: var(--color, var(--accrnt-color, var(--primary-fg)));
 }
 
 .text {
     background: transparent;
     box-shadow: none;
-    color: var(--color, var(--accrnt-color));
+    color: var(--color, var(--accrnt-color, var(--primary-fg)));
     padding: 0 16px;
 }
 
 .filled {
-    background-color: var(--bg, var(--bg-raised));
-    color: var(--fg-primary);
+    color: white;
+    background-color: var(--bg, var(--accrnt-color));
     height: var(--height);
-    padding: 0 16px;
     width: var(--width);
+    padding: 0 16px;
 }
-
+.filled:disabled {
+    background-color: var(--secondary-bg);
+}
 .outlined {
+    color: var(--color, var(--accrnt-color, var(--primary-fg)));
     background: transparent;
-    border: 2px solid var(--bg, var(--color, var(--fg-secondary)));
+    border: 2px solid var(--color, var(--accrnt-color));
     box-shadow: none;
-    color: var(--color, var(--fg-primary));
     height: var(--height);
-    padding: 0 16px;
     width: var(--width);
+    padding: 0 16px;
 }
 .outlined:disabled {
-    border-color: var(--disabled-color);
+    border-color: var(--secondary-bg);
 }

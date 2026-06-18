@@ -14,8 +14,8 @@
     display: flex;
     position: relative;
     z-index: 100;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    background-color: var(--bg-raised);
+    box-shadow: 0 2px 4px var(--primary-bg);
+    background-color: var(--secondary-bg);
     transition-duration: 512ms;
 }
 
@@ -41,7 +41,8 @@
     bottom: 0;
     left: calc(100% / var(--count) * var(--index, 0));
     width: calc(100% / var(--count));
-    background-color: color-mix(in srgb, var(--accrnt-color) 12%, transparent);
+    background-color: var(--accrnt-color);
+    opacity: 0.12;
     transition:
         left 512ms ease,
         width 512ms ease;
@@ -54,7 +55,7 @@
     justify-content: center;
     gap: 6px;
     transition-duration: 512ms;
-    color: var(--fg-primary);
+    color: var(--primary-fg);
     cursor: pointer;
 }
 

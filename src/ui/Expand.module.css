@@ -10,7 +10,7 @@
         justify-content: space-between;
         align-items: center;
         color: var(--color);
-        background-color: var(--bg-base);
+        background-color: var(--secondary-bg);
         transition-duration: 512ms;
 
         >:last-child {
@@ -27,7 +27,7 @@
     &.active {
         >nav {
             background-color: var(--accrnt-color);
-            --color: white;
+            --color: var(--secondary-bg);
 
             >:last-child {
                 transform: rotate(90deg);
@@ -35,7 +35,7 @@
         }
 
         >main {
-            background-color: var(--bg-base);
+            background-color: var(--secondary-bg);
             animation-name: open;
         }
     }

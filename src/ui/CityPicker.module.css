@@ -11,16 +11,16 @@
            align-items: center;
 
            >div {
-               background-color: var(--bg-base);
+               background-color: var(--secondary-bg);
 
                &:last-of-type {
-                   color: white;
+                   color: var(--secondary-bg);
                    background-color: var(--accrnt-color);
                }
            }
 
            >span {
-               color: var(--fg-secondary);
+               color: var(--secondary-fg);
                font-size: smaller;
            }
        }
@@ -33,7 +33,7 @@
            scroll-snap-type: y mandatory;
 
            >div {
-               background-color: var(--bg-base);
+               background-color: var(--secondary-bg);
                margin-bottom: 4px;
                display: flex;
                justify-content: space-between;

@@ -21,3 +21,9 @@ test("demo build excludes the TypeScript compiler runtime from browser chunks", 
     expect(source.includes("SemanticDiagnosticsBuilderProgram")).toBe(false);
   }
 });
+
+test("theme demo keeps the disabled swatch readable against the disabled background", async () => {
+  const source = await Bun.file(join(import.meta.dir, "..", "demo", "src", "pages", "ThemePage.tsx")).text();
+
+  expect(source).toContain('background: "var(--disabled-color)", color: "var(--primary-fg)"');
+});

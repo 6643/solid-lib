@@ -9,12 +9,12 @@
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: var(--fg-primary);
+  color: var(--primary-fg);
 }
 
 .desc {
   font-size: 14px;
-  color: var(--fg-secondary);
+  color: var(--secondary-fg);
   margin-bottom: 24px;
 }
 
@@ -28,7 +28,7 @@
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: var(--fg-primary);
+  color: var(--primary-fg);
 }
 
 .subTitle {
@@ -36,12 +36,12 @@
   font-weight: 500;
   margin-top: 16px;
   margin-bottom: 8px;
-  color: var(--fg-secondary);
+  color: var(--secondary-fg);
 }
 
 .note {
   font-size: 12px;
-  color: var(--fg-secondary);
+  color: var(--secondary-fg);
   margin-top: 8px;
 }
 
@@ -57,7 +57,7 @@
 
 .expandContent {
   padding: 12px;
-  background: var(--bg-inset);
+  background: var(--inset-bg);
   border-radius: 8px;
   margin: 8px 0;
 }
@@ -77,7 +77,7 @@
 
 .modalContent p {
   margin-bottom: 16px;
-  color: var(--fg-secondary);
+  color: var(--secondary-fg);
 }
 
 .tabPanel {
@@ -91,7 +91,7 @@
 }
 
 .tabPanel p {
-  color: var(--fg-secondary);
+  color: var(--secondary-fg);
   margin-bottom: 12px;
 }
 
@@ -100,7 +100,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 12px;
-  border-bottom: 1px solid var(--bg-inset);
+  border-bottom: 1px solid var(--inset-bg);
 }
 
 .listItem strong {
@@ -110,7 +110,7 @@
 
 .listItem span {
   font-size: 12px;
-  color: var(--fg-secondary);
+  color: var(--secondary-fg);
 }
 
 .sortItem {
@@ -122,12 +122,12 @@
 
 .sortItemId {
   font-size: 12px;
-  color: var(--fg-secondary);
+  color: var(--secondary-fg);
   font-weight: 500;
 }
 
 .codeBlock {
-  background: var(--bg-inset);
+  background: var(--inset-bg);
   padding: 12px;
   border-radius: 8px;
   overflow-x: auto;
@@ -136,7 +136,7 @@
 .codeBlock pre {
   font-family: monospace;
   font-size: 12px;
-  color: var(--fg-primary);
+  color: var(--primary-fg);
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -146,7 +146,7 @@
   top: 100%;
   left: 0;
   margin-top: 8px;
-  background: var(--bg-raised);
+  background: var(--raised-bg);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 8px;
@@ -162,11 +162,11 @@
 }
 
 .dropdown p:hover {
-  background: var(--bg-inset);
+  background: var(--inset-bg);
 }
 
 .resizeBox {
-  background: var(--bg-inset);
+  background: var(--inset-bg);
   padding: 16px;
   border-radius: 8px;
   resize: both;
@@ -180,7 +180,7 @@
 }
 
 .visBox {
-  background: var(--bg-inset);
+  background: var(--inset-bg);
   padding: 16px;
   border-radius: 8px;
   min-height: 100px;
@@ -224,7 +224,7 @@
 /* FlexBox demo */
 .flexDemo {
     height: 80px;
-    background-color: var(--bg-inset);
+    background-color: var(--inset-bg);
     padding: 8px;
     border-radius: 8px;
 }

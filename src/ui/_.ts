@@ -45,6 +45,7 @@ export { CityPicker, initCities } from "./CityPicker";
 export { LoadMore } from "./LoadMore";
 export { Plyr } from "./Plyr";
 export { ThemeSwitch, AccentSelector } from "./Theme";
+export { ThemeToggle, AccentPicker } from "./Theme";
 
 // Hooks & Utils
 export { createDebouncedSignal } from "./createDebouncedSignal";
@@ -67,6 +68,14 @@ export { useResize } from "../use/useResize";
 export { useScrollEnd } from "../use/useScrollEnd";
 export { createStorage } from "../use/createStorage";
 export { initTheme, useTheme, initAccent, useAccent } from "./Theme";
+export {
+    getThemeMode,
+    initializeThemeMode,
+    setThemeMode,
+    setSystemTheme,
+    setLightTheme,
+    setDarkTheme,
+} from "./themeMode.ts";
 export { createThrottle } from "../use/createThrottle";
 export { getChinaTimestamp } from "../use/createTime";
 export { createTry } from "../use/createTry";

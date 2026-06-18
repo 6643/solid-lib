@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - button "🌓 Toggle Dark/Light" [ref=e2] [cursor=pointer]
+  - heading "Background colors" [level=2] [ref=e3]
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: "--page-bg"
+      - generic [ref=e7]: "#dddddd"
+    - generic [ref=e8]:
+      - generic [ref=e9]: "--primary-bg"
+      - generic [ref=e10]: "#cbcbcb"
+    - generic [ref=e11]:
+      - generic [ref=e12]: "--secondary-bg"
+      - generic [ref=e13]: "#fdfdfd"
+  - heading "Foreground colors" [level=2] [ref=e14]
+  - generic [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]: "--primary-fg"
+      - generic [ref=e18]: "#2a2a2a"
+    - generic [ref=e19]:
+      - generic [ref=e20]: "--secondary-fg"
+      - generic [ref=e21]: "#606060"
+  - heading "Components" [level=2] [ref=e22]
+  - generic [ref=e23]: Card (--secondary-bg)
+  - textbox "Input (--primary-bg)" [ref=e25]: hello
+  - generic [ref=e26]:
+    - button "Filled (--secondary-bg)" [ref=e27] [cursor=pointer]
+    - button "Outlined" [ref=e28] [cursor=pointer]
+  - generic [ref=e29]: Surface with --primary-bg, text with --secondary-fg

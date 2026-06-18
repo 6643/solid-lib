@@ -1,34 +1,60 @@
-import { createEffect, createRoot, createSignal, For } from "solid-js";
+import { createSignal, For } from "solid-js";
 import { createStorage } from "../use/createStorage";
 import { IconButton } from "./Button";
 import { icon_palette, icon_light_mode, icon_dark_mode } from "./svgicons";
 import styles from "./Theme.module.css";
+import { getResolvedThemeModeCore, initializeThemeModeCore, setThemeModeCore, type ThemeMode } from "./themeMode.ts";
 
-type Theme = "light" | "dark";
+const [themeMode, setThemeModeSignal] = createSignal<ThemeMode>("system");
+let accentState: ReturnType<typeof createStorage<string>> | undefined;
 
-const [theme, setTheme] = createStorage<Theme>("theme", "light");
-const [accent, setAccent] = createStorage("accent", "teal");
+const applyAccent = (color: string) => {
+    try {
+        globalThis.document?.documentElement?.style?.setProperty("--accrnt-color", color);
+    } catch {}
+};
 
-export const initTheme = () =>
-    createRoot((dispose) => {
-        createEffect(
-            () => theme(),
-            (current) => document.documentElement.setAttribute("theme", current),
-        );
-        return dispose;
-    });
+const getAccentState = () => {
+    accentState ??= createStorage("accent", "teal");
+    return accentState;
+};
 
-export const initAccent = () =>
-    createRoot((dispose) => {
-        createEffect(
-            () => accent(),
-            (color) => document.documentElement.style.setProperty("--accrnt-color", color),
-        );
-        return dispose;
-    });
+export const initTheme = () => {
+    const mode = initializeThemeModeCore();
+    setThemeModeSignal(mode);
+    return mode;
+};
 
-export const useTheme = () => [theme, setTheme] as const;
-export const useAccent = () => [accent, setAccent] as const;
+export const initAccent = () => {
+    const [accent] = getAccentState();
+    const currentAccent = accent();
+    applyAccent(currentAccent);
+    return currentAccent;
+};
+
+export const useTheme = () => [
+    themeMode,
+    (value: ThemeMode | ((prev: ThemeMode) => ThemeMode)) => {
+        const nextMode = typeof value === "function" ? value(themeMode()) : value;
+        const appliedThemeMode = setThemeModeCore(nextMode);
+        setThemeModeSignal(appliedThemeMode);
+        return appliedThemeMode;
+    },
+] as const;
+
+export const useAccent = () => [
+    () => {
+        const [accent] = getAccentState();
+        return accent();
+    },
+    (value: string | ((prev: string) => string)) => {
+        const [accent, setAccent] = getAccentState();
+        const nextAccent = typeof value === "function" ? value(accent()) : value;
+        setAccent(nextAccent);
+        applyAccent(nextAccent);
+        return nextAccent;
+    },
+] as const;
 
 const accents = [
     { name: "teal", value: "teal" },
@@ -45,8 +71,11 @@ const themeIcons = { light: icon_light_mode, dark: icon_dark_mode };
 
 export const ThemeSwitch = () => {
     const [theme, setTheme] = useTheme();
-    const toggle = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
-    return <IconButton icon={themeIcons[theme()]} tap={toggle} />;
+    const resolvedTheme = () => getResolvedThemeModeCore();
+    const toggle = () => {
+        setTheme(resolvedTheme() === "dark" ? "light" : "dark");
+    };
+    return <IconButton icon={themeIcons[resolvedTheme()]} tap={toggle} />;
 };
 
 export const AccentSelector = () => {
@@ -65,6 +94,7 @@ export const AccentSelector = () => {
                 <For each={accents}>
                     {(item) => (
                         <button
+                            type="button"
                             onClick={() => setAccent(item.value)}
                             title={item.name}
                             class={`${styles.swatch} ${accent() === item.value ? styles.selected : ""}`}
@@ -76,3 +106,6 @@ export const AccentSelector = () => {
         </div>
     );
 };
+
+export const ThemeToggle = ThemeSwitch;
+export const AccentPicker = AccentSelector;

@@ -1,0 +1,58 @@
+- generic [ref=e3]:
+  - main [ref=e1000]:
+    - generic [ref=e1001]:
+      - heading "主题设置" [level=1] [ref=e1002]
+      - paragraph [ref=e1003]: 切换亮暗模式，选择强调色
+      - generic [ref=e1004]:
+        - heading "亮暗模式" [level=2] [ref=e1005]
+        - generic [ref=e1006]:
+          - button [ref=e1007] [cursor=pointer]:
+            - img [ref=e1008]
+          - generic [ref=e1010]: 点击切换
+      - generic [ref=e1011]:
+        - heading "强调色" [level=2] [ref=e1012]
+        - button [ref=e1015] [cursor=pointer]:
+          - img [ref=e1016]
+      - generic [ref=e1018]:
+        - heading "组件预览" [level=2] [ref=e1019]
+        - generic [ref=e1020]:
+          - generic [ref=e1021]:
+            - button "强调按钮" [ref=e1022] [cursor=pointer]:
+              - generic [ref=e1023]: 强调按钮
+            - button "描边按钮" [ref=e1024] [cursor=pointer]:
+              - generic [ref=e1025]: 描边按钮
+            - button "文字按钮" [ref=e1026] [cursor=pointer]:
+              - generic [ref=e1027]: 文字按钮
+          - generic [ref=e1028]:
+            - generic [ref=e1030]: 输入框
+            - textbox "输入框" [ref=e1033]:
+              - /placeholder: " "
+              - text: 示例文本
+          - generic [ref=e1034]:
+            - button [ref=e1035] [cursor=pointer]:
+              - img [ref=e1036]
+            - main [ref=e1038]:
+              - generic [ref=e1039]: "5"
+              - generic [ref=e1040]: "4"
+              - generic [ref=e1041]: "4"
+            - main [ref=e1042]:
+              - generic [ref=e1043]: "3"
+              - generic [ref=e1044]: "2"
+              - generic [ref=e1045]: "2"
+            - button [ref=e1046] [cursor=pointer]:
+              - img [ref=e1047]
+      - generic [ref=e1049]:
+        - heading "色彩层级" [level=2] [ref=e1050]
+        - generic [ref=e1051]:
+          - generic [ref=e1052]: page — 页面背景
+          - generic [ref=e1053]: base — 卡片、容器
+          - generic [ref=e1054]: raised — 按钮、凸起
+          - generic [ref=e1055]: inset — 输入框、凹陷
+          - generic [ref=e1056]: disabled — 禁用状态
+  - navigation [ref=e133]:
+    - img [ref=e135] [cursor=pointer]
+    - img [ref=e138] [cursor=pointer]
+    - img [ref=e141] [cursor=pointer]
+    - img [ref=e144] [cursor=pointer]
+    - img [ref=e147] [cursor=pointer]
+    - img [ref=e150] [cursor=pointer]

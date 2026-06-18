@@ -14,7 +14,7 @@
     display: grid;
     grid-auto-rows: 48px;
     gap: 4px;
-    background-color: var(--bg-raised);
+    background-color: var(--secondary-bg);
     box-shadow: 4px 0 4px -4px var(--disabled-color);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -48,7 +48,8 @@
     right: 0;
     top: calc(1px * var(--top, 0));
     height: calc(1px * var(--height, 48));
-    background-color: color-mix(in srgb, var(--accrnt-color) 12%, transparent);
+    background-color: var(--accrnt-color);
+    opacity: 0.12;
     transition:
         top 512ms ease,
         height 512ms ease;
@@ -60,13 +61,13 @@
     align-items: center;
     justify-content: center;
     transition-duration: 512ms;
-    color: var(--fg-primary);
+    color: var(--primary-fg);
     cursor: pointer;
 }
 
 .navTab > nav > div.active {
     color: var(--accrnt-color);
-    background-color: var(--bg-raised);
+    background-color: var(--secondary-bg);
 }
 
 /* 内容区 */

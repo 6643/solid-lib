@@ -1,0 +1,58 @@
+- generic [ref=e3]:
+  - main [ref=e335]:
+    - generic [ref=e336]:
+      - heading "主题设置" [level=1] [ref=e337]
+      - paragraph [ref=e338]: 切换亮暗模式，选择强调色
+      - generic [ref=e339]:
+        - heading "亮暗模式" [level=2] [ref=e340]
+        - generic [ref=e341]:
+          - button [ref=e342] [cursor=pointer]:
+            - img [ref=e343]
+          - generic [ref=e345]: 点击切换
+      - generic [ref=e346]:
+        - heading "强调色" [level=2] [ref=e347]
+        - button [ref=e350] [cursor=pointer]:
+          - img [ref=e351]
+      - generic [ref=e353]:
+        - heading "组件预览" [level=2] [ref=e354]
+        - generic [ref=e355]:
+          - generic [ref=e356]:
+            - button "强调按钮" [ref=e357] [cursor=pointer]:
+              - generic [ref=e358]: 强调按钮
+            - button "描边按钮" [ref=e359] [cursor=pointer]:
+              - generic [ref=e360]: 描边按钮
+            - button "文字按钮" [ref=e361] [cursor=pointer]:
+              - generic [ref=e362]: 文字按钮
+          - generic [ref=e363]:
+            - generic [ref=e365]: 输入框
+            - textbox "输入框" [ref=e368]:
+              - /placeholder: " "
+              - text: 示例文本
+          - generic [ref=e369]:
+            - button [ref=e370] [cursor=pointer]:
+              - img [ref=e371]
+            - main [ref=e373]:
+              - generic [ref=e374]: "5"
+              - generic [ref=e375]: "4"
+              - generic [ref=e376]: "4"
+            - main [ref=e377]:
+              - generic [ref=e378]: "3"
+              - generic [ref=e379]: "2"
+              - generic [ref=e380]: "2"
+            - button [ref=e381] [cursor=pointer]:
+              - img [ref=e382]
+      - generic [ref=e384]:
+        - heading "色彩层级" [level=2] [ref=e385]
+        - generic [ref=e386]:
+          - generic [ref=e387]: page — 页面背景
+          - generic [ref=e388]: base — 卡片、容器
+          - generic [ref=e389]: raised — 按钮、凸起
+          - generic [ref=e390]: inset — 输入框、凹陷
+          - generic [ref=e391]: disabled — 禁用状态
+  - navigation [ref=e133]:
+    - img [ref=e135] [cursor=pointer]
+    - img [ref=e138] [cursor=pointer]
+    - img [ref=e141] [cursor=pointer]
+    - img [ref=e144] [cursor=pointer]
+    - img [ref=e147] [cursor=pointer]
+    - img [ref=e150] [cursor=pointer]

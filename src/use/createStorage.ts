@@ -1,4 +1,4 @@
-import { createSignal, onSettled, untrack } from "solid-js";
+import { createSignal, untrack } from "solid-js";
 
 /**
  * A reactive hook that persists a signal value in localStorage.
@@ -11,22 +11,20 @@ export const createStorage = <T>(
     key: string,
     defaultValue: T | (() => T),
 ): [() => T, (value: T | ((prev: T) => T)) => void] => {
-    const initial = untrack(() =>
-        typeof defaultValue === "function" ? (defaultValue as () => T)() : defaultValue
-    );
-
-    const [value, setValue] = createSignal(initial as Exclude<T, Function>);
-
-    onSettled(() => {
+    const initial = untrack(() => {
         try {
             const stored = localStorage.getItem(key);
             if (stored !== null) {
-                setValue(() => JSON.parse(stored));
+                return JSON.parse(stored) as T;
             }
         } catch {
-            // ignore parse errors
+            // ignore storage and parse errors
         }
+
+        return typeof defaultValue === "function" ? (defaultValue as () => T)() : defaultValue;
     });
+
+    const [value, setValue] = createSignal(initial as Exclude<T, Function>);
 
     const setter = (input: T | ((prev: T) => T)) => {
         setValue((prev) => {

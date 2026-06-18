@@ -29,7 +29,7 @@
     }
 
     >span {
-        color: var(--fg-secondary);
+        color: var(--secondary-fg);
     }
 }
 
