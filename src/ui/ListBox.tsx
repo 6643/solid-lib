@@ -33,23 +33,18 @@ export const ListBox = <T,>(props: {
         });
     };
 
-    // Initial render
-    createEffect(
-        () => props.index ?? 0,
-        (index) => updateSlice(index),
-    );
-
-    // Re-slice when items change
-    createEffect(
-        () => getItems(),
-        () => updateSlice(0),
-    );
+    // Re-slice when index or items change
+    createEffect(() => {
+        getItems();
+        const index = props.index ?? 0;
+        updateSlice(index);
+    });
 
     // Re-slice when element becomes available
-    createEffect(
-        () => getEl(),
-        (el) => { if (el) updateSlice(0); },
-    );
+    createEffect(() => {
+        const el = getEl();
+        if (el) updateSlice(untrack(() => props.index ?? 0));
+    });
 
     useScrollEnd(getEl, () => {
         const el = untrack(getEl);

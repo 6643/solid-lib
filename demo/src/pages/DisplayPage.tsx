@@ -1,4 +1,4 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, createMemo } from "solid-js";
 import {
   Card,
   FlexBox,
@@ -10,6 +10,8 @@ import {
   ListBox,
   SortListBox,
   SvgIcon,
+  TextInput,
+  NumberInput,
 } from "../../../src/ui/_";
 import { icon_drag_handle, icon_add, icon_remove } from "../../../src/ui/svgicons";
 
@@ -45,6 +47,13 @@ const DisplayPage = () => {
     name: `项目 ${i + 1}`,
     desc: `这是第 ${i + 1} 个项目的描述`,
   }));
+
+  const [listFilter, setListFilter] = createSignal("");
+  const [listIndex, setListIndex] = createSignal(0);
+  const filteredCount = createMemo(() => {
+    const q = listFilter();
+    return q ? listItems.filter((item) => item.name.includes(q)).length : listItems.length;
+  });
 
   return (
     <div class={styles.page}>
@@ -121,8 +130,31 @@ const DisplayPage = () => {
 
       <Card class={styles.card}>
         <h2 class={styles.cardTitle}>ListBox 虚拟列表（1000项）</h2>
+        <FlexBox gap={8} ai="center" wrap="wrap" style={{ "margin-bottom": "8px" }}>
+          <TextInput
+            label="过滤"
+            value={listFilter()}
+            changed={setListFilter}
+          />
+          <NumberInput
+            label="跳转到"
+            value={listIndex()}
+            changed={setListIndex}
+            min={0}
+            max={filteredCount() - 1}
+            step={1}
+          />
+          <span style={{ "font-size": "12px", color: "var(--secondary-fg)", "align-self": "flex-end", "padding-bottom": "8px" }}>
+            共 {filteredCount()} 项
+          </span>
+        </FlexBox>
         <div class={styles.container300}>
-          <ListBox items={listItems} overscan={10}>
+          <ListBox
+            items={listItems}
+            overscan={10}
+            index={listIndex()}
+            filter={listFilter() ? (item) => item.name.includes(listFilter()) : undefined}
+          >
             {(item) => (
               <div class={styles.listItem}>
                 <strong>{item.name}</strong>
