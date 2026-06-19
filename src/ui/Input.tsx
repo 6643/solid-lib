@@ -312,9 +312,9 @@ export const NumberInput = (props: {
 
     const right = (
         <>
-            {props.right?.()}
             <IconButton icon={icon_remove} tap={decrement} />
             <IconButton icon={icon_add} tap={increment} />
+            {props.right?.()}
         </>
     );
 

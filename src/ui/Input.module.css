@@ -3,7 +3,6 @@
 .field {
     display: flex;
     flex-direction: column;
-    gap: 4px;
 }
 
 .field > div:first-child {
@@ -39,7 +38,9 @@
     flex: 1;
     min-width: 0;
 }
-
+.field input {
+    height: 36px;
+}
 .field input,
 .field textarea {
     appearance: none;
@@ -47,7 +48,6 @@
     border: none;
     box-shadow: none;
     outline: 0;
-    padding: 11px 8px;
     width: 100%;
     resize: vertical;
 }
@@ -59,7 +59,7 @@
 }
 
 .field input[type="number"] {
-    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .field input:-webkit-autofill,
