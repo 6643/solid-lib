@@ -34,17 +34,16 @@ export const ListBox = <T,>(props: {
     };
 
     // Re-slice when index or items change
-    createEffect(() => {
-        getItems();
-        const index = props.index ?? 0;
-        updateSlice(index);
-    });
+    createEffect(
+        () => { getItems(); return props.index ?? 0; },
+        (index) => updateSlice(index),
+    );
 
     // Re-slice when element becomes available
-    createEffect(() => {
-        const el = getEl();
-        if (el) updateSlice(untrack(() => props.index ?? 0));
-    });
+    createEffect(
+        () => getEl(),
+        (el) => { if (el) updateSlice(untrack(() => props.index ?? 0)); },
+    );
 
     useScrollEnd(getEl, () => {
         const el = untrack(getEl);
