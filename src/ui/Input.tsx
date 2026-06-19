@@ -1,6 +1,8 @@
 import styles from "./Input.module.css";
 import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
 import type { JSX } from "@solidjs/web";
+import { IconButton } from "./Button";
+import { icon_arrow_drop_down, icon_arrow_drop_up } from "./svgicons";
 
 // ── 公共类型 ──
 
@@ -280,11 +282,41 @@ export const NumberInput = (props: {
         },
     );
 
+    const step = () => props.step ?? 1;
+
+    const clamp = (v: number) => {
+        if (props.min != null && v < props.min) return props.min;
+        if (props.max != null && v > props.max) return props.max;
+        return v;
+    };
+
+    const increment = () => {
+        if (!props.changed) return;
+        const v = clamp(value() + step());
+        setValue(v);
+        props.changed(v);
+    };
+
+    const decrement = () => {
+        if (!props.changed) return;
+        const v = clamp(value() - step());
+        setValue(v);
+        props.changed(v);
+    };
+
     const onInput = (e: Event) => {
         const v = (e.target as HTMLInputElement).valueAsNumber;
         setValue(v);
         props.changed?.(v);
     };
+
+    const right = (
+        <>
+            {props.right?.()}
+            <IconButton icon={icon_arrow_drop_up} tap={increment} />
+            <IconButton icon={icon_arrow_drop_down} tap={decrement} />
+        </>
+    );
 
     return (
         <Input
@@ -292,7 +324,7 @@ export const NumberInput = (props: {
             value={String(props.value ?? 0)}
             validate={props.validate}
             left={props.left}
-            right={props.right}
+            right={() => right}
         >
             <input
                 type="number"

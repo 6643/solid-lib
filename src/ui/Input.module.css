@@ -52,6 +52,16 @@
     resize: vertical;
 }
 
+.field input[type="number"]::-webkit-inner-spin-button,
+.field input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.field input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 .field input:-webkit-autofill,
 .field textarea:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px var(--secondary-bg) inset;
