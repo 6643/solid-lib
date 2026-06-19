@@ -2,7 +2,7 @@ import styles from "./Input.module.css";
 import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { IconButton } from "./Button";
-import { icon_arrow_drop_down, icon_arrow_drop_up } from "./svgicons";
+import { icon_add, icon_remove } from "./svgicons";
 
 // ── 公共类型 ──
 
@@ -313,8 +313,8 @@ export const NumberInput = (props: {
     const right = (
         <>
             {props.right?.()}
-            <IconButton icon={icon_arrow_drop_up} tap={increment} />
-            <IconButton icon={icon_arrow_drop_down} tap={decrement} />
+            <IconButton icon={icon_remove} tap={decrement} />
+            <IconButton icon={icon_add} tap={increment} />
         </>
     );
 
