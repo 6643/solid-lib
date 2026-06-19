@@ -1,7 +1,7 @@
 import "../../src/ui/_.css";
 
 import { MenuTab, NavTab, TopTab, BottomTab, initTheme, initAccent } from "../../src/ui/_";
-import { icon_dashboard, icon_edit, icon_grid_view, icon_code, icon_check, icon_palette } from "../../src/ui/svgicons";
+import { icon_dashboard, icon_edit, icon_grid_view, icon_list, icon_code, icon_check, icon_palette } from "../../src/ui/svgicons";
 
 import ButtonsPage from "./pages/ButtonsPage";
 import InputsPage from "./pages/InputsPage";
@@ -24,6 +24,7 @@ const App = () => {
                 { icon: icon_dashboard, panel: () => <ButtonsPage /> },
                 { icon: icon_edit, panel: () => <InputsPage /> },
                 { icon: icon_grid_view, panel: () => <LayoutPage /> },
+                { icon: icon_list, panel: () => <DisplayPage /> },
                 { icon: icon_code, panel: () => <HooksPage /> },
                 { icon: icon_check, panel: () => <ValidatePage /> },
                 { icon: icon_palette, panel: () => <ThemePage /> },
