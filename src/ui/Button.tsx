@@ -51,6 +51,7 @@ const BaseButton = (props: {
     children: any;
 }) => {
     const [busy, setBusy] = createSignal(false);
+    let btnRef: HTMLButtonElement | undefined;
 
     const handleClick = async () => {
         if (busy()) return;
@@ -60,13 +61,19 @@ const BaseButton = (props: {
         } finally {
             setBusy(false);
         }
+        setTimeout(() => {
+            const target = btnRef?.closest('[class*="inputWrap"]')?.querySelector("input, textarea");
+            if (target) (target as HTMLElement).focus();
+        });
     };
 
     return (
         <button
+            ref={btnRef}
             class={[styles.button, props.mode]}
             disabled={props.disabled || busy()}
             onClick={handleClick}
+            onMouseDown={(e) => e.preventDefault()}
             type="button"
             style={props.style}
         >

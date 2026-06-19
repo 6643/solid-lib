@@ -12,28 +12,28 @@
     --color-grey-850: #303030;
     --color-grey-900: #212121;
 
-    --accent-color: teal; /* 强调色：链接、选中态、焦点边框、品牌按钮 */
-    --error-color: firebrick; /* 错误色：错误提示、校验失败、危险操作按钮 */
-    --disabled-color: #9e9e9e; /* 禁用色：禁用按钮文字、禁用输入框、不可交互元素 */
-    --overlay-color: rgba(0, 0, 0, 0.5); /* 遮罩底色：模态框遮罩、点击反馈波纹层 */
+    --accent-color: teal;
+    --error-color: firebrick;
+    --disabled-color: #9e9e9e;
+    --overlay-color: rgba(0, 0, 0, 0.5);
 
-    --page-bg: #bdbdbd; /* 页面画布底色：整个页面的最底层背景 */
+    --page-bg: #eeeeee;
 
-    --primary-bg: #fafafa; /* 主要表面色：卡片、面板、侧边栏主体背景 */
-    --primary-fg: #000000; /* 主文字色：标题、正文、列表项主要内容 */
+    --primary-bg: #fafafa;
+    --primary-fg: #000000;
 
-    --secondary-bg: #e0e0e0; /* 次级表面色：弹窗、下拉菜单、悬浮卡片、tooltip 背景 */
-    --secondary-fg: #303030; /* 次文字色：辅助说明、标注、时间戳、占位提示 */
+    --secondary-bg: #e0e0e0;
+    --secondary-fg: #303030;
 }
 
 [data-theme-mode="dark"] {
-    --page-bg: #212121; /* 页面画布底色：整个页面的最底层深色背景 */
+    --page-bg: #212121;
 
-    --primary-bg: #303030; /* 主要表面色：卡片、面板、侧边栏主体背景 */
-    --primary-fg: #fafafa; /* 主文字色：标题、正文、列表项主要内容 */
+    --primary-bg: #303030;
+    --primary-fg: #fafafa;
 
-    --secondary-bg: #363636; /* 次级表面色：弹窗、下拉菜单、悬浮卡片、tooltip 背景 */
-    --secondary-fg: #e0e0e0; /* 次文字色：辅助说明、标注、时间戳、占位提示 */
+    --secondary-bg: #363636;
+    --secondary-fg: #e0e0e0;
 }
 
 body {

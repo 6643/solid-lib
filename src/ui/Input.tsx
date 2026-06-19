@@ -2,30 +2,19 @@ import styles from "./Input.module.css";
 import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
 import type { JSX } from "@solidjs/web";
 
-// ── 公共 props ──
+// ── 公共类型 ──
 
 type ValidateResult = string | undefined | Promise<string | undefined>;
 
-interface FieldProps {
-    label: string;
-    value?: string;
-    changed?: (value: string) => void;
-    minLen?: number;
-    maxLen?: number;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
-    validate?: (value: string) => ValidateResult;
-}
-
 // ── 公共字段逻辑 ──
 
-const useField = (props: FieldProps) => {
+const useField = (value: () => string, validate?: (value: string) => ValidateResult) => {
     const [error, setError] = createSignal<string | undefined>();
     const [checking, setChecking] = createSignal(false);
     let seq = 0;
 
     createEffect(
-        () => ({ v: props.value ?? "", validate: props.validate }),
+        () => ({ v: value(), validate }),
         ({ v, validate }) => {
             if (!validate) {
                 setError(undefined);
@@ -55,8 +44,15 @@ const useField = (props: FieldProps) => {
 
 // ── 公共字段包装 ──
 
-const Input = (props: FieldProps & { children: any }) => {
-    const { error, checking } = useField(props);
+const Input = (props: {
+    label: string;
+    value?: string;
+    validate?: (value: string) => ValidateResult;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
+    children: any;
+}) => {
+    const { error, checking } = useField(() => props.value ?? "", props.validate);
 
     return (
         <label class={[styles.field, error() && styles.error]}>
@@ -66,9 +62,7 @@ const Input = (props: FieldProps & { children: any }) => {
             </div>
             <div class={styles.inputWrap}>
                 {props.left?.()}
-                <div class={styles.inputGrow}>
-                    {props.children}
-                </div>
+                <div class={styles.inputGrow}>{props.children}</div>
                 {props.right?.()}
             </div>
         </label>
@@ -129,11 +123,20 @@ export const RangeInput = (props: {
 
 // ── TextInput ──
 
-export const TextInput = (props: FieldProps) => {
+export const TextInput = (props: {
+    label: string;
+    value?: string;
+    changed?: (value: string) => void;
+    minLen?: number;
+    maxLen?: number;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
+    validate?: (value: string) => ValidateResult;
+}) => {
     const value = createMemo(() => props.value ?? "");
 
     return (
-        <Input {...props}>
+        <Input label={props.label} value={props.value} validate={props.validate} left={props.left} right={props.right}>
             <input
                 inputmode="text"
                 value={value()}
@@ -150,33 +153,96 @@ export const TextInput = (props: FieldProps) => {
 
 // ── TextArea ──
 
-export const TextArea = (props: Omit<FieldProps, "left" | "right"> & { row?: number }) => {
-    const row = () => props.row ?? 3;
+export const TextArea = (props: {
+    label: string;
+    value?: string;
+    changed?: (value: string) => void;
+    minLen?: number;
+    maxLen?: number;
+    validate?: (value: string) => ValidateResult;
+    row?: number;
+    lineNumbers?: boolean;
+}) => {
+    const row = () => props.row ?? 5;
+    const lineNumbers = () => props.lineNumbers ?? true;
     const value = createMemo(() => props.value ?? "");
+    let textareaRef: HTMLTextAreaElement | undefined;
+    let lineNumRef: HTMLDivElement | undefined;
+
+    const lineCount = () => {
+        const v = value();
+        return v ? v.split("\n").length : 1;
+    };
+
+    const renderLineNumbers = () => {
+        const el = lineNumRef;
+        if (!el) return;
+        const count = lineCount();
+        let text = "";
+        for (let i = 1; i <= count; i++) text += i + "\n";
+        el.innerText = text;
+    };
+
+    const syncScroll = () => {
+        const ln = lineNumRef;
+        const ta = textareaRef;
+        if (ln && ta) ln.scrollTop = ta.scrollTop;
+    };
+
+    const onInput = (e: InputEvent) => {
+        props.changed?.((e.target as HTMLTextAreaElement).value);
+        renderLineNumbers();
+    };
+
+    createEffect(
+        () => value(),
+        () => renderLineNumbers(),
+    );
+
+    const textarea = (extra: Record<string, unknown>) => (
+        <textarea
+            inputmode="text"
+            value={value()}
+            onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
+            placeholder=" "
+            spellcheck={false}
+            readonly={!props.changed}
+            minlength={props.minLen}
+            maxlength={props.maxLen}
+            rows={row()}
+            {...extra}
+        />
+    );
 
     return (
-        <Input {...props}>
-            <textarea
-                inputmode="text"
-                value={value()}
-                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
-                placeholder=" "
-                spellcheck={false}
-                readonly={!props.changed}
-                minlength={props.minLen}
-                maxlength={props.maxLen}
-                rows={row()}
-            />
+        <Input label={props.label} value={props.value} validate={props.validate}>
+            <Show when={lineNumbers()} fallback={textarea({})}>
+                <div class={styles.editorWrap}>
+                    <div class={styles.lineNumbers} ref={lineNumRef}>
+                        1
+                    </div>
+                    {textarea({ ref: textareaRef, class: styles.editorTextarea, onScroll: syncScroll, onInput })}
+                </div>
+            </Show>
         </Input>
     );
 };
 
 // ── PasswordInput ──
 
-export const PasswordInput = (props: FieldProps) => {
+export const PasswordInput = (props: {
+    label: string;
+    value?: string;
+    changed?: (value: string) => void;
+    minLen?: number;
+    maxLen?: number;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
+    validate?: (value: string) => ValidateResult;
+}) => {
     const value = createMemo(() => props.value ?? "");
     return (
-        <Input {...props}>
+        <Input label={props.label} value={props.value} validate={props.validate} left={props.left} right={props.right}>
             <input
                 type="password"
                 value={value()}
@@ -193,31 +259,41 @@ export const PasswordInput = (props: FieldProps) => {
 
 // ── NumberInput ──
 
-export const NumberInput = (
-    props: FieldProps & {
-        min?: number;
-        max?: number;
-        step?: number;
-        unit?: string;
-    },
-) => {
-    const [value, setValue] = createSignal(untrack(() => props.value) ?? "");
+export const NumberInput = (props: {
+    label: string;
+    value?: number;
+    changed?: (value: number) => void;
+    min?: number;
+    max?: number;
+    step?: number;
+    unit?: string;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
+    validate?: (value: string) => ValidateResult;
+}) => {
+    const [value, setValue] = createSignal(untrack(() => props.value) ?? 0);
 
     createEffect(
-        () => props.value ?? "",
+        () => props.value ?? 0,
         (v) => {
             setValue(v);
         },
     );
 
     const onInput = (e: Event) => {
-        const v = (e.target as HTMLInputElement).value;
+        const v = (e.target as HTMLInputElement).valueAsNumber;
         setValue(v);
         props.changed?.(v);
     };
 
     return (
-        <Input label={props.label} value={props.value} changed={props.changed} validate={props.validate} left={props.left} right={props.right}>
+        <Input
+            label={props.label}
+            value={String(props.value ?? 0)}
+            validate={props.validate}
+            left={props.left}
+            right={props.right}
+        >
             <input
                 type="number"
                 value={value()}
@@ -237,12 +313,24 @@ export const NumberInput = (
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const EmailInput = (props: FieldProps) => {
+export const EmailInput = (props: {
+    label: string;
+    value?: string;
+    changed?: (value: string) => void;
+    minLen?: number;
+    maxLen?: number;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
+    validate?: (value: string) => ValidateResult;
+}) => {
     const value = createMemo(() => props.value ?? "");
     return (
         <Input
-            {...props}
+            label={props.label}
+            value={props.value}
             validate={props.validate ?? ((v: string) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined))}
+            left={props.left}
+            right={props.right}
         >
             <input
                 type="email"
@@ -260,10 +348,20 @@ export const EmailInput = (props: FieldProps) => {
 
 // ── TelInput ──
 
-export const TelInput = (props: FieldProps & { pattern?: string }) => {
+export const TelInput = (props: {
+    label: string;
+    value?: string;
+    changed?: (value: string) => void;
+    minLen?: number;
+    maxLen?: number;
+    left?: () => JSX.Element;
+    right?: () => JSX.Element;
+    validate?: (value: string) => ValidateResult;
+    pattern?: string;
+}) => {
     const value = createMemo(() => props.value ?? "");
     return (
-        <Input {...props}>
+        <Input label={props.label} value={props.value} validate={props.validate} left={props.left} right={props.right}>
             <input
                 type="tel"
                 value={value()}

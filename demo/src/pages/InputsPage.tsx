@@ -22,11 +22,11 @@ const InputsPage = () => {
     const [name, setName] = createSignal("张三");
     const [email, setEmail] = createSignal("");
     const [phone, setPhone] = createSignal("");
-    const [age, setAge] = createSignal("25");
+    const [age, setAge] = createSignal(25);
     const [bio, setBio] = createSignal("这是一段简介文本...");
     const [volume, setVolume] = createSignal(50);
     const [search, setSearch] = createSignal("");
-    const [qty, setQty] = createSignal("1");
+    const [qty, setQty] = createSignal(1);
     const [agree, setAgree] = createSignal(false);
     const [gender, setGender] = createSignal("male");
 
@@ -99,7 +99,14 @@ const InputsPage = () => {
                             min={0}
                             max={150}
                             step={1}
-                            right={() => <IconButton icon={icon_add} />}
+                            right={() => (
+                                <IconButton
+                                    icon={icon_add}
+                                    tap={() => {
+                                        setAge((val) => val + 1);
+                                    }}
+                                />
+                            )}
                         />
                         <NumberInput label="数量" min={0} max={999} step={10} />
                     </FlexBox>
