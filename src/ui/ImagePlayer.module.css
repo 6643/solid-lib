@@ -4,18 +4,18 @@
     margin: 4px 0;
     display: flex;
     flex-wrap: nowrap;
+}
 
-    >div {
-        height: calc(1px * var(--height, 240));
-        animation-duration: calc(1s * var(--duration, 32));
-        animation-name: moveLeft;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear;
+.image_player > div {
+    height: calc(1px * var(--height, 240));
+    animation-duration: calc(1s * var(--duration, 32));
+    animation-name: moveLeft;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
 
-        >img {
-            height: 100%;
-        }
-    }
+.image_player > div > img {
+    height: 100%;
 }
 
 @keyframes moveLeft {

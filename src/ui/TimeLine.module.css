@@ -1,65 +1,58 @@
-.time_line {
+.time_line > main {
+    display: flex;
+}
 
-    >main {
-        display: flex;
+.time_line > main > div {
+    padding-bottom: 8px;
+}
 
-        >div {
-            padding-bottom: 8px;
+.time_line > main > div > span {
+    color: var(--secondary-fg);
+}
 
-            >span {
-                color: var(--secondary-fg);
-            }
-        }
+.time_line > main > span {
+    display: block;
+    width: 9px;
+    margin-right: 8px;
+    position: relative;
+}
 
-        >span {
-            display: block;
-            width: 9px;
-            margin-right: 8px;
-            position: relative;
+.time_line > main > span::before {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 100%;
+    background-color: var(--secondary-bg);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 8px;
+}
 
-            &::before {
-                content: "";
-                display: block;
-                width: 1px;
-                height: 100%;
-                background-color: var(--secondary-bg);
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 8px;
-            }
+.time_line > main > span::after {
+    content: "";
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--accrnt-color);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 8px;
+}
 
-            &::after {
-                content: "";
-                display: block;
-                width: 5px;
-                height: 5px;
-                border-radius: 50%;
-                background-color: var(--accrnt-color);
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 8px;
-            }
-        }
+.time_line > main:last-of-type > span::before {
+    display: none;
+}
 
+.time_line > main:last-of-type > div {
+    display: flex;
+    align-items: center;
+    --color: var(--secondary-fg);
+    color: var(--color);
+}
 
-        &:last-of-type {
-            >span::before {
-                display: none;
-            }
-
-            >div {
-                display: flex;
-                align-items: center;
-                --color: var(--secondary-fg);
-                color: var(--color);
-            }
-        }
-    }
-
-
-    >div {
-        background-color: var(--secondary-bg);
-    }
+.time_line > div {
+    background-color: var(--secondary-bg);
 }

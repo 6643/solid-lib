@@ -1,48 +1,48 @@
-   .CityPicker {
-       display: grid;
-       grid-template-rows: auto 1fr;
+.CityPicker {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
 
-       >nav {
-           user-select: none;
-           padding: 8px;
-           height: 48px;
-           display: flex;
-           gap: 8px;
-           align-items: center;
+.CityPicker > nav {
+    user-select: none;
+    padding: 8px;
+    height: 48px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
 
-           >div {
-               background-color: var(--secondary-bg);
+.CityPicker > nav > div {
+    background-color: var(--secondary-bg);
+}
 
-               &:last-of-type {
-                   color: var(--secondary-bg);
-                   background-color: var(--accrnt-color);
-               }
-           }
+.CityPicker > nav > div:last-of-type {
+    color: var(--secondary-bg);
+    background-color: var(--accrnt-color);
+}
 
-           >span {
-               color: var(--secondary-fg);
-               font-size: smaller;
-           }
-       }
+.CityPicker > nav > span {
+    color: var(--secondary-fg);
+    font-size: smaller;
+}
 
-       >main {
-           user-select: none;
-           outline: none;
-           overflow-y: auto;
-           padding: 8px;
-           scroll-snap-type: y mandatory;
+.CityPicker > main {
+    user-select: none;
+    outline: none;
+    overflow-y: auto;
+    padding: 8px;
+    scroll-snap-type: y mandatory;
+}
 
-           >div {
-               background-color: var(--secondary-bg);
-               margin-bottom: 4px;
-               display: flex;
-               justify-content: space-between;
-               align-items: center;
-               scroll-snap-align: start;
-           }
-       }
+.CityPicker > main > div {
+    background-color: var(--secondary-bg);
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    scroll-snap-align: start;
+}
 
-       div {
-           padding: 8px;
-       }
-   }
+.CityPicker div {
+    padding: 8px;
+}

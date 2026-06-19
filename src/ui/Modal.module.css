@@ -4,10 +4,10 @@
     background-color: rgba(0, 0, 0, 0.5);
     opacity: 0;
     transition: opacity 256ms ease-out;
+}
 
-    &.active {
-        opacity: 1;
-    }
+.backdrop.active {
+    opacity: 1;
 }
 
 .modal {
@@ -20,112 +20,113 @@
     background-color: transparent;
     transition: transform 256ms ease-out, opacity 256ms ease-out;
     opacity: 0;
+}
 
-    &.active {
-        opacity: 1;
+.modal.active {
+    opacity: 1;
+}
+
+.modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 256ms ease-out;
+}
+
+.modal.active::backdrop {
+    opacity: 1;
+}
+
+.modal.filled {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transform: translateY(100%);
+}
+
+@media (orientation: landscape) {
+    .modal.filled {
+        max-width: 100vh;
+        margin: 0 auto;
     }
+}
 
-    &::backdrop {
-        background-color: rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        transition: opacity 256ms ease-out;
+.modal.filled.active {
+    transform: translateY(0);
+}
 
-        &.active {
-            opacity: 1;
-        }
+.modal.bottom {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 62.8%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transform: translateY(100%);
+}
+
+@media (orientation: landscape) {
+    .modal.bottom {
+        max-width: 100vh;
+        margin: 0 auto;
     }
+}
 
-    &.filled {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
-        max-height: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
-        transform: translateY(100%);
+.modal.bottom.active {
+    transform: translateY(0);
+}
 
-        @media (orientation: landscape) {
-            max-width: 100vh;
-            margin: 0 auto;
-        }
+.modal.top {
+    bottom: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 0 0 12px 12px;
+    transform: translateY(-100%);
+}
 
-        &.active {
-            transform: translateY(0);
-        }
-    }
+.modal.top.active {
+    transform: translateY(0);
+}
 
-    &.bottom {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 62.8%;
-        max-width: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
-        transform: translateY(100%);
+.modal.left {
+    right: auto;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    border-radius: 0 12px 12px 0;
+    transform: translateX(-100%);
+}
 
-        @media (orientation: landscape) {
-            max-width: 100vh;
-            margin: 0 auto;
-        }
+.modal.left.active {
+    transform: translateX(0);
+}
 
-        &.active {
-            transform: translateY(0);
-        }
-    }
+.modal.right {
+    left: auto;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    border-radius: 12px 0 0 12px;
+    transform: translateX(100%);
+}
 
-    &.top {
-        bottom: auto;
-        top: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        border-radius: 0 0 12px 12px;
-        transform: translateY(-100%);
+.modal.right.active {
+    transform: translateX(0);
+}
 
-        &.active {
-            transform: translateY(0);
-        }
-    }
+.modal.center {
+    transform: scale(0.9);
+}
 
-
-    &.left {
-        right: auto;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        height: 100%;
-        border-radius: 0 12px 12px 0;
-        transform: translateX(-100%);
-
-        &.active {
-            transform: translateX(0);
-        }
-    }
-
-    &.right {
-        left: auto;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        height: 100%;
-        border-radius: 12px 0 0 12px;
-        transform: translateX(100%);
-
-
-        &.active {
-            transform: translateX(0);
-        }
-    }
-
-    &.center {
-        transform: scale(0.9);
-
-        &.active {
-            transform: scale(1);
-        }
-    }
-
+.modal.center.active {
+    transform: scale(1);
 }
