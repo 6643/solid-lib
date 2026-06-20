@@ -2,7 +2,7 @@ import styles from "./Input.module.css";
 import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { IconButton } from "./Button";
-import { icon_add, icon_remove } from "./svgicons";
+import { icon_add, icon_remove, icon_content_paste } from "./svgicons";
 
 // ── 公共类型 ──
 
@@ -452,5 +452,96 @@ export const RadioButton = (props: {
             />
             <span>{props.label}</span>
         </label>
+    );
+};
+
+// ── CodeInput ──
+
+export const CodeInput = (props: {
+    label: string;
+    length?: number;
+    value?: string;
+    changed?: (value: string) => void;
+    disabled?: boolean;
+    pattern?: RegExp;
+}) => {
+    const len = () => props.length ?? 6;
+    const pattern = () => props.pattern ?? /^\d$/;
+    let inputEl: HTMLInputElement | undefined;
+
+    createEffect(
+        () => props.value,
+        (value) => {
+            const el = inputEl;
+            if (el && value) {
+                requestAnimationFrame(() => el.setSelectionRange(0, 0));
+            }
+        },
+    );
+
+    const handleInput = (e: InputEvent) => {
+        const input = e.target as HTMLInputElement;
+        const current = props.value ?? "";
+
+        if (e.inputType === "deleteContentBackward") {
+            const v = current.slice(0, -1);
+            input.value = v;
+            props.changed?.(v);
+            return;
+        }
+
+        if (e.inputType === "insertText" && e.data) {
+            if (current.length >= len()) return;
+            const ch = [...e.data].find(c => pattern().test(c));
+            if (!ch) return;
+            const result = current + ch;
+            input.value = result;
+            props.changed?.(result);
+            requestAnimationFrame(() => input.setSelectionRange(0, 0));
+            return;
+        }
+
+        if (e.inputType === "insertFromPaste") {
+            const text = input.value;
+            const matched = [...text].filter(c => pattern().test(c)).slice(0, len());
+            const result = matched.join("");
+            input.value = result;
+            props.changed?.(result);
+            requestAnimationFrame(() => input.setSelectionRange(0, 0));
+            return;
+        }
+
+        // 兜底: 其他输入类型, 恢复原值
+        input.value = current;
+    };
+
+    const handlePaste = async () => {
+        const text = await navigator.clipboard.readText();
+        const matched = [...text].filter(c => pattern().test(c)).slice(0, len());
+        props.changed?.(matched.join(""));
+    };
+
+    const right = <IconButton icon={icon_content_paste} tap={handlePaste} disabled={props.disabled} />;
+
+    return (
+        <Input label={props.label} right={() => right}>
+            <input
+                ref={(el: HTMLInputElement) => { inputEl = el; }}
+                class={styles.codeInput}
+                type="text"
+                inputmode="numeric"
+                maxlength={len()}
+                value={props.value ?? ""}
+                onInput={handleInput}
+                onPointerUp={(e: PointerEvent) => {
+                    const input = e.currentTarget as HTMLInputElement;
+                    requestAnimationFrame(() => input.setSelectionRange(0, 0));
+                }}
+                disabled={props.disabled}
+                autocomplete="one-time-code"
+                spellcheck={false}
+                style={{ "--len": len() } as any}
+            />
+        </Input>
     );
 };

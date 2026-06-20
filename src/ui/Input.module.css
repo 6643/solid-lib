@@ -16,11 +16,11 @@
     align-items: center;
     gap: 4px;
     width: 100%;
-    background: var(--secondary-bg);
+    height: 40px;
+    background: var(--base-bg);
 
     border: 2px solid transparent;
     border-radius: 3px;
-    padding: 0 6px;
     transition: border-color 160ms ease;
 }
 
@@ -184,6 +184,31 @@
     border: 2px solid var(--secondary-fg);
     border-radius: 3px;
     transition: border-color 160ms ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.checkBtn::before,
+.radioBtn::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: radial-gradient(circle, currentColor 10%, transparent 10%);
+    background-size: 1000% 1000%;
+    background-position: 50%;
+    pointer-events: none;
+    transition: 512ms;
+    opacity: 0;
+}
+
+.checkBtn:active::before,
+.radioBtn:active::before {
+    background-size: 0 0;
+    opacity: 0.28;
+    transition: none;
 }
 
 .checkBtn input,
@@ -220,4 +245,52 @@
 .checkBtn:has(input:disabled) span,
 .radioBtn:has(input:disabled) span {
     color: var(--disabled-color);
+}
+
+/* ── CodeInput ── */
+
+input.codeInput {
+    --slot: 40px;
+    --gap: 2px;
+    appearance: none;
+    border: none;
+    background-image: repeating-linear-gradient(
+        90deg,
+        var(--disabled-color) 0px,
+        var(--disabled-color) 1px,
+        transparent 1px,
+        transparent 40px
+    );
+    background-size: calc((var(--len) - 1) * var(--slot)) 24px;
+    background-position: var(--slot) 6px;
+    background-repeat: no-repeat;
+    color: var(--primary-fg);
+    font-family: monospace;
+    font-style: italic;
+    height: 36px;
+    letter-spacing: calc(var(--slot) - 1ch);
+    outline: none;
+    caret-color: var(--accrnt-color);
+    text-indent: calc((var(--slot) - 1ch) / 2);
+    text-align: left;
+    width: calc(var(--len) * var(--slot) + var(--slot) - 1ch);
+}
+
+.codeInput:focus {
+    border-color: var(--accrnt-color);
+}
+
+.codeInput::selection {
+    background-color: transparent;
+    color: inherit;
+}
+.codeInput::-moz-selection {
+    background-color: transparent;
+    color: inherit;
+}
+
+.codeInput:disabled {
+    color: var(--disabled-color);
+    border-color: var(--disabled-color);
+    cursor: not-allowed;
 }

@@ -12,6 +12,7 @@ import {
   SvgIcon,
   TextInput,
   NumberInput,
+  CodeInput,
 } from "../../../src/ui/_";
 import { icon_drag_handle, icon_add, icon_remove } from "../../../src/ui/svgicons";
 
@@ -48,6 +49,8 @@ const DisplayPage = () => {
     desc: `这是第 ${i + 1} 个项目的描述`,
   }));
 
+  const [code4, setCode4] = createSignal("");
+  const [code6, setCode6] = createSignal("");
   const [listFilter, setListFilter] = createSignal("");
   const [listIndex, setListIndex] = createSignal(0);
   const filteredCount = createMemo(() => {
@@ -178,6 +181,30 @@ const DisplayPage = () => {
           )}
         />
       </Card>
+
+      <FlexBox gap={16} wrap="wrap">
+        <Card class={styles.card}>
+          <h2 class={styles.cardTitle}>CodeInput 验证码（4位）</h2>
+          <CodeInput
+            label="短信验证码"
+            length={4}
+            value={code4()}
+            changed={setCode4}
+          />
+          <p class={styles.note}>当前值: {code4() || "（未输入）"}</p>
+        </Card>
+
+        <Card class={styles.card}>
+          <h2 class={styles.cardTitle}>CodeInput 验证码（6位）</h2>
+          <CodeInput
+            label="邮箱验证码"
+            length={6}
+            value={code6()}
+            changed={setCode6}
+          />
+          <p class={styles.note}>当前值: {code6() || "（未输入）"}</p>
+        </Card>
+      </FlexBox>
     </div>
   );
 };

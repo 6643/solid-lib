@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 2px;
     user-select: none;
-    background-color: var(--secondary-bg);
+    background-color: var(--base-bg);
 }
 
 .sort_list_box > .listItem {

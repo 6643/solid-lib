@@ -10,7 +10,7 @@ export {
     type OutlinedButtonProps,
     type TextButtonProps,
 } from "./Button";
-export { RangeInput, TextInput, TextArea, PasswordInput, NumberInput, EmailInput, TelInput, CheckButton, RadioButton } from "./Input";
+export { RangeInput, TextInput, TextArea, PasswordInput, NumberInput, EmailInput, TelInput, CheckButton, RadioButton, CodeInput } from "./Input";
 
 // Layout
 export { Block } from "./Box";

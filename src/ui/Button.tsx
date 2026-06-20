@@ -73,7 +73,7 @@ const BaseButton = (props: {
             class={[styles.button, props.mode]}
             disabled={props.disabled || busy()}
             onClick={handleClick}
-            onMouseDown={(e) => e.preventDefault()}
+            onMouseDown={(e: Event) => e.preventDefault()}
             type="button"
             style={props.style}
         >
@@ -82,12 +82,7 @@ const BaseButton = (props: {
     );
 };
 
-export type IconButtonProps = {
-    color?: string;
-    icon: string;
-    tap?: ButtonTapHandler;
-    disabled?: boolean;
-};
+export type IconButtonProps = { color?: string; icon: string; tap?: ButtonTapHandler; disabled?: boolean };
 
 export const IconButton = (props: IconButtonProps) => (
     <BaseButton
