@@ -102,22 +102,10 @@ export const ListBox = <T,>(props: {
         },
     )
 
-    const getSliceRows = createMemo(() => {
-        const s = start()
-        const slice = getSlice()
-        return slice.map((item, i) => ({ item, dataIndex: s + i }))
-    })
-
-    const getRenderedRows = createMemo(() => {
-        const rows = getSliceRows()
-        const renderFn = props.children
-        return rows.map(r => ({ index: r.dataIndex, content: renderFn(r.item, r.dataIndex) }))
-    })
-
     createEffect(
         () => {
             const el = getEl()
-            getSliceRows()
+            getSlice()
             const viewport = el?.children[0]?.children[0] as HTMLElement | undefined
             const heights = getHeights()
             return { viewport, heights }
@@ -147,8 +135,11 @@ export const ListBox = <T,>(props: {
     return <div class={styles.listBox} ref={setEl} onScroll={handleScroll}>
         <div class={styles.inner} style={{ height: getTotalHeight() + "px" }}>
             <div class={styles.viewport} style={{ transform: "translateY(" + getOffset() + "px)" }}>
-                <For each={getRenderedRows()}>
-                    {(row) => <div data-index={row.index}>{row.content}</div>}
+                <For each={getSlice()}>
+                    {(item, i) => {
+                        const index = untrack(() => start() + i())
+                        return <div data-index={index}>{props.children(item, index)}</div>
+                    }}
                 </For>
             </div>
         </div>
