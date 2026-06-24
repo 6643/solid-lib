@@ -1,7 +1,7 @@
 .stack_box {
     width: inf;
     height: calc(1px * var(--height, 160));
-    background: var(--bg, var(--accrnt-color));
+    background: var(--bg, var(--accent-color));
     display: grid;
     place-items: center;
     position: relative;

@@ -32,7 +32,7 @@
     top: calc(68px * var(--top, 0) / 68);
     width: 2px;
     height: 64px;
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     transition: top 512ms ease;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .leftTab > nav > div.active {
-    color: var(--accrnt-color);
+    color: var(--accent-color);
 }
 
 /* 内容区 */

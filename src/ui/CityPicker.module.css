@@ -18,7 +18,7 @@
 
 .CityPicker > nav > div:last-of-type {
     color: var(--secondary-bg);
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
 }
 
 .CityPicker > nav > span {

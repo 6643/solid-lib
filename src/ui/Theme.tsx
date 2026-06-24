@@ -10,7 +10,7 @@ let accentState: ReturnType<typeof createStorage<string>> | undefined;
 
 const applyAccent = (color: string) => {
     try {
-        globalThis.document?.documentElement?.style?.setProperty("--accrnt-color", color);
+        globalThis.document?.documentElement?.style?.setProperty("--accent-color", color);
     } catch {}
 };
 

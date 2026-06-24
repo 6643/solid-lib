@@ -49,14 +49,6 @@ export const initCities = async (path: string) => {
     setCities(citys);
 };
 
-const getChilds = (code: number): City[] => {
-    const citys = getCities();
-    const _citys = citys.filter(({ parent }) => parent == code);
-    if (_citys.length > 0) return _citys;
-    const city = citys.find((city) => city.code == code);
-    return citys.filter(({ parent }) => parent == (city?.parent ?? 0));
-};
-
 const getCity = (code: number): City[] => {
     const citys = getCities();
     const c = citys.find((city) => city.code == code);

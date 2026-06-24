@@ -42,8 +42,8 @@
 }
 
 @keyframes breathe {
-    0%, 100% { box-shadow: inset 0 0 0 2px var(--accrnt-color); }
-    50% { box-shadow: inset 0 0 6px 2px var(--accrnt-color); }
+    0%, 100% { box-shadow: inset 0 0 0 2px var(--accent-color); }
+    50% { box-shadow: inset 0 0 6px 2px var(--accent-color); }
 }
 
 .button:focus-visible {
@@ -62,19 +62,19 @@
     border-radius: 40px;
     height: 40px;
     width: 40px;
-    color: var(--color, var(--accrnt-color, var(--primary-fg)));
+    color: var(--color, var(--accent-color, var(--primary-fg)));
 }
 
 .text {
     background: transparent;
     box-shadow: none;
-    color: var(--color, var(--accrnt-color, var(--primary-fg)));
+    color: var(--color, var(--accent-color, var(--primary-fg)));
     padding: 0 16px;
 }
 
 .filled {
     color: white;
-    background-color: var(--bg, var(--accrnt-color));
+    background-color: var(--bg, var(--accent-color));
     height: var(--height);
     width: var(--width);
     padding: 0 16px;
@@ -83,9 +83,9 @@
     background-color: var(--secondary-bg);
 }
 .outlined {
-    color: var(--color, var(--accrnt-color, var(--primary-fg)));
+    color: var(--color, var(--accent-color, var(--primary-fg)));
     background: transparent;
-    border: 2px solid var(--color, var(--accrnt-color));
+    border: 2px solid var(--color, var(--accent-color));
     box-shadow: none;
     height: var(--height);
     width: var(--width);

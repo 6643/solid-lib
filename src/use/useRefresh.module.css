@@ -14,7 +14,7 @@
          position: absolute;
          top: 0;
          width: 2px;
-         background: linear-gradient(to bottom, transparent, var(--accrnt-color));
+         background: linear-gradient(to bottom, transparent, var(--accent-color));
 
          height: 0;
          opacity: 0;

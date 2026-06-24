@@ -18,13 +18,13 @@
     transition-duration: 512ms;
 }
 
-.expand > main {
+.expand > div {
     padding: 8px;
     animation-duration: 512ms;
 }
 
 .expand.active > nav {
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     --color: var(--secondary-bg);
 }
 
@@ -32,12 +32,12 @@
     transform: rotate(90deg);
 }
 
-.expand.active > main {
+.expand.active > div {
     background-color: var(--secondary-bg);
     animation-name: open;
 }
 
-.expand:not(.active) > main {
+.expand:not(.active) > div {
     animation-name: close;
 }
 

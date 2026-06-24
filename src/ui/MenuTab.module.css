@@ -48,7 +48,7 @@
 }
 
 .navList > div.active {
-    color: var(--accrnt-color);
+    color: var(--accent-color);
 }
 
 /* 线条指示器 */
@@ -59,7 +59,7 @@
     left: calc(1px * var(--left, 0));
     width: calc(1px * var(--width, 0));
     height: 2px;
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     transition:
         left 512ms ease,
         width 512ms ease;
@@ -72,7 +72,7 @@
     bottom: 0;
     left: calc(1px * var(--left, 0));
     width: calc(1px * var(--width, 0));
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     opacity: 0.12;
     transition:
         left 512ms ease,

@@ -33,7 +33,7 @@
     top: calc(1px * var(--top, 0));
     width: 2px;
     height: calc(1px * var(--height, 48));
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     z-index: 1;
     transition:
         top 512ms ease,
@@ -48,7 +48,7 @@
     right: 0;
     top: calc(1px * var(--top, 0));
     height: calc(1px * var(--height, 48));
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     opacity: 0.12;
     transition:
         top 512ms ease,
@@ -66,7 +66,7 @@
 }
 
 .navTab > nav > div.active {
-    color: var(--accrnt-color);
+    color: var(--accent-color);
     background-color: var(--secondary-bg);
 }
 

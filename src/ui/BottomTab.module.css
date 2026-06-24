@@ -44,7 +44,7 @@
     z-index: 0;
     --svg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'><path d='M62 10.619a16 16 0 0 1 16 0l39.426 22.762a16 16 0 0 1 8 13.856v45.525a16 16 0 0 1-8 13.856L78 129.381a16 16 0 0 1-16 0l-39.426-22.762a16 16 0 0 1-8-13.856V47.238a16 16 0 0 1 8-13.856' /></svg>");
     mask: var(--svg) no-repeat center;
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     opacity: 0.2;
     transform: rotate(calc(var(--spin, 0) * 360deg));
     transition:
@@ -61,7 +61,7 @@
     width: calc(100% / var(--len));
     height: 2px;
     z-index: 2;
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     transition: left 512ms linear;
 }
 
@@ -77,7 +77,7 @@
 }
 
 .bottomTab > nav > div.active {
-    color: var(--accrnt-color);
+    color: var(--accent-color);
 }
 
 @keyframes moveLeft {

@@ -27,7 +27,7 @@
     left: calc(100% / var(--count) * var(--index, 0));
     width: calc(100% / var(--count));
     height: 2px;
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     transition:
         left 512ms ease,
         width 512ms ease;
@@ -41,7 +41,7 @@
     bottom: 0;
     left: calc(100% / var(--count) * var(--index, 0));
     width: calc(100% / var(--count));
-    background-color: var(--accrnt-color);
+    background-color: var(--accent-color);
     opacity: 0.12;
     transition:
         left 512ms ease,
@@ -60,7 +60,7 @@
 }
 
 .topTab > nav > div.active {
-    color: var(--accrnt-color);
+    color: var(--accent-color);
 }
 
 /* 内容区 */

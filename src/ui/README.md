@@ -18,7 +18,7 @@
 | accrnt | 强调色 | teal | teal |
 | error | 错误色 | firebrick | firebrick |
 
-**全局色**（不区分亮暗）：`--accrnt-color`、`--error-color`
+**全局色**（不区分亮暗）：`--accent-color`、`--error-color`
 
 **层级色**（亮暗各一套）：`--page-bg/fg`、`--base-bg/fg`、`--raised-bg/fg`、`--inset-bg/fg`、`--disabled-bg/fg`
 
@@ -35,9 +35,9 @@ import "solid-lib/ui.css";
 - `Card` 使用 `--base-bg/fg`
 - `Button` 使用 `--raised-bg/fg`
 - `Input` 使用 `--inset-bg/fg`
-- `FilledButton` 使用 `--accrnt-color`
-- `TextButton` 使用透明背景 + `--accrnt-color`
-- `OutlinedButton` 使用透明背景 + `--accrnt-color` 描边
+- `FilledButton` 使用 `--accent-color`
+- `TextButton` 使用透明背景 + `--accent-color`
+- `OutlinedButton` 使用透明背景 + `--accent-color` 描边
 - 组件禁用态统一使用 `--disabled-bg/fg`
 
 ## 内部结构

@@ -39,11 +39,11 @@ export const CountDown = (props: {
 
 
 const Down = (props: { val: number }) => {
-    return <main class={styles.move}>
+    return <div class={styles.move}>
         <div>{props.val + 1 > 9 ? 0 : props.val + 1}</div>
         <div>{props.val}</div>
         <div>{props.val - 1 < 0 ? 9 : props.val - 1}</div>
-    </main >
+    </div>
 }
 
 

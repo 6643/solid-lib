@@ -14,7 +14,7 @@ export const Expand = (props: { title: string; children: any }) => {
                 setActive(true);
                 return;
             }
-            const timer = setTimeout(() => setActive(() => false), 400);
+            const timer = setTimeout(() => setActive(false), 400);
             return () => clearTimeout(timer);
         },
     );
@@ -28,7 +28,7 @@ export const Expand = (props: { title: string; children: any }) => {
                 <SvgIcon name={icon_chevron_right} />
             </nav>
             <Show when={isActive()}>
-                <main>{props.children}</main>
+                <div>{props.children}</div>
             </Show>
         </div>
     );

@@ -17,8 +17,10 @@ export const Swiper = <T,>(props: {
         Object.entries(otherProps).forEach(([key, value]) => swiperEl.setAttribute(key, String(value)));
 
         let swiper: any, slideChangeHandler: () => void, autoplayController: () => void, allVideos: HTMLVideoElement[];
+        let destroyed = false;
 
         customElements.whenDefined("swiper-container").then(() => {
+            if (destroyed) return;
             swiper = (swiperEl as any).swiper;
             autoplayController = () => checkVideoStatusAndControlAutoplay(swiper);
 
@@ -45,7 +47,8 @@ export const Swiper = <T,>(props: {
             slideChangeHandler();
         });
 
-        onSettled(() => {
+        onSettled(() => () => {
+            destroyed = true;
             if (!swiper) return;
             allVideos.forEach((video: HTMLVideoElement) => {
                 video.removeEventListener("play", autoplayController);
