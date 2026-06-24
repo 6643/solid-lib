@@ -1,5 +1,5 @@
 import styles from "./GridBox.module.css"
-import { children, createMemo, untrack } from "solid-js"
+import { children, createMemo, createEffect } from "solid-js"
 import type * as CSS from "csstype"
 
 export const GridBox = (props: {
@@ -26,11 +26,14 @@ export const GridBox = (props: {
     })
 
     const resolved = children(() => props.children)
-    untrack(() => {
-        resolved.toArray().forEach((child: any, i: number) => {
-            if (child instanceof HTMLElement) child.style.gridArea = toIndex((i + 1).toString())
-        })
-    })
+    createEffect(
+        () => resolved.toArray(),
+        (nodes) => {
+            nodes.forEach((child: any, i: number) => {
+                if (child instanceof HTMLElement) child.style.gridArea = toIndex((i + 1).toString())
+            })
+        }
+    )
 
     return <div class={getClass()} style={getStyle()}>
         {resolved() as any}
@@ -45,9 +48,9 @@ const toArgs = (str: string): string => {
         const [first, second] = part.split(",");
 
         if (first === undefined || second === undefined) return ""
-        return `_${first} _${second}`
+        return `"_${first} _${second}"`
     })
 
-    const result = parts.filter(p => p !== "").join(`" "`)
-    return `"${result}"`;
+    const result = parts.filter(p => p !== "").join(" ")
+    return result;
 }

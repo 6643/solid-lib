@@ -5,7 +5,7 @@ type StyleStatus = 'idle' | 'loading' | 'loaded' | 'error';
 // Global map to store stylesheet references and their counts
 const styleRefCounts = new Map<string, { link: HTMLLinkElement, count: number }>();
 
-export const loadStyle = (href: Accessor<string | null> | string | null): StyleStatus => {
+export const loadStyle = (href: Accessor<string | null> | string | null): Accessor<StyleStatus> => {
     const [status, setStatus] = createSignal<StyleStatus>('idle');
     const styleHref = typeof href === 'function' ? href : () => href;
 
@@ -84,5 +84,5 @@ export const loadStyle = (href: Accessor<string | null> | string | null): StyleS
         }
     );
 
-    return status();
+    return status;
 };

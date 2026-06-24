@@ -90,7 +90,7 @@ export const NavTab = (props: { children: { name: string; panel: () => any }[] }
     const { getActives, getTop, getHeight, toIndex, onScroll, navRef, mainRef } = useNavTab("nav.tab");
 
     onSettled(() => {
-        setTimeout(() => toIndex(getPos(location.pathname, "nav.tab")));
+        queueMicrotask(() => toIndex(getPos(location.pathname, "nav.tab")));
     });
 
     return (
@@ -98,7 +98,7 @@ export const NavTab = (props: { children: { name: string; panel: () => any }[] }
             <nav ref={navRef} style={{ "--top": getTop(), "--height": getHeight() }}>
                 <For each={props.children}>
                     {({ name }, index) => (
-                        <div onClick={() => toIndex(index())} class={{ [styles.active ?? "active"]: getActives()[index()] }}>
+                        <div onClick={() => toIndex(index())} class={getActives()[index()] ? styles.active : ""}>
                             {name}
                         </div>
                     )}

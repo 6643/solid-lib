@@ -150,7 +150,7 @@ export const SortListBox = <T,>(props: {
         setDragState(null);
     };
 
-    onSettled(() => cleanUpDrag);
+    onSettled(() => () => cleanUpDrag());
 
     return (
         <div class={styles.sort_list_box} ref={containerEl} onPointerDown={handlePointerDown}>

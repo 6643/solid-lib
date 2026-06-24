@@ -24,7 +24,7 @@ export const TimeLine = (props: {
                 )}
             </For>
             <Show when={props.children.length > initEvents.length}>
-                <main>
+                <div class={styles.toggle}>
                     <span></span>
                     <div onClick={toggle}>
                         <span>{getEvents().length != props.children.length ? "展开" : "收起"}</span>
@@ -33,7 +33,7 @@ export const TimeLine = (props: {
                             name={getEvents().length != props.children.length ? icon_expand_all : icon_unfold_less}
                         />
                     </div>
-                </main>
+                </div>
             </Show>
         </div>
     );
@@ -41,13 +41,13 @@ export const TimeLine = (props: {
 
 const Item = (props: { time: number; info: string; url?: string }) => {
     return (
-        <main>
+        <div class={styles.item}>
             <span></span>
             <div>
                 <span>{toRecentTime(props.time)}</span>
                 <div>{props.info}</div>
             </div>
-        </main>
+        </div>
     );
 };
 

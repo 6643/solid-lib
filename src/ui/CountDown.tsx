@@ -1,5 +1,5 @@
 import styles from "./CountDown.module.css"
-import { createMemo, createSignal, For, onSettled, Show } from "solid-js"
+import { createMemo, createSignal, For, onSettled, onCleanup, Show } from "solid-js"
 
 export const CountDown = (props: {
     value: number
@@ -22,7 +22,7 @@ export const CountDown = (props: {
                 clearInterval(timer)
             }
         }, 1000)
-        return () => clearInterval(timer)
+        onCleanup(() => clearInterval(timer))
     })
 
 

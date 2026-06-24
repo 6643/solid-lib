@@ -1,23 +1,27 @@
-.time_line > main {
+.time_line {
+    background-color: var(--secondary-bg);
+}
+
+.item {
     display: flex;
 }
 
-.time_line > main > div {
+.item > div {
     padding-bottom: 8px;
 }
 
-.time_line > main > div > span {
+.item > div > span {
     color: var(--secondary-fg);
 }
 
-.time_line > main > span {
+.item > span {
     display: block;
     width: 9px;
     margin-right: 8px;
     position: relative;
 }
 
-.time_line > main > span::before {
+.item > span::before {
     content: "";
     display: block;
     width: 1px;
@@ -29,7 +33,7 @@
     top: 8px;
 }
 
-.time_line > main > span::after {
+.item > span::after {
     content: "";
     display: block;
     width: 5px;
@@ -42,17 +46,32 @@
     top: 8px;
 }
 
-.time_line > main:last-of-type > span::before {
+.item:last-of-type > span::before {
     display: none;
 }
 
-.time_line > main:last-of-type > div {
+.item:last-of-type > div {
     display: flex;
     align-items: center;
     --color: var(--secondary-fg);
     color: var(--color);
 }
 
-.time_line > div {
-    background-color: var(--secondary-bg);
+.toggle {
+    display: flex;
+}
+
+.toggle > span {
+    display: block;
+    width: 9px;
+    margin-right: 8px;
+    position: relative;
+}
+
+.toggle > div {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 8px;
 }

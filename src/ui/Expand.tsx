@@ -3,7 +3,7 @@ import { createSignal, Show, createEffect } from "solid-js";
 import { SvgIcon } from "./SvgIcon";
 import { icon_chevron_right } from "./svgicons";
 
-export const Expand = (props: { title: string; children: any; group?: string }) => {
+export const Expand = (props: { title: string; children: any }) => {
     const [getVis, setVis] = createSignal(false);
     const [isActive, setActive] = createSignal(false);
 

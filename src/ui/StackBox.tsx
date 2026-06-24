@@ -6,10 +6,10 @@ export const StackBox = (props: {
 }) => {
 
     const getStyle = (x?: number, y?: number): string[] => {
-        if (!x || !y || x == 0 || y == 0) return [];
+        if (!x && !y) return [];
         const result = []
-        x < 0 ? result.push(`--right:${-x}`) : result.push(`--left:${x}`)
-        y < 0 ? result.push(`--bottom:${-y}`) : result.push(`--top:${y}`)
+        if (x) result.push(x < 0 ? `--right:${-x}` : `--left:${x}`)
+        if (y) result.push(y < 0 ? `--bottom:${-y}` : `--top:${y}`)
         return result
     }
     const resolved = children(() => props.children)

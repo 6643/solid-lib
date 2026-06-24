@@ -15,13 +15,12 @@ export const CityPicker = (props: {
     const [getVis, setVis] = props.vis;
     const [getPickCode, setPickCode] = createSignal(props.cityCode ?? 0);
     const getPickCity = createMemo(() => getCity(getPickCode() ?? 0).reverse());
-    const getCityChilds = createMemo(() => getChilds(getPickCode() ?? 0));
 
     const pick = (city: City) => {
         setPickCode(city.code);
         if (city.code < 100000) return;
         setVis(false);
-        props.change?.({ code: getPickCode() ?? 0, names: getPickCity().map((city) => city.name) });
+        props.change?.({ code: city.code, names: getCity(city.code).reverse().map(c => c.name) });
     };
 
     createEffect(
