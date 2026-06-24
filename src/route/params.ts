@@ -1,4 +1,4 @@
-import type { Accessor } from "solid-js";
+import { createMemo, type Accessor } from "solid-js";
 
 import { ensureRouteState, getCurrentSearch } from "./state";
 
@@ -58,41 +58,27 @@ type ParseParam = {
     <T>(name: string, parser: ParamParser<T>): Accessor<T>;
 };
 
-export const parseParam: ParseParam = <T>(name: string, parserOrFallback: ParamParser<T> | ParamFallback): Accessor<T> => {
+export const parseParam: ParseParam = <T>(name: string, parserOrFallback: ParamParser<T> | ParamFallback) => {
     ensureRouteState();
     const parser = toParamParser(parserOrFallback);
 
-    return () => {
+    return createMemo(() => {
         const searchParams = new URLSearchParams(getCurrentSearch());
         return parser(searchParams.get(name));
-    };
+    });
 };
 
-const readParsedParams = <T extends ParamSchema>(schema: T): ParsedParams<T> => {
-    const searchParams = new URLSearchParams(getCurrentSearch());
-    const next: Record<string, unknown> = {};
-
-    for (const [key, parser] of Object.entries(schema)) {
-        next[key] = (parser as ParamParser<unknown>)(searchParams.get(key));
-    }
-
-    return next as ParsedParams<T>;
-};
-
-export const parseParams = <T extends ParamSchema>(schema: T): ParsedParams<T> => {
+export const parseParams = <T extends ParamSchema>(schema: T): { readonly [K in keyof T]: Accessor<T[K]> } => {
     ensureRouteState();
 
-    const params: Record<string, unknown> = {};
+    const result = {} as Record<string, Accessor<unknown>>;
 
     for (const [key, parser] of Object.entries(schema)) {
-        Object.defineProperty(params, key, {
-            configurable: false,
-            enumerable: true,
-            get() {
-                return readParsedParams(schema)[key as keyof T];
-            },
+        result[key] = createMemo(() => {
+            const searchParams = new URLSearchParams(getCurrentSearch());
+            return (parser as ParamParser<unknown>)(searchParams.get(key));
         });
     }
 
-    return params as ParsedParams<T>;
+    return result as { readonly [K in keyof T]: Accessor<T[K]> };
 };

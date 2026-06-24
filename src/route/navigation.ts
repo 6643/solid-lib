@@ -55,7 +55,7 @@ const getInterceptableAnchorUrl = (event: BrowserClickEvent, anchor: AnchorLike 
         return undefined;
     }
 
-    const currentUrl = parseUrl(getCurrentInternalPath() || "/", `${currentOrigin}/`);
+    const currentUrl = parseUrl(getCurrentInternalPath(), `${currentOrigin}/`);
     if (!currentUrl) {
         return undefined;
     }

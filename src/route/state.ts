@@ -106,9 +106,6 @@ const readHistoryMeta = (state: unknown): RouteHistoryMeta => {
     };
 };
 
-const hasHistoryMeta = (state: unknown) =>
-    !!state && typeof state === "object" && ROUTE_HISTORY_KEY in (state as Record<string, unknown>);
-
 const writeHistoryMeta = (state: unknown, meta: RouteHistoryMeta) => {
     if (state && typeof state === "object" && !Array.isArray(state)) {
         return {
@@ -132,7 +129,11 @@ const ensureCurrentEntryMeta = (browser: BrowserLike) => {
         return;
     }
 
-    if (hasHistoryMeta(history.state)) {
+    if (
+        history.state &&
+        typeof history.state === "object" &&
+        ROUTE_HISTORY_KEY in (history.state as Record<string, unknown>)
+    ) {
         return;
     }
 
