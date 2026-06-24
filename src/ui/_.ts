@@ -20,7 +20,7 @@ export { StackBox } from "./StackBox";
 export { CenterBox } from "./CenterBox";
 
 // Interaction
-export { newFilledModal, newBottomModal, newLeftModal, newRightModal } from "./Modal";
+export { BottomModal, TopModal, LeftModal, RightModal } from "./Modal";
 export { Expand } from "./Expand";
 export { Carousel } from "./Carousel";
 export { Swiper } from "./Swiper";

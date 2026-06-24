@@ -1,88 +1,84 @@
 import styles from "./Modal.module.css";
-import { createEffect, createSignal, Show, children } from "solid-js";
+import { createEffect, createSignal, Show } from "solid-js";
 import { Portal } from "@solidjs/web";
 
+interface ModalProps {
+    children: any;
+    open: boolean;
+    class?: string;
+    onClose?: VoidFunction;
+    width?: string;
+}
 
+interface BottomModalProps extends ModalProps {
+    height?: string;
+}
 
-const newModal = (modeClass: string) => {
-    const [isActive, setActive] = createSignal(false)
+const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: string; height?: string }) => {
+    const [isMounted, setMounted] = createSignal(false);
+    const [isAnimating, setAnimating] = createSignal(false);
+    const [el, setEl] = createSignal<HTMLDialogElement>();
 
-    const Modal = (props: {
-        children: any,
-        class?: string,
-        onClose?: VoidFunction;
-    }) => {
-        const [isMounted, setMounted] = createSignal(false)
-        const [isAnimating, setAnimating] = createSignal(false)
+    createEffect(
+        () => ({ currentEl: el(), isMounted: isMounted() }),
+        ({ currentEl, isMounted }) => {
+            if (!currentEl) return;
+            if (isMounted && !currentEl.open) currentEl.showModal();
+            if (!isMounted && currentEl.open) currentEl.close();
+        },
+    );
 
-        const [el, setEl] = createSignal<HTMLDialogElement>();
-        createEffect(
-            () => ({ currentEl: el(), isMounted: isMounted() }),
-            ({ currentEl, isMounted }) => {
-                if (!currentEl) return;
-                if (isMounted && !currentEl.open) currentEl.showModal();
-                if (!isMounted && currentEl.open) currentEl.close();
+    createEffect(
+        () => props.open,
+        (open) => {
+            if (open) {
+                setMounted(true);
+                queueMicrotask(() => setAnimating(true));
+            } else {
+                setAnimating(false);
+                const timer = setTimeout(() => setMounted(false), 256);
+                return () => clearTimeout(timer);
             }
-        );
+        },
+    );
 
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key !== "Escape") return
-            e.preventDefault()
-            setActive(false)
-        }
-        const closeDialog = (e: Event) => {
-            if (e.target === e.currentTarget) setActive(false);
-        }
+    const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key !== "Escape") return;
+        e.preventDefault();
+        props.onClose?.();
+    };
 
-        const getClassName = () => {
-            const classes = [styles.modal!, isAnimating() ? styles.active! : ""]
-            if (props.class) classes.push(props.class)
-            return classes.filter(Boolean).join(" ")
-        }
+    const closeDialog = (e: MouseEvent) => {
+        if ((e.target as HTMLElement).closest(`.${styles.content}`)) return;
+        props.onClose?.();
+    };
 
-        createEffect(
-            () => isActive(),
-            (active) => {
-                if (active) {
-                    setMounted(true);
-                    queueMicrotask(() => setAnimating(true));
-                } else {
-                    setAnimating(false);
-                    const timer = setTimeout(() => {
-                        setMounted(false)
-                        props.onClose?.();
-                    }, 256);
-                    return () => clearTimeout(timer);
-                }
-            }
-        );
+    const getClassName = () => {
+        const classes = [styles.modal!, isAnimating() ? styles.active! : ""];
+        if (props.class) classes.push(props.class);
+        return classes.filter(Boolean).join(" ");
+    };
 
-        return <Show when={isMounted()}>
+    return (
+        <Show when={isMounted()}>
             <Portal>
-                <dialog ref={setEl} class={[modeClass, getClassName()]} onKeyDown={onKeyDown} onClick={closeDialog}>
-                    {props.children}
+                <dialog ref={setEl} class={[props.modeClass, getClassName()]} onKeyDown={onKeyDown} onClick={closeDialog}>
+                    <div class={styles.overlay} />
+                    <div
+                        class={[styles.content, props.contentClass]}
+                        style={{ "--modal-height": props.height, "--content-width": props.width }}
+                    >
+                        {props.children}
+                    </div>
                 </dialog>
             </Portal>
         </Show>
-    }
-
-    return { isActive, setActive, Modal }
+    );
 };
 
-
-export const newFilledModal = () => {
-    const { isActive, setActive, Modal: FilledModal } = newModal(styles.filled!);
-    return { isActive, setActive, FilledModal }
-}
-export const newBottomModal = () => {
-    const { isActive, setActive, Modal: BottomModal } = newModal(styles.bottom!);
-    return { isActive, setActive, BottomModal }
-}
-export const newLeftModal = () => {
-    const { isActive, setActive, Modal: LeftModal } = newModal(styles.left!);
-    return { isActive, setActive, LeftModal }
-}
-export const newRightModal = () => {
-    const { isActive, setActive, Modal: RightModal } = newModal(styles.right!);
-    return { isActive, setActive, RightModal }
-}
+export const BottomModal = (props: BottomModalProps) => <BaseModal {...props} modeClass={styles.bottom!} />;
+export const TopModal = (props: ModalProps) => <BaseModal {...props} modeClass={styles.top!} contentClass={styles.center!} />;
+export const LeftModal = (props: ModalProps) => <BaseModal {...props} modeClass={styles.left!} contentClass={styles.left!} />;
+export const RightModal = (props: ModalProps) => (
+    <BaseModal {...props} modeClass={styles.right!} contentClass={styles.right!} />
+);

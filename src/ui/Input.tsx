@@ -474,7 +474,7 @@ export const CodeInput = (props: {
         (value) => {
             const el = inputEl;
             if (el && value) {
-                requestAnimationFrame(() => el.setSelectionRange(0, 0));
+                el.setSelectionRange(value.length, value.length);
             }
         },
     );
@@ -497,7 +497,7 @@ export const CodeInput = (props: {
             const result = current + ch;
             input.value = result;
             props.changed?.(result);
-            requestAnimationFrame(() => input.setSelectionRange(0, 0));
+            input.setSelectionRange(result.length, result.length);
             return;
         }
 
@@ -507,7 +507,7 @@ export const CodeInput = (props: {
             const result = matched.join("");
             input.value = result;
             props.changed?.(result);
-            requestAnimationFrame(() => input.setSelectionRange(0, 0));
+            input.setSelectionRange(result.length, result.length);
             return;
         }
 
@@ -535,7 +535,8 @@ export const CodeInput = (props: {
                 onInput={handleInput}
                 onPointerUp={(e: PointerEvent) => {
                     const input = e.currentTarget as HTMLInputElement;
-                    requestAnimationFrame(() => input.setSelectionRange(0, 0));
+                    const pos = input.value.length;
+                    input.setSelectionRange(pos, pos);
                 }}
                 disabled={props.disabled}
                 autocomplete="one-time-code"
