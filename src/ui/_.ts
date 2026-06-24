@@ -48,6 +48,7 @@ export { ThemeSwitch, AccentSelector } from "./Theme";
 export { ThemeToggle, AccentPicker } from "./Theme";
 
 // Hooks & Utils
+export { useMediaQuery } from "./useMediaQuery";
 export { createDebouncedSignal } from "./createDebouncedSignal";
 export { useClass } from "../use/useClass";
 export { useClickOutside } from "../use/useClickOutside";
