@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, createRoot, createStore, onCleanup, untrack } from "solid-js"
+import { type Accessor, createEffect, createRoot, createStore, untrack } from "solid-js"
 import { useScrollEnd } from "./useScrollEnd.ts"
 
 
@@ -45,7 +45,7 @@ export const useKeepScroll = (
                 el.scrollTop = storedTop;
             }, 0);
 
-            onCleanup(() => clearTimeout(timer));
+            return () => clearTimeout(timer);
         });
 
         return dispose;

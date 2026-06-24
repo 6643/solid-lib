@@ -5,7 +5,7 @@
         "target": "ESNext",
         "module": "Preserve",
         "jsx": "preserve",
-        "jsxImportSource": "solid-js",
+        "jsxImportSource": "@solidjs/web",
         "ignoreDeprecations": "6.0",
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,

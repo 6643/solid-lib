@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, createSignal, type Accessor } from "solid-js";
+import { createEffect, createSignal, type Accessor } from "solid-js";
 
 type ScriptStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
@@ -46,12 +46,10 @@ export const loadScript = (src: Accessor<string | null> | string | null): Access
             script.addEventListener('load', handleLoad);
             script.addEventListener('error', handleError);
 
-            onCleanup(() => {
+            return () => {
                 script.removeEventListener('load', handleLoad);
                 script.removeEventListener('error', handleError);
-                // 动态加载脚本的清理策略通常比较复杂，取决于具体需求。
-                // 简单起见，这里不自动移除，避免副作用。
-            });
+            };
         }
     );
 

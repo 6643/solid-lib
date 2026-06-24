@@ -32,3 +32,11 @@
 - route 只能从 `solid-lib/route` 导入
 - ui 只能从 `solid-lib/ui` 导入
 - 样式只能从 `solid-lib/ui.css` 导入
+
+
+
+## 基于 SolidJS 2.0
+
+本项目基于 [SolidJS 2.0](https://github.com/solidjs/solid/tree/next/documentation/solid-2.0)，所有 API 使用 2.0 最新写法。
+
+> 参考文档：https://www.solidjs.com/docs/latest/api

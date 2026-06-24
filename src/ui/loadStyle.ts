@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, createSignal, type Accessor } from "solid-js";
+import { createEffect, createSignal, type Accessor } from "solid-js";
 
 type StyleStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
@@ -65,7 +65,7 @@ export const loadStyle = (href: Accessor<string | null> | string | null): Access
             link.addEventListener('load', handleLoad);
             link.addEventListener('error', handleError);
 
-            onCleanup(() => {
+            return () => {
                 link.removeEventListener('load', handleLoad);
                 link.removeEventListener('error', handleError);
 
@@ -73,14 +73,13 @@ export const loadStyle = (href: Accessor<string | null> | string | null): Access
                 if (cleanupLinkEntry) {
                     cleanupLinkEntry.count--;
                     if (cleanupLinkEntry.count <= 0) {
-                        // Only remove if no other components are using it
                         cleanupLinkEntry.link.remove();
                         styleRefCounts.delete(currentHref);
                     } else {
-                        styleRefCounts.set(currentHref, cleanupLinkEntry); // Update map with new count
+                        styleRefCounts.set(currentHref, cleanupLinkEntry);
                     }
                 }
-            });
+            };
         }
     );
 
