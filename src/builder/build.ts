@@ -16,13 +16,14 @@ export const buildStaticApp = async ({
     configDependencyPaths,
     configPath,
     cwd,
+    watchDirs,
 }: LoadedSolidBuildConfig): Promise<BuildStaticAppResult> => {
     const outdir = config.outDirPath;
 
     rmSync(outdir, { force: true, recursive: true });
 
     const built = await buildAppBundle(
-        { config, configDependencyPaths, configPath, cwd },
+        { config, configDependencyPaths, configPath, cwd, watchDirs },
         { development: false, minify: true, sourcemap: "none" },
     );
 

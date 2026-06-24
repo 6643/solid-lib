@@ -28,7 +28,7 @@ export const createBootstrapSource = ({
         `const root = document.getElementById(${JSON.stringify(mountId)});`,
         "",
         "if (!root) {",
-        `  throw new Error(${JSON.stringify(`Demo root "#${mountId}" was not found.`)});`,
+        `  throw new Error(${JSON.stringify(`App root "#${mountId}" was not found.`)});`,
         "}",
         "",
         "render(() => <App />, root);",
@@ -188,6 +188,7 @@ export const buildAppBundle = async (
 const resolveIfExists = (specifier: string, targetPath: string): Record<string, string> =>
     existsSync(targetPath) ? { [specifier]: targetPath } : {};
 
+// Bun emits CSS assets with a .js extension in the artifact list; rename to actual extension.
 export const normalizeArtifactPath = (artifact: BuildArtifact): string => {
     const relativePath = artifact.path.replace(/^\.\//, "");
 

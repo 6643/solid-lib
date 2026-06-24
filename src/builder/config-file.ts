@@ -95,7 +95,7 @@ const collectConfigDependencyPaths = async (configPath: string, cwd: string): Pr
     const queue = [configPath];
 
     while (queue.length > 0) {
-        const currentPath = queue.shift()!;
+        const currentPath = queue.pop()!;
         if (visited.has(currentPath)) {
             continue;
         }

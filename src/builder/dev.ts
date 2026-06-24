@@ -58,7 +58,10 @@ const isSpaRequest = (request: Request, pathname: string): boolean => {
         return false;
     }
 
-    return !pathname.split("/").at(-1)?.includes(".");
+    // SPA fallback: treat as SPA when last segment has no dot (no file extension).
+    // Known limitation: paths like /users/john.doe are not treated as SPA routes.
+    const lastSegment = pathname.split("/").at(-1) ?? "";
+    return !lastSegment.includes(".");
 };
 
 const safeLstat = (filePath: string): Stats | undefined => {
@@ -121,19 +124,14 @@ const listFiles = (rootPath: string): string[] => {
     return files;
 };
 
-const createWatchSignature = ({ config, configDependencyPaths, cwd }: LoadedSolidBuildConfig): string => {
+const createWatchSignature = ({ config, configDependencyPaths, cwd, watchDirs }: LoadedSolidBuildConfig): string => {
     const roots = new Set<string>([
         resolve(cwd, "./solid-build.config.ts"),
         ...configDependencyPaths,
         config.appSourceRootPath,
         ...config.assetsDirs.map((assetDir) => assetDir.inputPath),
+        ...watchDirs.map((dir) => resolve(cwd, dir)),
     ]);
-
-    // Watch parent src directory when demo imports from ../../src/ui/
-    const parentSrc = resolve(cwd, "../src");
-    if (safeStat(parentSrc)?.isDirectory()) {
-        roots.add(parentSrc);
-    }
 
     return Array.from(roots)
         .flatMap((root) => listFiles(root))

@@ -19,6 +19,7 @@ export interface SolidBuildConfig {
     assetsDirs?: string[];
     devPort?: number;
     outDir?: string;
+    watchDirs?: string[];
 }
 
 export interface LoadedAssetDir {
@@ -41,9 +42,10 @@ export interface LoadedSolidBuildConfig {
     configDependencyPaths: string[];
     configPath?: string;
     cwd: string;
+    watchDirs: string[];
 }
 
-const DEFAULT_CONFIG: Required<SolidBuildConfig> = {
+const DEFAULT_CONFIG: Required<Omit<SolidBuildConfig, "watchDirs">> & { watchDirs?: string[] } = {
     appComponent: "src/_.tsx",
     appTitle: "Solid App",
     assetsDirs: ["assets"],
@@ -52,7 +54,7 @@ const DEFAULT_CONFIG: Required<SolidBuildConfig> = {
     outDir: "dist",
 };
 
-const ALLOWED_CONFIG_KEYS = new Set(["appComponent", "appTitle", "assetsDirs", "devPort", "mountId", "outDir"]);
+const ALLOWED_CONFIG_KEYS = new Set(["appComponent", "appTitle", "assetsDirs", "devPort", "mountId", "outDir", "watchDirs"]);
 const LEGACY_CONFIG_KEYS = new Set(["entry", "html", "naming", "solid", "splitting", "tsconfig"]);
 const DEFAULT_ASSET_DIR = "assets";
 const RESERVED_PROJECT_DIR_NAMES = new Set([".git", "node_modules"]);
@@ -349,5 +351,6 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSol
         configDependencyPaths: loadedUserConfig.dependencyPaths,
         configPath: hasConfigFile ? configPath : undefined,
         cwd,
+        watchDirs: mergedConfig.watchDirs ?? [],
     };
 };
