@@ -1,13 +1,14 @@
 import styles from "./Modal.module.css";
 import { createEffect, createSignal, Show } from "solid-js";
-import { Portal } from "@solidjs/web";
+import { Portal, type JSX } from "@solidjs/web";
 
 interface ModalProps {
-    children: any;
+    children: JSX.Element;
     open: boolean;
     class?: string;
     onClose?: VoidFunction;
     width?: string;
+    ariaLabel?: string;
 }
 
 interface BottomModalProps extends ModalProps {
@@ -18,6 +19,7 @@ const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: strin
     const [isMounted, setMounted] = createSignal(false);
     const [isAnimating, setAnimating] = createSignal(false);
     const [el, setEl] = createSignal<HTMLDialogElement>();
+    let closingTimer: ReturnType<typeof setTimeout> | undefined;
 
     createEffect(
         () => ({ currentEl: el(), isMounted: isMounted() }),
@@ -32,12 +34,13 @@ const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: strin
         () => props.open,
         (open) => {
             if (open) {
+                clearTimeout(closingTimer);
                 setMounted(true);
                 queueMicrotask(() => setAnimating(true));
             } else {
                 setAnimating(false);
-                const timer = setTimeout(() => setMounted(false), 256);
-                return () => clearTimeout(timer);
+                closingTimer = setTimeout(() => setMounted(false), 256);
+                return () => clearTimeout(closingTimer);
             }
         },
     );
@@ -62,11 +65,11 @@ const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: strin
     return (
         <Show when={isMounted()}>
             <Portal>
-                <dialog ref={setEl} class={[props.modeClass, getClassName()]} onKeyDown={onKeyDown} onClick={closeDialog}>
+                <dialog ref={setEl} class={[props.modeClass, getClassName()]} onKeyDown={onKeyDown} onClick={closeDialog} aria-label={props.ariaLabel}>
                     <div class={styles.overlay} />
                     <div
                         class={[styles.content, props.contentClass]}
-                        style={{ "--modal-height": props.height, "--content-width": props.width }}
+                        style={{ "--max-height": props.height, "--max-width": props.width }}
                     >
                         {props.children}
                     </div>

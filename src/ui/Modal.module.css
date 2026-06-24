@@ -39,7 +39,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: var(--modal-height, 100vh);
+    height: var(--max-height, 100vh);
     overflow-x: hidden;
     overflow-y: auto;
     background: white;
@@ -67,7 +67,7 @@
 .content.left {
     left: 0;
     top: 0;
-    width: var(--content-width, 320px);
+    width: var(--max-width, 320px);
     height: 100vh;
 }
 
@@ -75,7 +75,7 @@
     left: auto;
     right: 0;
     top: 0;
-    width: var(--content-width, 320px);
+    width: var(--max-width, 320px);
     height: 100vh;
 }
 
