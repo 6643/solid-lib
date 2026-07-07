@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from "bun:test";
 import { createRoot } from "solid-js";
 
-import { createStorage } from "../src/use/createStorage";
+import { createStorage } from "../src/utils/createStorage";
 import { initAccent } from "../src/ui/Theme";
 
 class FakeStorage {
@@ -16,7 +16,8 @@ class FakeStorage {
     }
 }
 
-const originalLocalStorage = (globalThis as Record<string, unknown>).localStorage;
+const originalLocalStorage = globalThis.localStorage;
+const originalSessionStorage = globalThis.sessionStorage;
 
 const installStorage = (initial: Record<string, string> = {}) => {
     const storage = new FakeStorage();
@@ -33,15 +34,8 @@ const installStorage = (initial: Record<string, string> = {}) => {
 };
 
 afterEach(() => {
-    if (typeof originalLocalStorage === "undefined") {
-        delete (globalThis as Record<string, unknown>).localStorage;
-        return;
-    }
-
-    Object.defineProperty(globalThis, "localStorage", {
-        configurable: true,
-        value: originalLocalStorage,
-    });
+    Object.defineProperty(globalThis, "localStorage", { configurable: true, value: originalLocalStorage });
+    Object.defineProperty(globalThis, "sessionStorage", { configurable: true, value: originalSessionStorage });
 });
 
 test("createStorage reads persisted values during initialization", () => {
@@ -54,6 +48,26 @@ test("createStorage reads persisted values during initialization", () => {
     });
 
     expect(accent()).toBe("#9c27b0");
+    dispose();
+});
+
+test("createStorage can persist into sessionStorage", () => {
+    const storage = installStorage({ accent: JSON.stringify("#9c27b0") });
+
+    Object.defineProperty(globalThis, "sessionStorage", {
+        configurable: true,
+        value: storage,
+    });
+
+    let dispose!: () => void;
+    const [accent, setAccent] = createRoot((rootDispose) => {
+        dispose = rootDispose;
+        return createStorage("accent", "teal", globalThis.sessionStorage);
+    });
+
+    expect(accent()).toBe("#9c27b0");
+    setAccent("#00aa00");
+    expect(storage.getItem("accent")).toBe(JSON.stringify("#00aa00"));
     dispose();
 });
 

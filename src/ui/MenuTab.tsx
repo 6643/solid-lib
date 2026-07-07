@@ -1,6 +1,6 @@
 import styles from "./MenuTab.module.css";
-import { createSignal, For, onSettled } from "solid-js";
-import { getPos, setPos, useKeepScroll } from "../use/useKeepScroll";
+import { createSignal, createTrackedEffect, For } from "solid-js";
+import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { IconButton } from "./Button";
 import { icon_menu } from "./svgicons";
 
@@ -39,7 +39,7 @@ const useMenuTab = (key: string) => {
 export const MenuTab = (props: { children: { name: string; panel: () => any }[] }) => {
     const { getActiveIndex, getIndicator, toIndex, mainRef, listRef } = useMenuTab("scroll.tab");
 
-    onSettled(() => toIndex(getPos(location.pathname, "scroll.tab")));
+    createTrackedEffect(() => toIndex(getPos(location.pathname, "scroll.tab")));
 
     const active = () => props.children[getActiveIndex()];
 

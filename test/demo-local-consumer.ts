@@ -35,7 +35,7 @@ try {
     private: true,
     type: "module",
     scripts: {
-      build: "solid-build",
+      build: "solid-lib build",
     },
     dependencies: {
       "solid-js": solidJsSpecifier,
@@ -60,7 +60,7 @@ try {
     join(consumerRoot, "src", "_.tsx"),
     [
       'import { Route, parseParam, pushRoute } from "solid-lib/route";',
-      'import { Card, FilledButton, IconButton, Input, OutlinedButton, TextButton, initializeThemeMode, setThemeMode } from "solid-lib/ui";',
+      'import { Card, FilledButton, IconButton, OutlinedButton, TextButton, TextInput, initializeThemeMode, setThemeMode } from "solid-lib/ui";',
       'import "solid-lib/ui.css";',
       "",
       'const iconMinus = \'<path d="M240-510h480v60H240z"/>\';',
@@ -72,7 +72,7 @@ try {
       "  return (",
       "    <Card>",
       '      <h1>UI Smoke</h1>',
-      '      <Input value="smoke@example.com" />',
+      '      <TextInput value="smoke@example.com" />',
       '      <div style={{ display: "flex", gap: "12px", "margin-top": "16px", "flex-wrap": "wrap" }}>',
       '        <TextButton text="Idle" />',
       '        <OutlinedButton text="Outline" />',
@@ -104,12 +104,14 @@ try {
   );
 
   writeFileSync(
-    join(consumerRoot, "solid-build.config.ts"),
+    join(consumerRoot, "config.ts"),
     [
-      "export default {",
+      'import { defineConfig } from "solid-lib/builder";',
+      "",
+      "export default defineConfig({",
       '  appTitle: "solid-lib local consumer",',
       '  outDir: "dist",',
-      "};",
+      "});",
       "",
     ].join("\n"),
   );

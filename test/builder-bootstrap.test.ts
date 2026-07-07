@@ -1,0 +1,22 @@
+import { expect, test } from "bun:test";
+
+import { APP_RUNTIME_MODULE, createBootstrapSource } from "../src/builder/bundle";
+
+test("builder bootstrap mounts the app with the configured mount id", () => {
+  expect(createBootstrapSource({ appComponentImportPath: "./src/_.tsx", mountId: "app" })).toBe(
+    [
+      `import { render as mount } from "${APP_RUNTIME_MODULE}";`,
+      'import App from "./src/_.tsx";',
+      "",
+      'let mountRoot = document.getElementById("app");',
+      "",
+      "if (!mountRoot) {",
+      '  mountRoot = document.createElement("div");',
+      '  mountRoot.id = "app";',
+      "  document.body.append(mountRoot);",
+      "}",
+      "",
+      "mount(() => <App />, mountRoot);",
+    ].join("\n"),
+  );
+});

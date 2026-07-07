@@ -42,8 +42,13 @@
 }
 
 @keyframes breathe {
-    0%, 100% { box-shadow: inset 0 0 0 2px var(--accent-color); }
-    50% { box-shadow: inset 0 0 6px 2px var(--accent-color); }
+    0%,
+    100% {
+        box-shadow: inset 0 0 0 2px var(--accent-color);
+    }
+    50% {
+        box-shadow: inset 0 0 6px 2px var(--accent-color);
+    }
 }
 
 .button:focus-visible {
@@ -62,13 +67,13 @@
     border-radius: 40px;
     height: 40px;
     width: 40px;
-    color: var(--color, var(--accent-color, var(--primary-fg)));
+    color: var(--color, var(--accent-color, var(--raised-fg)));
 }
 
 .text {
     background: transparent;
     box-shadow: none;
-    color: var(--color, var(--accent-color, var(--primary-fg)));
+    color: var(--color, var(--accent-color, var(--raised-fg)));
     padding: 0 16px;
 }
 
@@ -80,10 +85,10 @@
     padding: 0 16px;
 }
 .filled:disabled {
-    background-color: var(--secondary-bg);
+    background-color: var(--sunken-bg);
 }
 .outlined {
-    color: var(--color, var(--accent-color, var(--primary-fg)));
+    color: var(--color, var(--accent-color, var(--raised-fg)));
     background: transparent;
     border: 2px solid var(--color, var(--accent-color));
     box-shadow: none;
@@ -92,5 +97,5 @@
     padding: 0 16px;
 }
 .outlined:disabled {
-    border-color: var(--secondary-bg);
+    border-color: var(--disabled-color);
 }

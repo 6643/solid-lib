@@ -1,5 +1,5 @@
 import styles from "./GridBox.module.css"
-import { children, createMemo, createEffect } from "solid-js"
+import { children, createMemo, createTrackedEffect } from "solid-js"
 import type * as CSS from "csstype"
 
 export const GridBox = (props: {
@@ -26,14 +26,12 @@ export const GridBox = (props: {
     })
 
     const resolved = children(() => props.children)
-    createEffect(
-        () => resolved.toArray(),
-        (nodes) => {
-            nodes.forEach((child: any, i: number) => {
-                if (child instanceof HTMLElement) child.style.gridArea = toIndex((i + 1).toString())
-            })
-        }
-    )
+    createTrackedEffect(() => {
+        const nodes = resolved.toArray();
+        nodes.forEach((child: any, i: number) => {
+            if (child instanceof HTMLElement) child.style.gridArea = toIndex((i + 1).toString())
+        })
+    })
 
     return <div class={getClass()} style={getStyle()}>
         {resolved() as any}

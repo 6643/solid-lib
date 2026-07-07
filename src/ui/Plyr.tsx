@@ -1,20 +1,16 @@
-import { createEffect } from "solid-js";
-import { loadScript } from "./loadScript.ts";
-import { loadStyle } from "./loadStyle.ts";
+import { createTrackedEffect } from "solid-js";
+import { loadScript } from "../utils/loadScript";
+import { loadStyle } from "../utils/loadStyle";
 export const Plyr = (props: { src: string }) => {
     const jsState = loadScript("https://cdn.plyr.io/3.8.3/plyr.js")
     loadStyle("https://cdn.plyr.io/3.8.3/plyr.css")
 
     const init = (videoEl: HTMLVideoElement) => {
-        createEffect(
-            () => jsState() == "loaded",  // compute
-            (loaded) => {  // apply
-                if (loaded) {
-                    const player = new (window as any).Plyr(videoEl, { controls: ["play", "progress", "volume"] });
-                    return () => player.destroy()
-                }
-            }
-        )
+        createTrackedEffect(() => {
+            if (jsState() !== "loaded") return;
+            const player = new (window as any).Plyr(videoEl, { controls: ["play", "progress", "volume"] });
+            return () => player.destroy();
+        });
     };
 
     const togglePlay = (e: MouseEvent & { currentTarget: HTMLVideoElement }) => {

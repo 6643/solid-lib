@@ -13,16 +13,16 @@
 }
 
 .CityPicker > nav > div {
-    background-color: var(--secondary-bg);
+    background-color: var(--sunken-bg);
 }
 
 .CityPicker > nav > div:last-of-type {
-    color: var(--secondary-bg);
+    color: var(--sunken-bg);
     background-color: var(--accent-color);
 }
 
 .CityPicker > nav > span {
-    color: var(--secondary-fg);
+    color: var(--sunken-fg);
     font-size: smaller;
 }
 
@@ -35,7 +35,7 @@
 }
 
 .CityPicker > main > div {
-    background-color: var(--secondary-bg);
+    background-color: var(--sunken-bg);
     margin-bottom: 4px;
     display: flex;
     justify-content: space-between;

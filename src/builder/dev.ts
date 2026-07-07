@@ -126,7 +126,7 @@ const listFiles = (rootPath: string): string[] => {
 
 const createWatchSignature = ({ config, configDependencyPaths, cwd, watchDirs }: LoadedSolidBuildConfig): string => {
     const roots = new Set<string>([
-        resolve(cwd, "./solid-build.config.ts"),
+        resolve(cwd, "./config.ts"),
         ...configDependencyPaths,
         config.appSourceRootPath,
         ...config.assetsDirs.map((assetDir) => assetDir.inputPath),
@@ -260,7 +260,7 @@ export const startDevServer = async (
             const nextBuild = await buildDevCompilation(nextConfig);
             if (!hasExplicitPort && nextConfig.config.devPort !== currentConfig.config.devPort) {
                 console.warn(
-                    `solid-dev devPort change requires restarting solid-dev to take effect (${currentConfig.config.devPort} -> ${nextConfig.config.devPort})`,
+                    `solid-lib devPort change requires restarting solid-lib dev to take effect (${currentConfig.config.devPort} -> ${nextConfig.config.devPort})`,
                 );
             }
 
@@ -329,7 +329,7 @@ export const startDevServer = async (
     const port = server.port ?? Number(server.url.port);
 
     if (!Number.isFinite(port) || port <= 0) {
-        throw new Error("solid-dev failed to resolve a TCP port");
+        throw new Error("solid-lib dev failed to resolve a TCP port");
     }
 
     return {
@@ -360,8 +360,8 @@ const getNetworkOrigins = (port: number): string[] => {
     return Array.from(origins).sort();
 };
 
-const main = async (): Promise<void> => {
-    const loadedConfig = await loadConfig(process.cwd());
+export const runDevCommand = async (cwd: string = process.cwd()): Promise<StartedDevServer> => {
+    const loadedConfig = await loadConfig(cwd);
     const server = await startDevServer(loadedConfig, { host: "0.0.0.0" });
 
     console.log("Dev server running");
@@ -371,8 +371,10 @@ const main = async (): Promise<void> => {
     for (const origin of getNetworkOrigins(server.port)) {
         console.log(`- Network: ${origin}`);
     }
+
+    return server;
 };
 
 if (import.meta.main) {
-    await main();
+    await runDevCommand();
 }

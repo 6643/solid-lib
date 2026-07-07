@@ -15,9 +15,11 @@
 
 包含两条主要命令入口:
 
-- `solid-build`
+- `solid-lib`
+  统一 CLI 入口
+- `solid-lib build`
   用于生产构建, 输出到磁盘中的 `dist/`
-- `solid-dev`
+- `solid-lib dev`
   用于开发模式, 在内存中生成资源并通过 HTTP 服务提供内容
 
 ## 文件职责
@@ -29,26 +31,26 @@
 - `bundle.ts`
   应用打包核心。负责生成 bootstrap 入口、调用 `Bun.build`、收集 JS/CSS 产物并生成 HTML shell。
 - `config.ts`
-  配置加载与校验。负责默认值合并、`solid-build.config.ts` 导入、路径边界校验、`assetsDirs` 解析与 `outDir` 约束。
+  配置加载与校验。负责默认值合并、`config.ts` 导入、路径边界校验、`assetsDirs` 解析与 `outDir` 约束。
 - `config-file.ts`
-  配置文件导入辅助。负责扫描 `solid-build.config.ts` 的相对依赖、隔离暂存并导入用户配置。
+  配置文件导入辅助。负责扫描 `config.ts` 的相对依赖、隔离暂存并导入用户配置。
 - `lib.ts`
-  构建器共享能力。当前主要包含 Solid Babel 插件接入、`rxcore` shim，以及库构建辅助逻辑。
+  构建器共享能力。当前主要包含 Solid Babel 插件接入、TypeScript 擦除，以及库构建辅助逻辑。
 - `path.ts`
   路径安全辅助。负责真实路径解析、项目根目录边界、可写祖先和 `node_modules` 查找。
 
 ## 调用链
 
-### `solid-build`
+### `solid-lib build`
 
 1. `build.ts` 调用 `loadConfig()`
-2. `config.ts` 解析并校验 `solid-build.config.ts`
+2. `config.ts` 解析并校验 `config.ts`
 3. `build.ts` 调用 `buildAppBundle()`
 4. `bundle.ts` 生成 bootstrap 入口、执行 `Bun.build`
 5. `build.ts` 将打包产物写入 `outDir`
 6. `build.ts` 复制 `assetsDirs` 并写入 `index.html`
 
-### `solid-dev`
+### `solid-lib dev`
 
 1. `dev.ts` 调用 `loadConfig()`
 2. `dev.ts` 调用 `buildAppBundle()`，但不写入 `dist/`
@@ -77,13 +79,30 @@
 - `outDir` 不能指向项目根目录, 保留目录, 源码树内, 与 `assetsDirs` 重叠的位置, 或通过既有 symlink 祖先逃逸项目根目录
 - 入口组件必须有默认导出
 
+最小配置:
+
+```ts
+import { defineConfig } from "solid-lib/builder";
+
+export default defineConfig({
+  appTitle: "solid-lib demo",
+  assetsDirs: ["assets"],
+  outDir: "dist",
+  watchDirs: ["../src"],
+});
+```
+
+### 挂载节点
+
+bootstrap 会按 `mountId` 查找挂载节点。如果页面中没有对应元素, 会创建 `<div id="{mountId}">` 并追加到 `document.body` 后再挂载应用。
+
 ### 运行时依赖
 
-`bundle.ts` 直接引用 `dom-expressions/src/client` 作为运行时入口，`lib.ts` 负责为其中的 `rxcore` 导入提供 shim。由于这是实际的运行时依赖，安装后的消费者环境也必须能解析到 `dom-expressions`。
+`bundle.ts` 直接引用 `@solidjs/web` 作为运行时入口。由于这是实际的运行时依赖，安装后的消费者环境也必须能解析到 `@solidjs/web`。
 
-### `solid-dev` 的内存输出
+### `solid-lib dev` 的内存输出
 
-`solid-dev` 不会写入 `dist/`。它会:
+`solid-lib dev` 不会写入 `dist/`。它会:
 
 - 将打包产物保存在内存 `Map`
 - 通过 HTTP 直接返回 HTML、JS、CSS

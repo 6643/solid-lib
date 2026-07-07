@@ -1,9 +1,9 @@
 import { createSignal, For } from "solid-js";
-import { createStorage } from "../use/createStorage";
+import { createStorage } from "../utils/createStorage";
 import { IconButton } from "./Button";
 import { icon_palette, icon_light_mode, icon_dark_mode } from "./svgicons";
 import styles from "./Theme.module.css";
-import { getResolvedThemeModeCore, initializeThemeModeCore, setThemeModeCore, type ThemeMode } from "./themeMode.ts";
+import { getResolvedThemeMode, initializeThemeMode, setThemeMode, type ThemeMode } from "./themeMode";
 
 const [themeMode, setThemeModeSignal] = createSignal<ThemeMode>("system");
 let accentState: ReturnType<typeof createStorage<string>> | undefined;
@@ -15,12 +15,12 @@ const applyAccent = (color: string) => {
 };
 
 const getAccentState = () => {
-    accentState ??= createStorage("accent", "teal");
+    accentState ??= createStorage("accent", "#e95420");
     return accentState;
 };
 
 export const initTheme = () => {
-    const mode = initializeThemeModeCore();
+    const mode = initializeThemeMode();
     setThemeModeSignal(mode);
     return mode;
 };
@@ -36,7 +36,7 @@ export const useTheme = () => [
     themeMode,
     (value: ThemeMode | ((prev: ThemeMode) => ThemeMode)) => {
         const nextMode = typeof value === "function" ? value(themeMode()) : value;
-        const appliedThemeMode = setThemeModeCore(nextMode);
+        const appliedThemeMode = setThemeMode(nextMode);
         setThemeModeSignal(appliedThemeMode);
         return appliedThemeMode;
     },
@@ -62,7 +62,7 @@ const accents = [
     { name: "purple", value: "#9c27b0" },
     { name: "pink", value: "#e91e63" },
     { name: "red", value: "#f44336" },
-    { name: "orange", value: "#ff9800" },
+    { name: "orange", value: "#e95420" },
     { name: "green", value: "#4caf50" },
     { name: "indigo", value: "#3f51b5" },
 ];
@@ -71,7 +71,7 @@ const themeIcons = { light: icon_light_mode, dark: icon_dark_mode };
 
 export const ThemeSwitch = () => {
     const [theme, setTheme] = useTheme();
-    const resolvedTheme = () => getResolvedThemeModeCore();
+    const resolvedTheme = () => getResolvedThemeMode();
     const toggle = () => {
         setTheme(resolvedTheme() === "dark" ? "light" : "dark");
     };

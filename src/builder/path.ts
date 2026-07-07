@@ -70,14 +70,14 @@ export const getProjectRelativeSegments = (cwd: string, targetPath: string): str
 
 export const validateProjectRootPath = (cwd: string, targetPath: string, label: string, originalPath: string): void => {
     if (!isSameOrSubpath(targetPath, cwd)) {
-        throw new Error(`solid-build ${label} must stay inside the project root: ${originalPath}`);
+        throw new Error(`solid-lib ${label} must stay inside the project root: ${originalPath}`);
     }
 };
 
 export const validateExistingPathTarget = (cwd: string, targetPath: string, label: string, originalPath: string): void => {
     const realTargetPath = resolveExistingRealPath(targetPath);
     if (!isSameOrSubpath(realTargetPath, cwd)) {
-        throw new Error(`solid-build ${label} must stay inside the project root: ${originalPath}`);
+        throw new Error(`solid-lib ${label} must stay inside the project root: ${originalPath}`);
     }
 };
 

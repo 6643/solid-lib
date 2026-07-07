@@ -1,4 +1,4 @@
-import { createSignal, createEffect } from 'solid-js';
+import { createSignal, createTrackedEffect } from 'solid-js';
 
 /**
  * A hook to manage the Screen Wake Lock API.
@@ -36,18 +36,16 @@ export const useWakeLock = () => {
     };
 
     // Automatically re-acquire the lock when the page becomes visible again
-    createEffect(
-        () => document.visibilityState,  // compute
-        (visibilityState) => {  // apply
-            const handleVisibilityChange = () => {
-                if (isActive() && visibilityState === 'visible') {
-                    request();
-                }
-            };
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-            return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-        }
-    );
+    createTrackedEffect(() => {
+        const visibilityState = document.visibilityState;
+        const handleVisibilityChange = () => {
+            if (isActive() && visibilityState === 'visible') {
+                request();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    });
 
     const setActive = (active: boolean) => {
         active ? request() : release();

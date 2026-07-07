@@ -1,5 +1,5 @@
 import styles from "./SortListBox.module.css";
-import { createSignal, For, onSettled } from "solid-js";
+import { createSignal, createTrackedEffect, For } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { SvgIcon } from "./SvgIcon";
 import { icon_drag_handle } from "./svgicons";
@@ -120,6 +120,9 @@ export const SortListBox = <T,>(props: {
                 item.style.removeProperty("--translate-y");
                 item.classList.remove(styles.dragging!, styles.displaced!);
             });
+            // 滚到目标位置
+            const target = listItems[currentVisualIndex];
+            if (target) target.scrollIntoView({ block: "start" });
         });
     };
 
@@ -150,7 +153,7 @@ export const SortListBox = <T,>(props: {
         setDragState(null);
     };
 
-    onSettled(() => () => cleanUpDrag());
+    createTrackedEffect(() => cleanUpDrag());
 
     return (
         <div class={styles.sort_list_box} ref={containerEl} onPointerDown={handlePointerDown}>

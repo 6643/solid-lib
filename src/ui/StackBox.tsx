@@ -1,5 +1,5 @@
 import styles from "./StackBox.module.css"
-import { children, createEffect } from "solid-js"
+import { children, createTrackedEffect } from "solid-js"
 export const StackBox = (props: {
     children: any
     pos?: { x?: number, y?: number }[]
@@ -14,9 +14,10 @@ export const StackBox = (props: {
     }
     const resolved = children(() => props.children)
 
-    createEffect(
-        () => ({ nodes: resolved.toArray(), pos: props.pos }),
-        ({ nodes, pos }) => nodes.forEach((child: any, i: number) => {
+    createTrackedEffect(() => {
+        const nodes = resolved.toArray();
+        const pos = props.pos;
+        nodes.forEach((child: any, i: number) => {
             if (!(child instanceof HTMLElement)) return
             const p = pos?.[i]
             if (!p) return
@@ -26,11 +27,10 @@ export const StackBox = (props: {
                 child.style.setProperty(parts[0], parts[1])
             })
         })
-    )
+    })
 
 
     return <div class={styles.stack_box}>
         {resolved() as any}
     </div>
 }
-

@@ -45,12 +45,12 @@ export const buildStaticApp = async ({
     return { bundle: built.bundle, entryFile: built.entryFile };
 };
 
-const main = async (): Promise<void> => {
-    const loadedConfig = await loadConfig(process.cwd());
+export const runBuildCommand = async (cwd: string = process.cwd()): Promise<void> => {
+    const loadedConfig = await loadConfig(cwd);
     const result = await buildStaticApp(loadedConfig);
 
     if (!result.bundle.success) {
-        throw new Error("solid-build failed");
+        throw new Error("solid-lib build failed");
     }
 
     console.log(`Built ${loadedConfig.cwd}/${loadedConfig.config.outDir}`);
@@ -58,5 +58,5 @@ const main = async (): Promise<void> => {
 };
 
 if (import.meta.main) {
-    await main();
+    await runBuildCommand();
 }

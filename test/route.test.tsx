@@ -285,15 +285,15 @@ describe("parseParams", () => {
       tags: (raw) => raw?.split(",").filter(Boolean) ?? [],
     });
 
-    expect(params.page).toBe(1);
-    expect(params.enabled).toBe(false);
-    expect(params.tags).toEqual([]);
+    expect(params.page()).toBe(1);
+    expect(params.enabled()).toBe(false);
+    expect(params.tags()).toEqual([]);
 
     pushRoute("/search?page=2&enabled=true&tags=a,b");
 
-    expect(params.page).toBe(2);
-    expect(params.enabled).toBe(true);
-    expect(params.tags).toEqual(["a", "b"]);
+    expect(params.page()).toBe(2);
+    expect(params.enabled()).toBe(true);
+    expect(params.tags()).toEqual(["a", "b"]);
   });
 });
 

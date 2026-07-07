@@ -1,5 +1,5 @@
 import styles from "./Expand.module.css";
-import { createSignal, Show, createEffect } from "solid-js";
+import { createSignal, Show, createTrackedEffect } from "solid-js";
 import { SvgIcon } from "./SvgIcon";
 import { icon_chevron_right } from "./svgicons";
 
@@ -7,17 +7,14 @@ export const Expand = (props: { title: string; children: any }) => {
     const [getVis, setVis] = createSignal(false);
     const [isActive, setActive] = createSignal(false);
 
-    createEffect(
-        () => getVis(),
-        (value) => {
-            if (value) {
-                setActive(true);
-                return;
-            }
-            const timer = setTimeout(() => setActive(false), 400);
-            return () => clearTimeout(timer);
-        },
-    );
+    createTrackedEffect(() => {
+        if (getVis()) {
+            setActive(true);
+            return;
+        }
+        const timer = setTimeout(() => setActive(false), 400);
+        return () => clearTimeout(timer);
+    });
 
     const toggle = () => setVis(!getVis());
 

@@ -15,7 +15,7 @@
 | raised | 按钮、凸起 | 更浅/更深 | 更深/更浅 |
 | inset | 输入框、凹陷 | 更深/更浅 | 更浅/更深 |
 | disabled | 禁用状态 | 灰色 | 灰色 |
-| accrnt | 强调色 | teal | teal |
+| accent | 强调色 | teal | teal |
 | error | 错误色 | firebrick | firebrick |
 
 **全局色**（不区分亮暗）：`--accent-color`、`--error-color`

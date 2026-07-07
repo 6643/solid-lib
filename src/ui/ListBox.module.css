@@ -1,15 +1,8 @@
 .listBox {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-}
-
-.inner {
-    position: relative;
-}
-
-.viewport {
     display: grid;
+    width: inherit;
+    height: inherit;
+    overflow-y: auto;
     grid-auto-rows: auto;
-    gap: calc(1px * var(--gap, 4));
+    gap: 4px;
 }

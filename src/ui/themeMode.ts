@@ -1,4 +1,4 @@
-type ThemeMode = "light" | "dark" | "system";
+export type ThemeMode = "light" | "dark" | "system";
 
 type MediaQueryListWithLegacy = MediaQueryList & {
     addListener?: (listener: (event: MediaQueryListEvent) => void) => void;
@@ -128,5 +128,3 @@ export const initializeThemeMode = initializeThemeModeCore;
 export const setSystemTheme = setSystemThemeCore;
 export const setLightTheme = setLightThemeCore;
 export const setDarkTheme = setDarkThemeCore;
-
-export type { ThemeMode };

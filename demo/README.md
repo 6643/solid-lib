@@ -2,7 +2,7 @@
 
 `demo/` 是 `solid-lib` 的最小本地消费者示例，包含以下特性：
 
-- `solid-build.config.ts`
+- `config.ts`
 - `assetsDirs: ["assets"]`
 - CSS Modules
 - lazy loading
@@ -14,6 +14,8 @@
   - `parseParam()`
 
 ## 先注册链接包
+
+在仓库根目录执行:
 
 ```bash
 bun link
@@ -37,7 +39,7 @@ bun run typecheck
 bun run dev
 ```
 
-`solid-dev` 会以内存方式提供应用内容，不会写入 `dist/`。
+`solid-lib dev` 会以内存方式提供应用内容，不会写入 `dist/`。
 
 启动后可访问这些示例路径：
 
@@ -51,3 +53,5 @@ bun run dev
 ```bash
 bun run build
 ```
+
+实际执行的是 `solid-lib build`。

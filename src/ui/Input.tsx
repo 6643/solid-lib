@@ -1,5 +1,5 @@
 import styles from "./Input.module.css";
-import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
+import { createSignal, createTrackedEffect, createMemo, Show, untrack, For } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { IconButton } from "./Button";
 import { icon_add, icon_remove, icon_content_paste } from "./svgicons";
@@ -15,31 +15,30 @@ const useField = (value: () => string, validate?: (value: string) => ValidateRes
     const [checking, setChecking] = createSignal(false);
     let seq = 0;
 
-    createEffect(
-        () => ({ v: value(), validate }),
-        ({ v, validate }) => {
-            if (!validate) {
-                setError(undefined);
-                return;
-            }
+    createTrackedEffect(() => {
+        const v = value();
+        if (!validate) {
+            setError(undefined);
+            return;
+        }
 
-            const id = ++seq;
-            const result = validate(v);
+        const id = ++seq;
+        const result = validate(v);
 
-            if (result instanceof Promise) {
-                setChecking(true);
-                result
-                    .then((msg) => {
-                        if (id === seq) setError(msg);
-                    })
-                    .finally(() => {
-                        if (id === seq) setChecking(false);
-                    });
-            } else {
-                setError(result);
-            }
-        },
-    );
+        if (result instanceof Promise) {
+            setChecking(true);
+            result
+                .then((msg) => {
+                    if (id === seq) setError(msg);
+                })
+                .finally(() => {
+                    if (id === seq) setChecking(false);
+                });
+            return;
+        }
+
+        setError(result);
+    });
 
     return { error, checking };
 };
@@ -86,12 +85,9 @@ export const RangeInput = (props: {
 }) => {
     const [value, setValue] = createSignal(untrack(() => props.value) ?? untrack(() => props.min) ?? 0);
 
-    createEffect(
-        () => props.value ?? props.min ?? 0,
-        (v) => {
-            setValue(v);
-        },
-    );
+    createTrackedEffect(() => {
+        setValue(props.value ?? props.min ?? 0);
+    });
 
     const inputed = (e: Event) => {
         const v = (e.target as HTMLInputElement).valueAsNumber;
@@ -177,12 +173,13 @@ export const TextArea = (props: {
     };
 
     const renderLineNumbers = () => {
-        const el = lineNumRef;
-        if (!el) return;
-        const count = lineCount();
+        const _el = lineNumRef;
+        if (!_el) return;
+        const _v = value();
+        const _count = _v ? _v.split("\n").length : 1;
         let text = "";
-        for (let i = 1; i <= count; i++) text += i + "\n";
-        el.innerText = text;
+        for (let i = 1; i <= _count; i++) text += i + "\n";
+        _el.innerText = text;
     };
 
     const syncScroll = () => {
@@ -196,10 +193,15 @@ export const TextArea = (props: {
         renderLineNumbers();
     };
 
-    createEffect(
-        () => value(),
-        () => renderLineNumbers(),
-    );
+    createTrackedEffect(() => {
+        const el = lineNumRef;
+        if (!el) return;
+        const v = value();
+        const c = v ? v.split("\n").length : 1;
+        let t = "";
+        for (let i = 1; i <= c; i++) t += i + "\n";
+        el.innerText = t;
+    });
 
     const textarea = (extra: Record<string, unknown>) => (
         <textarea
@@ -275,12 +277,9 @@ export const NumberInput = (props: {
 }) => {
     const [value, setValue] = createSignal(untrack(() => props.value) ?? 0);
 
-    createEffect(
-        () => props.value ?? 0,
-        (v) => {
-            setValue(v);
-        },
-    );
+    createTrackedEffect(() => {
+        setValue(props.value ?? 0);
+    });
 
     const step = () => props.step ?? 1;
 
@@ -455,9 +454,9 @@ export const RadioButton = (props: {
     );
 };
 
-// ── CodeInput ──
+// ── CaptchaInput ──
 
-export const CodeInput = (props: {
+export const CaptchaInput = (props: {
     label: string;
     length?: number;
     value?: string;
@@ -466,38 +465,31 @@ export const CodeInput = (props: {
     pattern?: RegExp;
 }) => {
     const len = () => props.length ?? 6;
-    const pattern = () => props.pattern ?? /^\d$/;
+    const pattern = () => props.pattern ?? /^\w$/;
     let inputEl: HTMLInputElement | undefined;
 
-    createEffect(
-        () => props.value,
-        (value) => {
-            const el = inputEl;
-            if (el && value) {
-                el.setSelectionRange(value.length, value.length);
-            }
-        },
-    );
-
     const handleInput = (e: InputEvent) => {
-        const input = e.target as HTMLInputElement;
         const current = props.value ?? "";
+        const input = e.currentTarget as HTMLInputElement;
 
         if (e.inputType === "deleteContentBackward") {
-            const v = current.slice(0, -1);
-            input.value = v;
-            props.changed?.(v);
+            props.changed?.(current.slice(0, -1));
             return;
         }
 
         if (e.inputType === "insertText" && e.data) {
-            if (current.length >= len()) return;
+            if (current.length >= len()) {
+                input.value = current;
+                return;
+            }
             const ch = [...e.data].find(c => pattern().test(c));
-            if (!ch) return;
-            const result = current + ch;
-            input.value = result;
-            props.changed?.(result);
-            input.setSelectionRange(result.length, result.length);
+            if (!ch) {
+                input.value = current;
+                return;
+            }
+            props.changed?.(current + ch);
+            input.value = current + ch;
+            input.setSelectionRange((current + ch).length, (current + ch).length);
             return;
         }
 
@@ -511,7 +503,6 @@ export const CodeInput = (props: {
             return;
         }
 
-        // 兜底: 其他输入类型, 恢复原值
         input.value = current;
     };
 
@@ -527,17 +518,12 @@ export const CodeInput = (props: {
         <Input label={props.label} right={() => right}>
             <input
                 ref={(el: HTMLInputElement) => { inputEl = el; }}
-                class={styles.codeInput}
+                class={styles.captchaInput}
                 type="text"
                 inputmode="numeric"
                 maxlength={len()}
                 value={props.value ?? ""}
                 onInput={handleInput}
-                onPointerUp={(e: PointerEvent) => {
-                    const input = e.currentTarget as HTMLInputElement;
-                    const pos = input.value.length;
-                    input.setSelectionRange(pos, pos);
-                }}
                 disabled={props.disabled}
                 autocomplete="one-time-code"
                 spellcheck={false}

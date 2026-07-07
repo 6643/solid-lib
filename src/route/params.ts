@@ -1,4 +1,4 @@
-import { createMemo, type Accessor } from "solid-js";
+import type { Accessor } from "solid-js";
 
 import { ensureRouteState, getCurrentSearch } from "./state";
 
@@ -62,10 +62,10 @@ export const parseParam: ParseParam = <T>(name: string, parserOrFallback: ParamP
     ensureRouteState();
     const parser = toParamParser(parserOrFallback);
 
-    return createMemo(() => {
+    return () => {
         const searchParams = new URLSearchParams(getCurrentSearch());
         return parser(searchParams.get(name));
-    });
+    };
 };
 
 export const parseParams = <T extends ParamSchema>(schema: T): { readonly [K in keyof T]: Accessor<T[K]> } => {
@@ -74,10 +74,10 @@ export const parseParams = <T extends ParamSchema>(schema: T): { readonly [K in 
     const result = {} as Record<string, Accessor<unknown>>;
 
     for (const [key, parser] of Object.entries(schema)) {
-        result[key] = createMemo(() => {
+        result[key] = () => {
             const searchParams = new URLSearchParams(getCurrentSearch());
             return (parser as ParamParser<unknown>)(searchParams.get(key));
-        });
+        };
     }
 
     return result as { readonly [K in keyof T]: Accessor<T[K]> };

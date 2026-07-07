@@ -1,4 +1,4 @@
-import { createEffect, type Accessor, createMemo } from "solid-js";
+import { createMemo, createTrackedEffect, type Accessor } from "solid-js";
 
 
 interface GestureOptions {
@@ -21,60 +21,60 @@ const usePointerEvents = <T extends HTMLElement>(
     handlersAccessor: Accessor<PointerEventHandlers>,
     capturePointerAccessor: Accessor<boolean> = () => true
 ) => {
-    createEffect(
-        () => ({ ref: typeof ref === "function" ? ref() : ref, handlers: handlersAccessor(), capturePointer: capturePointerAccessor() }),  // compute
-        ({ ref: el, handlers: handlersAccessorValue, capturePointer }) => {  // apply
-            if (!el) return;
+    createTrackedEffect(() => {
+        const el = typeof ref === "function" ? ref() : ref;
+        const handlersAccessorValue = handlersAccessor();
+        const capturePointer = capturePointerAccessor();
+        if (!el) return;
 
-            let activePointerId: number | null = null;
+        let activePointerId: number | null = null;
 
-            const handlePointerDown = (event: PointerEvent) => {
-                if (event.button !== 0) return; // Only left click
-                activePointerId = event.pointerId;
-                if (capturePointer) {
-                    (event.currentTarget as Element).setPointerCapture(activePointerId);
-                }
-                handlersAccessorValue.onPointerDown?.(event, activePointerId);
-            };
+        const handlePointerDown = (event: PointerEvent) => {
+            if (event.button !== 0) return;
+            activePointerId = event.pointerId;
+            if (capturePointer) {
+                (event.currentTarget as Element).setPointerCapture(activePointerId);
+            }
+            handlersAccessorValue.onPointerDown?.(event, activePointerId);
+        };
 
-            const handlePointerMove = (event: PointerEvent) => {
-                if (activePointerId === null || event.pointerId !== activePointerId) return;
-                handlersAccessorValue.onPointerMove?.(event, activePointerId);
-            };
+        const handlePointerMove = (event: PointerEvent) => {
+            if (activePointerId === null || event.pointerId !== activePointerId) return;
+            handlersAccessorValue.onPointerMove?.(event, activePointerId);
+        };
 
-            const handlePointerUp = (event: PointerEvent) => {
-                if (activePointerId === null || event.pointerId !== activePointerId) return;
-                handlersAccessorValue.onPointerUp?.(event, activePointerId);
-                if (capturePointer) {
-                    (event.currentTarget as Element).releasePointerCapture(activePointerId);
-                }
-                activePointerId = null;
-            };
+        const handlePointerUp = (event: PointerEvent) => {
+            if (activePointerId === null || event.pointerId !== activePointerId) return;
+            handlersAccessorValue.onPointerUp?.(event, activePointerId);
+            if (capturePointer) {
+                (event.currentTarget as Element).releasePointerCapture(activePointerId);
+            }
+            activePointerId = null;
+        };
 
-            const handlePointerCancel = (event: PointerEvent) => {
-                if (activePointerId === null || event.pointerId !== activePointerId) return;
-                handlersAccessorValue.onPointerCancel?.(event, activePointerId);
-                if (capturePointer) {
-                    (event.currentTarget as Element).releasePointerCapture(activePointerId);
-                }
-                activePointerId = null;
-            };
+        const handlePointerCancel = (event: PointerEvent) => {
+            if (activePointerId === null || event.pointerId !== activePointerId) return;
+            handlersAccessorValue.onPointerCancel?.(event, activePointerId);
+            if (capturePointer) {
+                (event.currentTarget as Element).releasePointerCapture(activePointerId);
+            }
+            activePointerId = null;
+        };
 
-            el.addEventListener("pointerdown", handlePointerDown);
-            el.addEventListener("pointermove", handlePointerMove); // Add move listener
-            el.addEventListener("pointerup", handlePointerUp);
-            el.addEventListener("pointercancel", handlePointerCancel);
-            el.addEventListener("pointerleave", handlePointerCancel); // Treat leave as cancel
+        el.addEventListener("pointerdown", handlePointerDown);
+        el.addEventListener("pointermove", handlePointerMove);
+        el.addEventListener("pointerup", handlePointerUp);
+        el.addEventListener("pointercancel", handlePointerCancel);
+        el.addEventListener("pointerleave", handlePointerCancel);
 
-            return () => {
-                el.removeEventListener("pointerdown", handlePointerDown);
-                el.removeEventListener("pointermove", handlePointerMove);
-                el.removeEventListener("pointerup", handlePointerUp);
-                el.removeEventListener("pointercancel", handlePointerCancel);
-                el.removeEventListener("pointerleave", handlePointerCancel);
-            };
-        }
-    );
+        return () => {
+            el.removeEventListener("pointerdown", handlePointerDown);
+            el.removeEventListener("pointermove", handlePointerMove);
+            el.removeEventListener("pointerup", handlePointerUp);
+            el.removeEventListener("pointercancel", handlePointerCancel);
+            el.removeEventListener("pointerleave", handlePointerCancel);
+        };
+    });
 };
 
 export const useTap = <T extends HTMLElement>(

@@ -38,9 +38,6 @@
     flex: 1;
     min-width: 0;
 }
-.field input {
-    height: 36px;
-}
 .field input,
 .field textarea {
     appearance: none;
@@ -48,6 +45,10 @@
     border: none;
     box-shadow: none;
     outline: 0;
+}
+
+.field .inputGrow input,
+.field .inputGrow textarea {
     width: 100%;
     resize: vertical;
 }
@@ -64,14 +65,14 @@
 
 .field input:-webkit-autofill,
 .field textarea:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px var(--secondary-bg) inset;
-    -webkit-text-fill-color: var(--secondary-fg);
+    -webkit-box-shadow: 0 0 0 1000px var(--sunken-bg) inset;
+    -webkit-text-fill-color: var(--sunken-fg);
 }
 
 .field input:-webkit-autofill:focus,
 .field textarea:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px var(--secondary-bg) inset;
-    -webkit-text-fill-color: var(--secondary-fg);
+    -webkit-box-shadow: 0 0 0 1000px var(--sunken-bg) inset;
+    -webkit-text-fill-color: var(--sunken-fg);
 }
 
 .field input::placeholder,
@@ -81,7 +82,7 @@
 
 .field input:disabled,
 .field textarea:disabled {
-    color: var(--secondary-fg);
+    color: var(--sunken-fg);
     cursor: not-allowed;
 }
 
@@ -103,11 +104,11 @@
     text-align: right;
     padding: 11px 8px;
     min-width: 2.4em;
-    color: var(--secondary-fg);
+    color: var(--sunken-fg);
     font-size: inherit;
     line-height: 1.5;
     white-space: pre;
-    border-right: 1px solid color-mix(in srgb, var(--secondary-fg) 20%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--sunken-fg) 20%, transparent);
     opacity: 0.6;
     box-sizing: border-box;
 }
@@ -148,7 +149,7 @@
 .rangeInput input[type="range"]::-moz-range-track {
     height: 4px;
     border-radius: 2px;
-    background: var(--secondary-bg);
+    background: var(--sunken-bg);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
@@ -181,7 +182,7 @@
     cursor: pointer;
     user-select: none;
     padding: 6px 12px;
-    border: 2px solid var(--secondary-fg);
+    border: 2px solid var(--sunken-fg);
     border-radius: 3px;
     transition: border-color 160ms ease;
     overflow: hidden;
@@ -221,7 +222,7 @@
 
 .checkBtn span,
 .radioBtn span {
-    color: var(--secondary-fg);
+    color: var(--sunken-fg);
     font-size: 14px;
 }
 
@@ -247,50 +248,30 @@
     color: var(--disabled-color);
 }
 
-/* ── CodeInput ── */
+/* ── CaptchaInput ── */
 
-input.codeInput {
-    --slot: 40px;
-    --gap: 2px;
+input.captchaInput {
+    letter-spacing: 4px;
+    padding-left: 8px;
     appearance: none;
-    border: none;
-    background-image: repeating-linear-gradient(
-        90deg,
-        var(--disabled-color) 0px,
-        var(--disabled-color) 1px,
-        transparent 1px,
-        transparent 40px
-    );
-    background-size: calc((var(--len) - 1) * var(--slot)) 24px;
-    background-position: var(--slot) 6px;
-    background-repeat: no-repeat;
-    color: var(--primary-fg);
+    outline: none;
     font-family: monospace;
     font-style: italic;
-    height: 36px;
-    letter-spacing: calc(var(--slot) - 1ch);
-    outline: none;
-    caret-color: var(--accent-color);
-    text-indent: calc((var(--slot) - 1ch) / 2);
-    text-align: left;
-    width: calc(var(--len) * var(--slot) + var(--slot) - 1ch);
+    color: var(--raised-fg);
+    transition: border-color 160ms ease;
 }
 
-.codeInput:focus {
+input.captchaInput:focus {
     border-color: var(--accent-color);
 }
 
-.codeInput::selection {
-    background-color: transparent;
-    color: inherit;
-}
-.codeInput::-moz-selection {
-    background-color: transparent;
-    color: inherit;
-}
-
-.codeInput:disabled {
+input.captchaInput:disabled {
     color: var(--disabled-color);
     border-color: var(--disabled-color);
     cursor: not-allowed;
+}
+
+input.captchaInput::selection {
+    background-color: transparent;
+    color: inherit;
 }

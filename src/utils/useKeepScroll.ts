@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, createRoot, createStore, untrack } from "solid-js"
+import { type Accessor, createStore, createTrackedEffect, getOwner, onCleanup, untrack } from "solid-js"
 import { useScrollEnd } from "./useScrollEnd.ts"
 
 
@@ -32,22 +32,28 @@ export const useKeepScroll = (
     key: string,
     debounceMs: number = 32,
 ) => {
-    const el = typeof ref === "function" ? ref() : ref;
-    if (!el) return;
+    const restoreScrollTop = (el: HTMLElement) => {
+        const storedTop = getPos(page, key);
+        if (storedTop <= 0) return;
 
-    createRoot((dispose) => {
+        const timer = setTimeout(() => {
+            el.scrollTop = storedTop;
+        }, 0);
+
+        return () => clearTimeout(timer);
+    };
+
+    if (typeof ref !== "function") {
+        useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs);
+        const cleanup = restoreScrollTop(ref);
+        if (cleanup && getOwner()) onCleanup(cleanup);
+        return;
+    }
+
+    createTrackedEffect(() => {
+        const el = ref();
+        if (!el) return;
         useScrollEnd(el, (top) => setPos(page, key, top), debounceMs);
-
-        createEffect(() => getPos(page, key), (storedTop) => {
-            if (storedTop <= 0) return;
-
-            const timer = setTimeout(() => {
-                el.scrollTop = storedTop;
-            }, 0);
-
-            return () => clearTimeout(timer);
-        });
-
-        return dispose;
+        return restoreScrollTop(el);
     });
 };

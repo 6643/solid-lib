@@ -1,6 +1,6 @@
 import styles from "./TopTab.module.css";
-import { createSignal, For, onSettled, Show } from "solid-js";
-import { getPos, setPos, useKeepScroll } from "../use/useKeepScroll";
+import { createSignal, createTrackedEffect, For, Show } from "solid-js";
+import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { SvgIcon } from "./SvgIcon.tsx";
 
 const useTopTab = (key: string) => {
@@ -20,7 +20,7 @@ const useTopTab = (key: string) => {
 export const TopTab = (props: { children: { name?: string; icon?: string; panel: () => any }[] }) => {
     const { getActiveIndex, toIndex, mainRef } = useTopTab("top.tab");
 
-    onSettled(() => toIndex(getPos(location.pathname, "top.tab")));
+    createTrackedEffect(() => toIndex(getPos(location.pathname, "top.tab")));
 
     return (
         <div class={styles.topTab}>

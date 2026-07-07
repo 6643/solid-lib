@@ -1,19 +1,21 @@
 import { createSignal, untrack } from "solid-js";
 
 /**
- * A reactive hook that persists a signal value in localStorage.
+ * A reactive hook that persists a signal value in Web Storage.
  *
- * @param key - The localStorage key
+ * @param key - The storage key
  * @param defaultValue - A plain value, or a function returning the default value
- * @returns A signal tuple [getter, setter] that syncs with localStorage
+ * @param storage - The storage backend, defaults to localStorage
+ * @returns A signal tuple [getter, setter] that syncs with storage
  */
 export const createStorage = <T>(
     key: string,
     defaultValue: T | (() => T),
+    storage: Storage | undefined = globalThis.localStorage,
 ): [() => T, (value: T | ((prev: T) => T)) => void] => {
     const initial = untrack(() => {
         try {
-            const stored = localStorage.getItem(key);
+            const stored = storage?.getItem(key);
             if (stored !== null) {
                 return JSON.parse(stored) as T;
             }
@@ -30,7 +32,7 @@ export const createStorage = <T>(
         setValue((prev) => {
             const next = typeof input === "function" ? (input as (prev: T) => T)(prev) : input;
             try {
-                localStorage.setItem(key, JSON.stringify(next));
+                storage?.setItem(key, JSON.stringify(next));
             } catch {
                 // ignore storage errors
             }

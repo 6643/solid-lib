@@ -59,8 +59,8 @@ const writeMinimalApp = (appRoot: string) => {
   );
 };
 
-test("solid-dev serves html, js, css, and sse without writing dist", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-"));
+test("solid-lib dev serves html, js, css, and sse without writing dist", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -92,7 +92,7 @@ test("solid-dev serves html, js, css, and sse without writing dist", async () =>
       'import styles from "./App.module.css";',
       "",
       "export default () => {",
-      '  return <main class={styles.shell}>Hello solid-dev</main>;',
+      '  return <main class={styles.shell}>Hello solid-lib dev</main>;',
       "}",
       "",
     ].join("\n"),
@@ -142,8 +142,8 @@ test("solid-dev serves html, js, css, and sse without writing dist", async () =>
   expect(eventsResponse.headers.get("content-type")).toContain("text/event-stream");
 });
 
-test("solid-dev serves the app html for SPA route paths", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-spa-"));
+test("solid-lib dev serves the app html for SPA route paths", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-spa-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -190,8 +190,8 @@ test("solid-dev serves the app html for SPA route paths", async () => {
   expect(html).toContain("/__solid_dev/events");
 });
 
-test("solid-dev rebuilds and emits reload events when source files change", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-watch-"));
+test("solid-lib dev rebuilds and emits reload events when source files change", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-watch-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -262,8 +262,8 @@ test("solid-dev rebuilds and emits reload events when source files change", asyn
   expect(await assetResponse.text()).toContain("before rebuild asset");
 });
 
-test("solid-dev uses devPort from config when no explicit port override is provided", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-port-"));
+test("solid-lib dev uses devPort from config when no explicit port override is provided", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-port-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -299,11 +299,11 @@ test("solid-dev uses devPort from config when no explicit port override is provi
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       "  devPort: 4321,",
       '  appTitle: "Port config",',
       "});",
@@ -318,8 +318,8 @@ test("solid-dev uses devPort from config when no explicit port override is provi
   expect(devServer.port).toBe(4321);
 });
 
-test("solid-dev watches the full app source tree, not only the entry directory", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-tree-"));
+test("solid-lib dev watches the full app source tree, not only the entry directory", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-tree-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src", "app"), { recursive: true });
@@ -359,11 +359,11 @@ test("solid-dev watches the full app source tree, not only the entry directory",
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appComponent: "src/app/_.tsx",',
       "});",
       "",
@@ -391,8 +391,8 @@ test("solid-dev watches the full app source tree, not only the entry directory",
   expect(jsSource).toContain("After sibling rebuild");
 });
 
-test("solid-dev also watches the full source tree when appComponent uses ./src path", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-dot-tree-"));
+test("solid-lib dev also watches the full source tree when appComponent uses ./src path", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-dot-tree-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src", "app"), { recursive: true });
@@ -432,11 +432,11 @@ test("solid-dev also watches the full source tree when appComponent uses ./src p
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appComponent: "./src/app/_.tsx",',
       "});",
       "",
@@ -464,8 +464,8 @@ test("solid-dev also watches the full source tree when appComponent uses ./src p
   expect(jsSource).toContain("After dot sibling rebuild");
 });
 
-test("solid-dev reloads updated config values after config file changes", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-config-"));
+test("solid-lib dev reloads updated config values after config file changes", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-config-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -500,13 +500,13 @@ test("solid-dev reloads updated config values after config file changes", async 
     ].join("\n"),
   );
 
-  const configPath = join(appRoot, "solid-build.config.ts");
+  const configPath = join(appRoot, "config.ts");
   writeFileSync(
     configPath,
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appTitle: "Before config reload",',
       "});",
       "",
@@ -523,9 +523,9 @@ test("solid-dev reloads updated config values after config file changes", async 
   writeFileSync(
     configPath,
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appTitle: "After config reload",',
       "});",
       "",
@@ -539,8 +539,8 @@ test("solid-dev reloads updated config values after config file changes", async 
   expect(html).toContain("<title>After config reload</title>");
 });
 
-test("solid-dev reloads config values when imported helper modules change", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-config-helper-"));
+test("solid-lib dev reloads config values when imported helper modules change", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-config-helper-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -577,12 +577,12 @@ test("solid-dev reloads config values when imported helper modules change", asyn
 
   writeFileSync(join(appRoot, "title.ts"), 'export const title = "Before helper reload";\n');
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       'import { title } from "./title";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       "  appTitle: title,",
       "});",
       "",
@@ -608,8 +608,8 @@ test("solid-dev reloads config values when imported helper modules change", asyn
   expect(afterHtml).toContain("<title>After helper reload</title>");
 });
 
-test("solid-dev warns that devPort changes require restart and keeps the current port", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-port-reload-"));
+test("solid-lib dev warns that devPort changes require restart and keeps the current port", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-port-reload-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -644,13 +644,13 @@ test("solid-dev warns that devPort changes require restart and keeps the current
     ].join("\n"),
   );
 
-  const configPath = join(appRoot, "solid-build.config.ts");
+  const configPath = join(appRoot, "config.ts");
   writeFileSync(
     configPath,
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       "  devPort: 4123,",
       '  appTitle: "Port before",',
       "});",
@@ -677,9 +677,9 @@ test("solid-dev warns that devPort changes require restart and keeps the current
     writeFileSync(
       configPath,
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         "  devPort: 5123,",
         '  appTitle: "Port after",',
         "});",
@@ -693,7 +693,7 @@ test("solid-dev warns that devPort changes require restart and keeps the current
     const html = await (await fetch(`${devServer.origin}/`)).text();
     expect(html).toContain("<title>Port after</title>");
     expect(devServer.port).toBe(4123);
-    expect(warnings.some((warning) => warning.includes("devPort change requires restarting solid-dev"))).toBe(true);
+    expect(warnings.some((warning) => warning.includes("devPort change requires restarting solid-lib dev"))).toBe(true);
   } finally {
     console.warn = originalWarn;
   }
@@ -736,7 +736,7 @@ test("loadConfig rejects app components that only mention export default in stri
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build app component must default export a component");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib app component must default export a component");
 });
 
 test("loadConfig rejects outDir inside the source tree when appComponent uses ./src path", async () => {
@@ -776,11 +776,11 @@ test("loadConfig rejects outDir inside the source tree when appComponent uses ./
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appComponent: "./src/app/_.tsx",',
       '  outDir: "src/dist",',
       "});",
@@ -788,7 +788,7 @@ test("loadConfig rejects outDir inside the source tree when appComponent uses ./
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not be inside the app source tree");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib outDir must not be inside the app source tree");
 });
 
 test("loadConfig rejects reserved output directories before build deletion can target them", async () => {
@@ -798,18 +798,18 @@ test("loadConfig rejects reserved output directories before build deletion can t
     writeMinimalApp(appRoot);
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         `  outDir: ${JSON.stringify(outDir)},`,
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not target a reserved project directory");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib outDir must not target a reserved project directory");
   }
 });
 
@@ -820,11 +820,11 @@ test("loadConfig rejects output directories that overlap configured assets direc
   mkdirSync(join(appRoot, "assets"), { recursive: true });
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  assetsDirs: ["assets"],',
       '  outDir: "assets",',
       "});",
@@ -832,7 +832,7 @@ test("loadConfig rejects output directories that overlap configured assets direc
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not overlap assetsDirs entries");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib outDir must not overlap assetsDirs entries");
 });
 
 test("loadConfig rejects appComponent paths outside the project root", async () => {
@@ -867,18 +867,18 @@ test("loadConfig rejects appComponent paths outside the project root", async () 
     );
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         '  appComponent: "../.tmp-solid-config-external-app.tsx",',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build app component must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib app component must stay inside the project root");
   } finally {
     rmSync(outsideComponentPath, { force: true });
   }
@@ -917,18 +917,18 @@ test("loadConfig rejects symlinked appComponent paths whose real target escapes 
     );
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         '  appComponent: "src/link.tsx",',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build app component must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib app component must stay inside the project root");
   } finally {
     rmSync(outsideComponentPath, { force: true });
   }
@@ -977,18 +977,18 @@ test("loadConfig rejects assetsDirs outside the project root", async () => {
     );
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         '  assetsDirs: ["../.tmp-solid-config-external-assets"],',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib assetsDirs entries must stay inside the project root");
   } finally {
     rmSync(outsideAssetsPath, { force: true, recursive: true });
   }
@@ -1038,18 +1038,18 @@ test("loadConfig rejects symlinked assetsDirs whose real target escapes the proj
     );
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         '  assetsDirs: ["assets-link"],',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib assetsDirs entries must stay inside the project root");
   } finally {
     rmSync(outsideAssetsPath, { force: true, recursive: true });
   }
@@ -1061,18 +1061,18 @@ test("loadConfig rejects the project root as an assets directory", async () => {
   writeMinimalApp(appRoot);
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  assetsDirs: ["."],',
       "});",
       "",
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not point at the project root");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib assetsDirs entries must not point at the project root");
 });
 
 test("loadConfig rejects assetsDirs symlinks whose real target is a reserved directory", async () => {
@@ -1083,18 +1083,18 @@ test("loadConfig rejects assetsDirs symlinks whose real target is a reserved dir
   symlinkSync(join(appRoot, "node_modules"), join(appRoot, "assets-link"), "dir");
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  assetsDirs: ["assets-link"],',
       "});",
       "",
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not target a reserved project directory");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib assetsDirs entries must not target a reserved project directory");
 });
 
 test("loadConfig rejects nested assets symlinks whose real target escapes the assets directory", async () => {
@@ -1110,18 +1110,18 @@ test("loadConfig rejects nested assets symlinks whose real target escapes the as
     symlinkSync(outsideAssetPath, join(appRoot, "assets", "outside.txt"));
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         '  assetsDirs: ["assets"],',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not contain symlinks outside the assets directory");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib assetsDirs entries must not contain symlinks outside the assets directory");
   } finally {
     rmSync(outsideAssetPath, { force: true });
   }
@@ -1136,18 +1136,18 @@ test("loadConfig rejects cyclic directory symlinks inside assets directories", a
   symlinkSync(".", join(appRoot, "assets", "loop"), "dir");
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  assetsDirs: ["assets"],',
       "});",
       "",
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build assetsDirs entries must not contain directory symlinks");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib assetsDirs entries must not contain directory symlinks");
 });
 
 test("loadConfig uses the nested src directory as app source root", async () => {
@@ -1187,11 +1187,11 @@ test("loadConfig uses the nested src directory as app source root", async () => 
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appComponent: "packages/web/src/_.tsx",',
       '  outDir: "packages/web-dist",',
       "});",
@@ -1247,18 +1247,18 @@ test("loadConfig rejects symlinked outDir paths", async () => {
     );
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         '  outDir: "out-link",',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not be a symbolic link");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib outDir must not be a symbolic link");
   } finally {
     rmSync(outsideOutDirPath, { force: true, recursive: true });
   }
@@ -1275,18 +1275,18 @@ test("loadConfig rejects outDir paths whose existing parent escapes the project 
   symlinkSync(outsideOutDirPath, join(appRoot, "out-link"));
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  outDir: "out-link/dist",',
       "});",
       "",
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-build outDir must not escape the project root through a symbolic link");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib outDir must not escape the project root through a symbolic link");
 });
 
 test("loadConfig rejects config helper imports outside the project root", async () => {
@@ -1331,19 +1331,19 @@ test("loadConfig rejects config helper imports outside the project root", async 
     );
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         'import { title } from "../.tmp-solid-config-parent-helper";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         "  appTitle: title,",
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build config imports must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib config imports must stay inside the project root");
   } finally {
     rmSync(outsideHelperPath, { force: true });
   }
@@ -1392,19 +1392,19 @@ test("loadConfig rejects config helper symlinks whose real target escapes the pr
     );
 
     writeFileSync(
-      join(appRoot, "solid-build.config.ts"),
+      join(appRoot, "config.ts"),
       [
-        'import { defineSolidBuildConfig } from "solid-lib/builder";',
+        'import { defineConfig } from "solid-lib/builder";',
         'import { title } from "./helper";',
         "",
-        "export default defineSolidBuildConfig({",
+        "export default defineConfig({",
         "  appTitle: title,",
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-build config imports must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib config imports must stay inside the project root");
   } finally {
     rmSync(outsideHelperPath, { force: true });
   }
@@ -1447,11 +1447,11 @@ test("loadConfig works when the project root is read-only", async () => {
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appTitle: "Readonly config",',
       "});",
       "",
@@ -1505,11 +1505,11 @@ test("loadConfig works when the project path contains percent-encoded characters
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appTitle: "Encoded path config",',
       "});",
       "",
@@ -1520,8 +1520,8 @@ test("loadConfig works when the project path contains percent-encoded characters
   expect(loaded.config.appTitle).toBe("Encoded path config");
 });
 
-test("solid-dev works when the project root is read-only", async () => {
-  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-dev-readonly-"));
+test("solid-lib dev works when the project root is read-only", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-readonly-"));
   createdDirs.push(appRoot);
 
   mkdirSync(join(appRoot, "src"), { recursive: true });
@@ -1557,11 +1557,11 @@ test("solid-dev works when the project root is read-only", async () => {
   );
 
   writeFileSync(
-    join(appRoot, "solid-build.config.ts"),
+    join(appRoot, "config.ts"),
     [
-      'import { defineSolidBuildConfig } from "solid-lib/builder";',
+      'import { defineConfig } from "solid-lib/builder";',
       "",
-      "export default defineSolidBuildConfig({",
+      "export default defineConfig({",
       '  appTitle: "Readonly dev root",',
       "});",
       "",

@@ -1,5 +1,5 @@
 import styles from "./CountDown.module.css"
-import { createMemo, createSignal, For, onSettled, Show } from "solid-js"
+import { createMemo, createSignal, createTrackedEffect, For, Show } from "solid-js"
 
 export const CountDown = (props: {
     value: number
@@ -14,7 +14,7 @@ export const CountDown = (props: {
         return isSecondToLast || isFourthToLast
     }
 
-    onSettled(() => {
+    createTrackedEffect(() => {
         const timer = setInterval(() => {
             if (getVal() > 0) setVal(getVal() - 1)
             if (getVal() == 0) {

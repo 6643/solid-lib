@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 
 import {
   getThemeMode,
+  getResolvedThemeMode,
   initializeThemeMode,
   setDarkTheme,
   setLightTheme,

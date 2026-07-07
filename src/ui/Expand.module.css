@@ -10,7 +10,7 @@
     justify-content: space-between;
     align-items: center;
     color: var(--color);
-    background-color: var(--secondary-bg);
+    background-color: var(--sunken-bg);
     transition-duration: 512ms;
 }
 
@@ -25,7 +25,7 @@
 
 .expand.active > nav {
     background-color: var(--accent-color);
-    --color: var(--secondary-bg);
+    --color: var(--sunken-bg);
 }
 
 .expand.active > nav > :last-child {
@@ -33,7 +33,7 @@
 }
 
 .expand.active > div {
-    background-color: var(--secondary-bg);
+    background-color: var(--sunken-bg);
     animation-name: open;
 }
 

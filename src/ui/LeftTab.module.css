@@ -13,7 +13,7 @@
     display: grid;
     grid-auto-rows: 64px;
     gap: 4px;
-    background-color: var(--secondary-bg);
+    background-color: var(--sunken-bg);
     box-shadow: 4px 0 4px -4px var(--disabled-color);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -38,12 +38,12 @@
 
 .leftTab > nav > div {
     padding: 8px;
-    background-color: var(--secondary-bg);
+    background-color: var(--sunken-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     transition-duration: 512ms;
-    color: var(--primary-fg);
+    color: var(--raised-fg);
     cursor: pointer;
 }
 

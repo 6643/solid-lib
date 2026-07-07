@@ -1,5 +1,5 @@
 import styles from "./Counter.module.css";
-import { createSignal, createMemo, createEffect, For, Show, untrack } from "solid-js";
+import { createSignal, createMemo, createTrackedEffect, For, Show, untrack } from "solid-js";
 import { IconButton } from "./Button";
 import { icon_remove, icon_add } from "./svgicons";
 
@@ -14,10 +14,9 @@ export const Counter = (props: {
     const [isMoveUp, setMoveUp] = createSignal(false);
     const getNums = createMemo(() => [...String(Math.abs(getVal()))].map(Number));
 
-    createEffect(
-        () => getVal(),
-        (val) => { props.change?.(val); },
-    );
+    createTrackedEffect(() => {
+        props.change?.(getVal());
+    });
 
     const increment = () => {
         const currentValue = getVal();

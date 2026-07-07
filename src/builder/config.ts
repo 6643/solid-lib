@@ -91,39 +91,39 @@ const hasDefaultExport = (sourceFile: ts.SourceFile): boolean => {
 const validateConfigKeys = (config: SolidBuildConfig): void => {
     for (const key of Object.keys(config)) {
         if (LEGACY_CONFIG_KEYS.has(key)) {
-            throw new Error(`solid-build config field "${key}" is no longer supported`);
+            throw new Error(`solid-lib config field "${key}" is no longer supported`);
         }
 
         if (!ALLOWED_CONFIG_KEYS.has(key)) {
-            throw new Error(`solid-build config field "${key}" is not supported`);
+            throw new Error(`solid-lib config field "${key}" is not supported`);
         }
     }
 
     if (config.assetsDirs !== undefined && !Array.isArray(config.assetsDirs)) {
-        throw new Error('solid-build config field "assetsDirs" must be an array of directory paths');
+        throw new Error('solid-lib config field "assetsDirs" must be an array of directory paths');
     }
 
     if (config.devPort !== undefined && (!Number.isInteger(config.devPort) || config.devPort <= 0 || config.devPort > 65535)) {
-        throw new Error('solid-build config field "devPort" must be an integer between 1 and 65535');
+        throw new Error('solid-lib config field "devPort" must be an integer between 1 and 65535');
     }
 
     for (const assetDir of config.assetsDirs ?? []) {
         if (typeof assetDir !== "string" || assetDir.length === 0) {
-            throw new Error('solid-build config field "assetsDirs" must contain non-empty strings');
+            throw new Error('solid-lib config field "assetsDirs" must contain non-empty strings');
         }
     }
 
     for (const field of ["appComponent", "appTitle", "mountId", "outDir"] as const) {
         const value = config[field];
         if (value !== undefined && (typeof value !== "string" || value.length === 0)) {
-            throw new Error(`solid-build config field "${field}" must be a non-empty string`);
+            throw new Error(`solid-lib config field "${field}" must be a non-empty string`);
         }
     }
 };
 
 const validateMountId = (mountId: string): void => {
     if (!DOM_ID_PATTERN.test(mountId)) {
-        throw new Error(`solid-build mountId must be a valid DOM id: ${mountId}`);
+        throw new Error(`solid-lib mountId must be a valid DOM id: ${mountId}`);
     }
 };
 
@@ -132,7 +132,7 @@ const validateDefaultExport = async (appComponentPath: string): Promise<void> =>
     const sourceFile = ts.createSourceFile(appComponentPath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 
     if (!hasDefaultExport(sourceFile)) {
-        throw new Error(`solid-build app component must default export a component: ${appComponentPath}`);
+        throw new Error(`solid-lib app component must default export a component: ${appComponentPath}`);
     }
 };
 
@@ -173,7 +173,7 @@ const validateOutDirExistingAncestor = (cwd: string, outDirPath: string): void =
 
     const realAncestorPath = resolveExistingRealPath(existingAncestorPath);
     if (!isSameOrSubpath(realAncestorPath, cwd)) {
-        throw new Error("solid-build outDir must not escape the project root through a symbolic link");
+        throw new Error("solid-lib outDir must not escape the project root through a symbolic link");
     }
 };
 
@@ -182,22 +182,22 @@ const validateOutDir = (cwd: string, outDir: string, appComponent: string): stri
     const relativeOutDir = relative(cwd, outDirPath);
 
     if (relativeOutDir === "") {
-        throw new Error("solid-build outDir must not point at the project root");
+        throw new Error("solid-lib outDir must not point at the project root");
     }
     if (relativeOutDir.startsWith(`..${sep}`) || relativeOutDir === ".." || isAbsolute(relativeOutDir)) {
-        throw new Error(`solid-build outDir must stay inside the project root: ${outDir}`);
+        throw new Error(`solid-lib outDir must stay inside the project root: ${outDir}`);
     }
     if (getProjectRelativeSegments(cwd, outDirPath).some((segment) => RESERVED_PROJECT_DIR_NAMES.has(segment))) {
-        throw new Error(`solid-build outDir must not target a reserved project directory: ${outDir}`);
+        throw new Error(`solid-lib outDir must not target a reserved project directory: ${outDir}`);
     }
     if (existsSync(outDirPath) && lstatSync(outDirPath).isSymbolicLink()) {
-        throw new Error(`solid-build outDir must not be a symbolic link: ${outDir}`);
+        throw new Error(`solid-lib outDir must not be a symbolic link: ${outDir}`);
     }
     validateOutDirExistingAncestor(cwd, outDirPath);
 
     const sourceTreePath = getSourceTreePath(cwd, appComponent);
     if (sourceTreePath && isSameOrSubpath(outDirPath, sourceTreePath)) {
-        throw new Error(`solid-build outDir must not be inside the app source tree: ${outDir}`);
+        throw new Error(`solid-lib outDir must not be inside the app source tree: ${outDir}`);
     }
 
     return outDirPath;
@@ -207,18 +207,18 @@ const validateAssetSymlink = (assetRootRealPath: string, entryPath: string, orig
     const realEntryPath = resolveExistingRealPath(entryPath);
     if (!isSameOrSubpath(realEntryPath, assetRootRealPath)) {
         throw new Error(
-            `solid-build assetsDirs entries must not contain symlinks outside the assets directory: ${originalPath}`,
+            `solid-lib assetsDirs entries must not contain symlinks outside the assets directory: ${originalPath}`,
         );
     }
     if (statSync(realEntryPath).isDirectory()) {
-        throw new Error(`solid-build assetsDirs entries must not contain directory symlinks: ${originalPath}`);
+        throw new Error(`solid-lib assetsDirs entries must not contain directory symlinks: ${originalPath}`);
     }
 };
 
 const validateAssetDirectory = (assetRootRealPath: string, entryPath: string, originalPath: string): void => {
     const realEntryPath = resolveExistingRealPath(entryPath);
     if (!isSameOrSubpath(realEntryPath, assetRootRealPath)) {
-        throw new Error(`solid-build assetsDirs entries must stay inside the assets directory: ${originalPath}`);
+        throw new Error(`solid-lib assetsDirs entries must stay inside the assets directory: ${originalPath}`);
     }
 };
 
@@ -253,40 +253,40 @@ const resolveAssetsDirs = (cwd: string, assetDirs: string[]): LoadedAssetDir[] =
         const inputPath = resolve(cwd, assetDir);
         validateProjectRootPath(cwd, inputPath, "assetsDirs entries", assetDir);
         if (inputPath === cwd) {
-            throw new Error(`solid-build assetsDirs entries must not point at the project root: ${assetDir}`);
+            throw new Error(`solid-lib assetsDirs entries must not point at the project root: ${assetDir}`);
         }
         if (getProjectRelativeSegments(cwd, inputPath).some((segment) => RESERVED_PROJECT_DIR_NAMES.has(segment))) {
-            throw new Error(`solid-build assetsDirs entries must not target a reserved project directory: ${assetDir}`);
+            throw new Error(`solid-lib assetsDirs entries must not target a reserved project directory: ${assetDir}`);
         }
 
         if (!existsSync(inputPath)) {
             if (assetDir === DEFAULT_ASSET_DIR) {
                 continue;
             }
-            throw new Error(`solid-build assets directory was not found at ${inputPath}`);
+            throw new Error(`solid-lib assets directory was not found at ${inputPath}`);
         }
         validateExistingPathTarget(cwd, inputPath, "assetsDirs entries", assetDir);
         const realInputPath = resolveExistingRealPath(inputPath);
 
         if (realInputPath === cwd) {
-            throw new Error(`solid-build assetsDirs entries must not point at the project root: ${assetDir}`);
+            throw new Error(`solid-lib assetsDirs entries must not point at the project root: ${assetDir}`);
         }
         if (getProjectRelativeSegments(cwd, realInputPath).some((segment) => RESERVED_PROJECT_DIR_NAMES.has(segment))) {
-            throw new Error(`solid-build assetsDirs entries must not target a reserved project directory: ${assetDir}`);
+            throw new Error(`solid-lib assetsDirs entries must not target a reserved project directory: ${assetDir}`);
         }
 
         if (!statSync(inputPath).isDirectory()) {
-            throw new Error(`solid-build assets path must be a directory: ${inputPath}`);
+            throw new Error(`solid-lib assets path must be a directory: ${inputPath}`);
         }
         validateAssetTreeSymlinks(inputPath, assetDir);
 
         const outputDirName = assetDir.replace(/\\/g, "/").split("/").filter(Boolean).at(-1);
         if (!outputDirName) {
-            throw new Error(`solid-build assets directory must resolve to a directory name: ${assetDir}`);
+            throw new Error(`solid-lib assets directory must resolve to a directory name: ${assetDir}`);
         }
 
         if (resolved.some((dir) => dir.outputDirName === outputDirName)) {
-            throw new Error(`solid-build assets directory name is duplicated: ${outputDirName}`);
+            throw new Error(`solid-lib assets directory name is duplicated: ${outputDirName}`);
         }
 
         resolved.push({ inputPath, outputDirName });
@@ -298,15 +298,15 @@ const resolveAssetsDirs = (cwd: string, assetDirs: string[]): LoadedAssetDir[] =
 const validateOutDirAssetOverlap = (outDirPath: string, assetsDirs: LoadedAssetDir[], outDir: string): void => {
     for (const assetsDir of assetsDirs) {
         if (isSameOrSubpath(outDirPath, assetsDir.inputPath) || isSameOrSubpath(assetsDir.inputPath, outDirPath)) {
-            throw new Error(`solid-build outDir must not overlap assetsDirs entries: ${outDir}`);
+            throw new Error(`solid-lib outDir must not overlap assetsDirs entries: ${outDir}`);
         }
     }
 };
 
-export const defineSolidBuildConfig = (config: SolidBuildConfig): SolidBuildConfig => config;
+export const defineConfig = (config: SolidBuildConfig): SolidBuildConfig => config;
 
 export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSolidBuildConfig> => {
-    const configPath = resolve(cwd, "./solid-build.config.ts");
+    const configPath = resolve(cwd, "./config.ts");
     const hasConfigFile = existsSync(configPath);
     const loadedUserConfig = hasConfigFile ? await loadUserConfig(configPath, cwd) : { config: {}, dependencyPaths: [] };
     const userConfig = loadedUserConfig.config;
@@ -323,11 +323,11 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSol
     validateProjectRootPath(cwd, appComponentPath, "app component", mergedConfig.appComponent);
 
     if (!existsSync(appComponentPath)) {
-        throw new Error(`solid-build app component was not found at ${appComponentPath}`);
+        throw new Error(`solid-lib app component was not found at ${appComponentPath}`);
     }
     validateExistingPathTarget(cwd, appComponentPath, "app component", mergedConfig.appComponent);
     if (!statSync(appComponentPath).isFile()) {
-        throw new Error(`solid-build app component must be a file: ${appComponentPath}`);
+        throw new Error(`solid-lib app component must be a file: ${appComponentPath}`);
     }
 
     await validateDefaultExport(appComponentPath);

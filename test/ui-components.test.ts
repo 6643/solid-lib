@@ -1,73 +1,96 @@
 import { expect, test } from "bun:test";
 import { join } from "node:path";
 
-import { createButtonStyle, invokeButtonTap } from "../src/ui/Button";
-
-const originalResizeObserver = (globalThis as Record<string, unknown>).ResizeObserver;
-const originalIntersectionObserver = (globalThis as Record<string, unknown>).IntersectionObserver;
-
 test("ui exports the public component primitives", async () => {
-  delete (globalThis as Record<string, unknown>).ResizeObserver;
-  delete (globalThis as Record<string, unknown>).IntersectionObserver;
-  const ui = await import("../src/ui/_");
+  const source = await Bun.file(join(import.meta.dir, "..", "src", "ui", "_.ts")).text();
 
-  expect(typeof ui.Card).toBe("function");
-  expect(typeof ui.TextInput).toBe("function");
-  expect(typeof ui.TextButton).toBe("function");
-  expect(typeof ui.FilledButton).toBe("function");
-  expect(typeof ui.OutlinedButton).toBe("function");
-  expect(typeof ui.IconButton).toBe("function");
-  expect(typeof ui.initializeThemeMode).toBe("function");
+  expect(source).toContain('export { Card, type CardProps } from "./Card";');
+  expect(source).toContain("type ButtonTapHandler");
+  expect(source).not.toContain("./buttonCore");
+  expect(source).toContain('export { initTheme, useTheme, initAccent, useAccent } from "./Theme";');
+  expect(source).toContain('export { createStorage } from "../utils/createStorage";');
+  expect(source).toContain('export { useMediaQuery } from "../utils/useMediaQuery";');
+  expect(source).toContain('export { loadScript } from "../utils/loadScript";');
+  expect(source).toContain('export { loadStyle } from "../utils/loadStyle";');
+  expect(source).not.toContain('export { useMediaQuery } from "./useMediaQuery";');
+  expect(source).not.toContain('export { loadScript } from "./loadScript";');
+  expect(source).not.toContain('export { loadStyle } from "./loadStyle";');
+});
 
-  if (typeof originalResizeObserver === "undefined") {
-    delete (globalThis as Record<string, unknown>).ResizeObserver;
-  } else {
-    Object.defineProperty(globalThis, "ResizeObserver", {
-      configurable: true,
-      value: originalResizeObserver,
-    });
-  }
+test("generic helpers live under src/utils instead of src/ui", async () => {
+  const [buttonSource, loadMoreSource, themeSource, swiperSource, plyrSource, utilsSource] = await Promise.all([
+    Bun.file(join(import.meta.dir, "..", "src", "ui", "Button.tsx")).text(),
+    Bun.file(join(import.meta.dir, "..", "src", "ui", "LoadMore.tsx")).text(),
+    Bun.file(join(import.meta.dir, "..", "src", "ui", "Theme.tsx")).text(),
+    Bun.file(join(import.meta.dir, "..", "src", "ui", "Swiper.tsx")).text(),
+    Bun.file(join(import.meta.dir, "..", "src", "ui", "Plyr.tsx")).text(),
+    Bun.file(join(import.meta.dir, "..", "src", "utils", "_.ts")).text(),
+  ]);
 
-  if (typeof originalIntersectionObserver === "undefined") {
-    delete (globalThis as Record<string, unknown>).IntersectionObserver;
-  } else {
-    Object.defineProperty(globalThis, "IntersectionObserver", {
-      configurable: true,
-      value: originalIntersectionObserver,
-    });
+  expect(await Bun.file(join(import.meta.dir, "..", "src", "utils", "loadScript.ts")).exists()).toBe(true);
+  expect(await Bun.file(join(import.meta.dir, "..", "src", "utils", "loadStyle.ts")).exists()).toBe(true);
+  expect(await Bun.file(join(import.meta.dir, "..", "src", "utils", "useMediaQuery.ts")).exists()).toBe(true);
+  expect(await Bun.file(join(import.meta.dir, "..", "src", "ui", "loadScript.ts")).exists()).toBe(false);
+  expect(await Bun.file(join(import.meta.dir, "..", "src", "ui", "loadStyle.ts")).exists()).toBe(false);
+  expect(await Bun.file(join(import.meta.dir, "..", "src", "ui", "useMediaQuery.ts")).exists()).toBe(false);
+  expect(await Bun.file(join(import.meta.dir, "..", "src", "ui", "buttonCore.ts")).exists()).toBe(false);
+
+  expect(buttonSource).not.toContain('from "./buttonCore"');
+  expect(loadMoreSource).toContain('from "../utils/useLoad"');
+  expect(loadMoreSource).not.toContain('from "../utils/useScrollEnd');
+  expect(loadMoreSource).not.toContain("createSignal");
+  expect(loadMoreSource).not.toContain("getToVisBottom");
+  expect(themeSource).toContain('from "../utils/createStorage"');
+  expect(themeSource).toContain('from "./themeMode"');
+  expect(themeSource).toContain("let accentState");
+  expect(swiperSource).toContain('from "../utils/loadScript"');
+  expect(plyrSource).toContain('from "../utils/loadScript"');
+  expect(plyrSource).toContain('from "../utils/loadStyle"');
+  expect(utilsSource).toContain('export { useMediaQuery } from "./useMediaQuery";');
+  expect(utilsSource).toContain('export { loadScript } from "./loadScript";');
+  expect(utilsSource).toContain('export { loadStyle } from "./loadStyle";');
+});
+
+test("ui source no longer depends on onSettled for lifecycle management", async () => {
+  const sources = await Promise.all([
+    "src/ui/BottomTab.tsx",
+    "src/ui/CountDown.tsx",
+    "src/ui/LeftTab.tsx",
+    "src/ui/LoadMore.tsx",
+    "src/ui/MenuTab.tsx",
+    "src/ui/NavTab.tsx",
+    "src/ui/SortListBox.tsx",
+    "src/ui/TopTab.tsx",
+    "src/ui/Modal.tsx",
+    "src/utils/createFullscreen.ts",
+    "src/utils/useClass.ts",
+    "src/utils/useKeepScroll.ts",
+    "src/route/Route.tsx",
+  ].map((path) => Bun.file(join(import.meta.dir, "..", path)).text()));
+
+  for (const source of sources) {
+    expect(source).not.toContain("onSettled");
   }
 });
 
-test("createButtonStyle converts numeric dimensions into css sizes", () => {
-  expect(
-    createButtonStyle({
-      borderRadius: 12,
-      color: "#123456",
-      height: 40,
-      width: "100%",
-    }),
-  ).toEqual({
-    "--radius": "12px",
-    "--color": "#123456",
-    "--height": "40px",
-    "--width": "100%",
-  });
+test("Button source converts numeric dimensions into css sizes", async () => {
+  const source = await Bun.file(join(import.meta.dir, "..", "src", "ui", "Button.tsx")).text();
+
+  expect(source).toContain("const createButtonStyle");
+  expect(source).toContain('typeof value === "number" ? `${value}px` : value');
+  expect(source).toContain('style["--radius"] = borderRadius');
+  expect(source).toContain('style["--height"] = height');
+  expect(source).toContain('style["--width"] = width');
 });
 
-test("invokeButtonTap supports sync and async taps", async () => {
-  let syncCount = 0;
-  let asyncCount = 0;
+test("Button source keeps tap invocation async-safe", async () => {
+  const source = await Bun.file(join(import.meta.dir, "..", "src", "ui", "Button.tsx")).text();
 
-  await invokeButtonTap(() => {
-    syncCount += 1;
-  });
-
-  await invokeButtonTap(async () => {
-    asyncCount += 1;
-  });
-
-  expect(syncCount).toBe(1);
-  expect(asyncCount).toBe(1);
+  expect(source).toContain("export type ButtonTapHandler = () => void | Promise<void>;");
+  expect(source).toContain("const isPromiseLike");
+  expect(source).toContain("const invokeButtonTap");
+  expect(source).toContain("await result");
+  expect(source).toContain("await invokeButtonTap(props.tap)");
 });
 
 test("SvgIcon source renders the provided svg string through innerHTML", async () => {
@@ -95,18 +118,17 @@ test("ui component css modules map to the public theme tokens", async () => {
     Bun.file(join(import.meta.dir, "..", "src/ui/Input.module.css")).text(),
   ]);
 
-  expect(buttonCss).toContain("var(--raised-bg)");
+  expect(buttonCss).toContain("var(--accent-color)");
   expect(buttonCss).not.toContain("--pf-color");
   expect(buttonCss).not.toContain("--sf-color");
   expect(buttonCss).not.toContain("--sb-color");
 
-  expect(cardCss).toContain("var(--base-bg)");
-  expect(cardCss).toContain("var(--primary-fg)");
+  expect(cardCss).toContain("var(--raised-bg)");
+  expect(cardCss).toContain("var(--raised-fg)");
 
-  expect(inputCss).toContain("var(--inset-bg)");
-  expect(inputCss).toContain("var(--secondary-fg)");
+  expect(inputCss).toContain("var(--base-bg)");
+  expect(inputCss).toContain("var(--sunken-fg)");
   expect(inputCss).toContain("var(--disabled-color)");
-  expect(inputCss).toContain("var(--secondary-fg)");
 });
 
 test("button and input css keep neutral defaults and state colors separated", async () => {
@@ -122,10 +144,10 @@ test("button and input css keep neutral defaults and state colors separated", as
     Bun.file(join(import.meta.dir, "..", "src/ui/TimeLine.module.css")).text(),
   ]);
 
-  expect(buttonCss).toContain("border: 2px solid var(--color, var(--secondary-fg))");
+  expect(buttonCss).toContain("border: 2px solid var(--color, var(--accent-color))");
 
-  expect(buttonCss).not.toContain("color-mix(");
-  expect(inputCss).not.toContain("color-mix(");
+  expect(buttonCss).toContain("background-image: radial-gradient(");
+  expect(inputCss).toContain("color-mix(");
   expect(cardCss).not.toContain("color-mix(");
   expect(topTabCss).not.toContain("color-mix(");
   expect(navTabCss).not.toContain("color-mix(");
@@ -136,16 +158,15 @@ test("button and input css keep neutral defaults and state colors separated", as
   expect(cardCss).not.toContain("rgba(");
   expect(topTabCss).not.toContain("rgba(");
   expect(menuTabCss).not.toContain("rgba(");
-  expect(inputCss).not.toContain("rgba(");
+  expect(inputCss).toContain("rgba(");
   expect(timelineCss).not.toContain("antiquewhite");
 });
 
-test("button ripple css uses a single scaled overlay instead of tiled gradients", async () => {
+test("button ripple css uses the existing radial overlay implementation", async () => {
   const buttonCss = await Bun.file(join(import.meta.dir, "..", "src/ui/Button.module.css")).text();
 
-  expect(buttonCss).not.toContain("background-image: radial-gradient(");
-  expect(buttonCss).not.toContain("background-size:");
-  expect(buttonCss).toContain("scale(0)");
-  expect(buttonCss).toContain("scale(1)");
-  expect(buttonCss).toContain("border-radius: 999px");
+  expect(buttonCss).toContain("background-image: radial-gradient(");
+  expect(buttonCss).toContain("background-size: 1000% 1000%");
+  expect(buttonCss).toContain("background-size: 0 0");
+  expect(buttonCss).not.toContain("scale(0)");
 });

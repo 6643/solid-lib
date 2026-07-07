@@ -39,6 +39,6 @@
 }
 
 .swatch.selected {
-    border-color: var(--primary-fg);
+    border-color: var(--raised-fg);
     transform: scale(1.15);
 }

@@ -14,8 +14,8 @@
     display: flex;
     align-items: center;
     position: relative;
-    background-color: var(--secondary-bg);
-    box-shadow: 0 2px 4px var(--primary-bg);
+    background-color: var(--sunken-bg);
+    box-shadow: 0 2px 4px var(--raised-bg);
 }
 
 .menuTab > nav::-webkit-scrollbar {
@@ -42,7 +42,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary-fg);
+    color: var(--raised-fg);
     cursor: pointer;
     transition: color 200ms ease;
 }

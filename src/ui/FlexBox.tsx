@@ -1,5 +1,5 @@
 import styles from "./FlexBox.module.css"
-import { createEffect, children, createMemo } from "solid-js"
+import { children, createMemo, createTrackedEffect } from "solid-js"
 export const FlexBox = (props: {
     children: any
     dir?: "row" | "row-reverse" | "column" | "column-reverse"
@@ -32,24 +32,21 @@ export const FlexBox = (props: {
     })
 
     const resolved = children(() => props.children)
-    createEffect(
-        () => ({
-            nodes: resolved.toArray(),
-            as: props.as,
-            fg: props.fg,
-            fs: props.fs,
-            order: props.order,
-        }),
-        ({ nodes, as, fg, fs, order }) => {
-            nodes.forEach((child: any, i: number) => {
-                if (!(child instanceof HTMLElement)) return
-                if (as) child.style.alignSelf = as[i]!
-                if (fg) child.style.flexGrow = String(fg[i])
-                if (fs) child.style.flexShrink = String(fs[i])
-                if (order) child.style.order = String(order[i])
-            })
-        }
-    )
+    createTrackedEffect(() => {
+        const nodes = resolved.toArray();
+        const as = props.as;
+        const fg = props.fg;
+        const fs = props.fs;
+        const order = props.order;
+
+        nodes.forEach((child: any, i: number) => {
+            if (!(child instanceof HTMLElement)) return
+            if (as) child.style.alignSelf = as[i]!
+            if (fg) child.style.flexGrow = String(fg[i])
+            if (fs) child.style.flexShrink = String(fs[i])
+            if (order) child.style.order = String(order[i])
+        })
+    })
 
     return <div class={get_class()} style={get_style()}>
         {resolved() as any}

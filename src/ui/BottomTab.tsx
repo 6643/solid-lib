@@ -1,6 +1,6 @@
 import styles from "./BottomTab.module.css";
-import { createSignal, For, onSettled, Show } from "solid-js";
-import { getPos, setPos, useKeepScroll } from "../use/useKeepScroll";
+import { createSignal, createTrackedEffect, For, Show } from "solid-js";
+import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { SvgIcon } from "./SvgIcon.tsx";
 
 const useBottomTab = (key: string) => {
@@ -23,7 +23,7 @@ const useBottomTab = (key: string) => {
 export const BottomTab = (props: { children: { icon: string; panel: () => any }[] }) => {
     const { getActiveIndex, spinDeg, toIndex, mainRef } = useBottomTab("app.tab");
 
-    onSettled(() => toIndex(getPos(location.pathname, "app.tab")));
+    createTrackedEffect(() => toIndex(getPos(location.pathname, "app.tab")));
 
     return (
         <div class={styles.bottomTab}>

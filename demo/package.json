@@ -3,12 +3,12 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "bun ../src/builder/build.ts",
-        "dev": "bun ../src/builder/dev.ts",
+        "build": "solid-lib build",
+        "dev": "solid-lib dev",
         "typecheck": "tsc --project ./tsconfig.json --noEmit"
     },
     "devDependencies": {
-        "solid-js": "next",
-        "solid-lib": "link:.."
+        "solid-js": "2.0.0-beta.15",
+        "solid-lib": "link:solid-lib"
     }
 }

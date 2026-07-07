@@ -2,33 +2,23 @@ import { rmSync } from "node:fs";
 import { dirname, resolve, sep } from "node:path";
 
 import { transformAsync } from "@babel/core";
+import * as ts from "typescript";
 
 const BUN_COMMAND = Bun.which("bun") ?? "bun";
-const SOLID_SOURCE_FILTER = /\.[cm]?[jt]sx$/;
-const TYPESCRIPT_JSX_FILTER = /\.[cm]?tsx$/;
+const SOLID_SOURCE_FILTER = /\.[cm]?[jt]sx?$/;
+const JSX_SOURCE_FILTER = /\.[cm]?[jt]sx$/;
+const TYPESCRIPT_SOURCE_FILTER = /\.[cm]?tsx?$/;
 const SOLID_PRESET = "babel-preset-solid";
-const TYPESCRIPT_PRESET = "@babel/preset-typescript";
-const DOM_EXPRESSIONS_CLIENT_MODULE = "dom-expressions/src/client";
-const SOLID_PLUGIN_RUNTIME_NAMESPACE = "solid-plugin-runtime";
-const DOM_EXPRESSIONS_SOLID_CORE_MODULE = "solid-plugin:dom-expressions-solid-core";
-const DOM_EXPRESSIONS_SOLID_CORE_SOURCE = [
-    'import { createComponent, createMemo, createRenderEffect, createRoot, flatten, getOwner, merge, runWithOwner, sharedConfig, untrack } from "solid-js";',
-    "",
-    "export const root = createRoot;",
-    "export { createComponent, flatten, getOwner, runWithOwner, sharedConfig, untrack };",
-    "export const mergeProps = merge;",
-    "",
-    "export const effect = (compute, effectOrInitial, initialValue) => {",
-    "  if (typeof effectOrInitial === \"function\") {",
-    "    createRenderEffect(compute, effectOrInitial, initialValue);",
-    "    return;",
-    "  }",
-    "",
-    "  createRenderEffect(compute, () => {}, effectOrInitial);",
-    "};",
-    "",
-    "export const memo = (compute, equal) => createMemo(compute, undefined, equal ? undefined : { equals: false });",
-].join("\n");
+
+const stripTypeScript = (source: string, fileName: string): string =>
+    ts.transpileModule(source, {
+        compilerOptions: {
+            jsx: ts.JsxEmit.Preserve,
+            module: ts.ModuleKind.ESNext,
+            target: ts.ScriptTarget.ESNext,
+        },
+        fileName,
+    }).outputText;
 
 export interface SolidPluginOptions {
     development?: boolean;
@@ -171,43 +161,29 @@ export const createSolidPlugin = (options: SolidPluginOptions = {}): Bun.BunPlug
                 path: resolvedPath,
             }));
         }
-
-        if (options.moduleName === DOM_EXPRESSIONS_CLIENT_MODULE) {
-            builder.onResolve({ filter: /^rxcore$/ }, () => ({
-                namespace: SOLID_PLUGIN_RUNTIME_NAMESPACE,
-                path: DOM_EXPRESSIONS_SOLID_CORE_MODULE,
-            }));
-            builder.onLoad(
-                { filter: /^solid-plugin:dom-expressions-solid-core$/, namespace: SOLID_PLUGIN_RUNTIME_NAMESPACE },
-                () => ({
-                    contents: DOM_EXPRESSIONS_SOLID_CORE_SOURCE,
-                    loader: "js",
-                }),
-            );
-        }
-
         builder.onLoad({ filter: SOLID_SOURCE_FILTER }, async ({ path }) => {
             const source = await Bun.file(path).text();
-            const transformed = await transformAsync(source, {
-                babelrc: false,
-                configFile: false,
-                filename: path,
-                presets: [
-                    [
-                        SOLID_PRESET,
-                        {
-                            dev: options.development ?? false,
-                            generate: options.generate ?? "dom",
-                            hydratable: options.hydratable ?? false,
-                            moduleName: options.moduleName ?? "solid-js/web",
-                        },
-                    ],
-                    ...(TYPESCRIPT_JSX_FILTER.test(path)
-                        ? [[TYPESCRIPT_PRESET, { allExtensions: true, isTSX: true }]]
-                        : []),
-                ],
-                sourceMaps: false,
-            });
+            const usesJsx = JSX_SOURCE_FILTER.test(path);
+            const typedSource = TYPESCRIPT_SOURCE_FILTER.test(path) ? stripTypeScript(source, path) : source;
+            const transformed = usesJsx
+                ? await transformAsync(typedSource, {
+                      babelrc: false,
+                      configFile: false,
+                      filename: path,
+                      presets: [
+                          [
+                              SOLID_PRESET,
+                              {
+                                  dev: options.development ?? false,
+                                  generate: options.generate ?? "dom",
+                                  hydratable: options.hydratable ?? false,
+                                  moduleName: options.moduleName ?? "solid-js/web",
+                              },
+                          ],
+                      ],
+                      sourceMaps: false,
+                  })
+                : { code: typedSource };
 
             if (!transformed?.code) {
                 throw new Error(`Solid transform returned no output for ${path}`);

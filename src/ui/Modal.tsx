@@ -1,6 +1,7 @@
 import styles from "./Modal.module.css";
-import { createEffect, createSignal, Show } from "solid-js";
-import { Portal, type JSX } from "@solidjs/web";
+import { createSignal, createTrackedEffect, Show } from "solid-js";
+import { Portal } from "@solidjs/web";
+import type { JSX } from "@solidjs/web";
 
 interface ModalProps {
     children: JSX.Element;
@@ -21,29 +22,25 @@ const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: strin
     const [el, setEl] = createSignal<HTMLDialogElement>();
     let closingTimer: ReturnType<typeof setTimeout> | undefined;
 
-    createEffect(
-        () => ({ currentEl: el(), isMounted: isMounted() }),
-        ({ currentEl, isMounted }) => {
-            if (!currentEl) return;
-            if (isMounted && !currentEl.open) currentEl.showModal();
-            if (!isMounted && currentEl.open) currentEl.close();
-        },
-    );
+    createTrackedEffect(() => {
+        const currentEl = el();
+        if (!currentEl) return;
+        if (isMounted() && !currentEl.open) currentEl.showModal();
+        if (!isMounted() && currentEl.open) currentEl.close();
+    });
 
-    createEffect(
-        () => props.open,
-        (open) => {
-            if (open) {
-                clearTimeout(closingTimer);
-                setMounted(true);
-                queueMicrotask(() => setAnimating(true));
-            } else {
-                setAnimating(false);
-                closingTimer = setTimeout(() => setMounted(false), 256);
-                return () => clearTimeout(closingTimer);
-            }
-        },
-    );
+    createTrackedEffect(() => {
+        if (props.open) {
+            clearTimeout(closingTimer);
+            setMounted(true);
+            queueMicrotask(() => setAnimating(true));
+            return;
+        }
+
+        setAnimating(false);
+        closingTimer = setTimeout(() => setMounted(false), 256);
+        return () => clearTimeout(closingTimer);
+    });
 
     const onKeyDown = (e: KeyboardEvent) => {
         if (e.key !== "Escape") return;

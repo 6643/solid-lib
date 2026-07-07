@@ -10,7 +10,18 @@ export {
     type OutlinedButtonProps,
     type TextButtonProps,
 } from "./Button";
-export { RangeInput, TextInput, TextArea, PasswordInput, NumberInput, EmailInput, TelInput, CheckButton, RadioButton, CodeInput } from "./Input";
+export {
+    RangeInput,
+    TextInput,
+    TextArea,
+    PasswordInput,
+    NumberInput,
+    EmailInput,
+    TelInput,
+    CheckButton,
+    RadioButton,
+    CaptchaInput,
+} from "./Input";
 
 // Layout
 export { Block } from "./Box";
@@ -48,41 +59,42 @@ export { ThemeSwitch, AccentSelector } from "./Theme";
 export { ThemeToggle, AccentPicker } from "./Theme";
 
 // Hooks & Utils
-export { useMediaQuery } from "./useMediaQuery";
-export { createDebouncedSignal } from "./createDebouncedSignal";
-export { useClass } from "../use/useClass";
-export { useClickOutside } from "../use/useClickOutside";
-export { createCopy } from "../use/createCopy";
-export { createDebounce } from "../use/createDebounce";
-export { useFilePicker } from "../use/useFilePicker";
-export { createFullscreen } from "../use/createFullscreen";
-export { useTap, useLongPress } from "../use/useGestures";
-export { createHttp, http } from "../use/useHttp";
-export { useImgScale } from "../use/useImgScale";
-export { useKeepScroll, setPos, getPos, delPos } from "../use/useKeepScroll";
-export { useKeyPress } from "../use/useKeyPress";
-export { useLoad } from "../use/useLoad";
-export { useMutation } from "../use/useMutation";
-export { createOnce } from "../use/createOnce";
-export { useRefresh } from "../use/useRefresh";
-export { useResize } from "../use/useResize";
-export { useScrollEnd } from "../use/useScrollEnd";
-export { createStorage } from "../use/createStorage";
+
 export { initTheme, useTheme, initAccent, useAccent } from "./Theme";
 export {
-    getThemeMode,
-    initializeThemeMode,
-    setThemeMode,
-    setSystemTheme,
-    setLightTheme,
-    setDarkTheme,
-} from "./themeMode.ts";
-export { createThrottle } from "../use/createThrottle";
-export { getChinaTimestamp } from "../use/createTime";
-export { createTry } from "../use/createTry";
-export { useVis } from "../use/useVis";
-export { useWakeLock } from "../use/useWakeLock";
-export { loadScript } from "./loadScript";
-export { loadStyle } from "./loadStyle";
-export type { AsyncVoidFunc } from "./utils";
-export { isAsyncFunc } from "./utils";
+    getThemeModeCore as getThemeMode,
+    getResolvedThemeModeCore as getResolvedThemeMode,
+    setThemeModeCore as setThemeMode,
+    initializeThemeModeCore as initializeThemeMode,
+    setSystemThemeCore as setSystemTheme,
+    setLightThemeCore as setLightTheme,
+    setDarkThemeCore as setDarkTheme,
+} from "./themeMode";
+export type { ThemeMode } from "./themeMode";
+export { useMediaQuery } from "../utils/useMediaQuery";
+export { loadScript } from "../utils/loadScript";
+export { loadStyle } from "../utils/loadStyle";
+export { createDebounce } from "../utils/createDebounce";
+export { createDebouncedSignal } from "../utils/createDebouncedSignal";
+export { createCopy } from "../utils/createCopy";
+export { createFullscreen } from "../utils/createFullscreen";
+export { createStorage } from "../utils/createStorage";
+export { createThrottle } from "../utils/createThrottle";
+export { createOnce } from "../utils/createOnce";
+export { getChinaTimestamp } from "../utils/createTime";
+export { createTry } from "../utils/createTry";
+export { useClass } from "../utils/useClass";
+export { useClickOutside } from "../utils/useClickOutside";
+export { useFilePicker } from "../utils/useFilePicker";
+export { useTap, useLongPress } from "../utils/useGestures";
+export { createHttp, http } from "../utils/useHttp";
+export { useImgScale } from "../utils/useImgScale";
+export { useKeepScroll, getPos, setPos, delPos } from "../utils/useKeepScroll";
+export { useKeyPress } from "../utils/useKeyPress";
+export { useLoad } from "../utils/useLoad";
+export { useMutation } from "../utils/useMutation";
+export { useRefresh } from "../utils/useRefresh";
+export { useResize } from "../utils/useResize";
+export { useScrollEnd } from "../utils/useScrollEnd";
+export { useVis } from "../utils/useVis";
+export { useWakeLock } from "../utils/useWakeLock";

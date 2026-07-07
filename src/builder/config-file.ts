@@ -87,7 +87,7 @@ const resolveRelativeImportPath = (fromPath: string, specifier: string): string 
         }
     }
 
-    throw new Error(`solid-build config import was not found: ${specifier} from ${fromPath}`);
+    throw new Error(`solid-lib config import was not found: ${specifier} from ${fromPath}`);
 };
 
 const collectConfigDependencyPaths = async (configPath: string, cwd: string): Promise<string[]> => {
@@ -124,7 +124,7 @@ export const loadUserConfig = async (
 ): Promise<{ config: SolidBuildConfig; dependencyPaths: string[] }> => {
     const dependencyPaths = await collectConfigDependencyPaths(configPath, cwd);
     const stagingBasePath = findWritableAncestorPath(cwd) ?? tmpdir();
-    const tempRoot = mkdtempSync(join(stagingBasePath, ".solid-build-config-"));
+    const tempRoot = mkdtempSync(join(stagingBasePath, ".solid-lib-config-"));
     const tempConfigPath = join(tempRoot, relative(cwd, configPath));
 
     try {
@@ -144,11 +144,11 @@ export const loadUserConfig = async (
         const userConfig = module.default as SolidBuildConfig | undefined;
 
         if (!userConfig) {
-            throw new Error(`solid-build config at ${configPath} must export a default config object`);
+            throw new Error(`solid-lib config at ${configPath} must export a default config object`);
         }
 
         if (typeof userConfig !== "object" || Array.isArray(userConfig)) {
-            throw new Error(`solid-build config at ${configPath} must export an object`);
+            throw new Error(`solid-lib config at ${configPath} must export an object`);
         }
 
         return { config: userConfig, dependencyPaths };

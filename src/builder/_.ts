@@ -1,1 +1,1 @@
-export { defineSolidBuildConfig, type SolidBuildConfig } from "./config";
+export { defineConfig, type SolidBuildConfig } from "./config";

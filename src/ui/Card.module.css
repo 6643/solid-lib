@@ -1,6 +1,6 @@
 .card {
-    background: var(--primary-bg);
+    background: var(--raised-bg);
     border-radius: 3px;
-    color: var(--primary-fg);
+    color: var(--raised-fg);
     padding: 8px;
 }

@@ -27,7 +27,7 @@
 }
 
 .countdown > span {
-    color: var(--secondary-fg);
+    color: var(--sunken-fg);
 }
 
 @keyframes move {

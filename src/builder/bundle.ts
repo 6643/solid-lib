@@ -8,7 +8,7 @@ import type { LoadedSolidBuildConfig } from "./config";
 import { createSolidPlugin } from "./lib";
 import { findNearestNodeModulesPath, findWritableAncestorPath } from "./path";
 
-export const APP_RUNTIME_MODULE = "dom-expressions/src/client";
+export const APP_RUNTIME_MODULE = "@solidjs/web";
 export const DEFAULT_ENTRY_NAMING: Bun.BuildConfig["naming"] = {
     chunk: "[hash].js",
     entry: "[hash].js",
@@ -22,16 +22,18 @@ export const createBootstrapSource = ({
     mountId: string;
 }): string => {
     return [
-        `import { render } from "${APP_RUNTIME_MODULE}";`,
+        `import { render as mount } from "${APP_RUNTIME_MODULE}";`,
         `import App from "${appComponentImportPath}";`,
         "",
-        `const root = document.getElementById(${JSON.stringify(mountId)});`,
+        `let mountRoot = document.getElementById(${JSON.stringify(mountId)});`,
         "",
-        "if (!root) {",
-        `  throw new Error(${JSON.stringify(`App root "#${mountId}" was not found.`)});`,
+        "if (!mountRoot) {",
+        "  mountRoot = document.createElement(\"div\");",
+        `  mountRoot.id = ${JSON.stringify(mountId)};`,
+        "  document.body.append(mountRoot);",
         "}",
         "",
-        "render(() => <App />, root);",
+        "mount(() => <App />, mountRoot);",
     ].join("\n");
 };
 
@@ -159,7 +161,7 @@ export const buildAppBundle = async (
 
         const entryAsset = normalizedAssets.find((output) => output.artifact.kind === "entry-point") ?? normalizedAssets[0];
         if (!entryAsset) {
-            throw new Error("solid-build did not emit an entry bundle");
+            throw new Error("solid-lib did not emit an entry bundle");
         }
 
         const cssFiles = normalizedAssets

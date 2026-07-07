@@ -1,179 +1,177 @@
 import { createSignal, Show } from "solid-js";
+import { Card, FlexBox, FilledButton, OutlinedButton, TextInput } from "../../../src/ui/_";
 import {
-  Card,
-  FlexBox,
-  FilledButton,
-  OutlinedButton,
-  TextInput,
-  createDebounce,
-  createThrottle,
-  createCopy,
-  useClickOutside,
-  useKeyPress,
-  useResize,
-  createFullscreen,
-  useVis,
-  createDebouncedSignal,
+    createDebounce,
+    createThrottle,
+    createCopy,
+    useClickOutside,
+    useKeyPress,
+    useResize,
+    createFullscreen,
+    useVis,
+    createDebouncedSignal,
 } from "../../../src/ui/_";
 
 import styles from "./Pages.module.css";
 
 const HooksPage = () => {
-  // createDebounce 示例
-  const [searchText, setSearchText] = createSignal("");
-  const debouncedSearch = createDebounce((value: string) => {
-    console.log("搜索:", value);
-  }, 500);
+    // createDebounce 示例
+    const [searchText, setSearchText] = createSignal("");
+    const debouncedSearch = createDebounce((value: string) => {
+        console.log("搜索:", value);
+    }, 500);
 
-  // createThrottle 示例
-  const [scrollCount, setScrollCount] = createSignal(0);
-  const throttledScroll = createThrottle(() => {
-    setScrollCount(c => c + 1);
-  }, 1000);
+    // createThrottle 示例
+    const [scrollCount, setScrollCount] = createSignal(0);
+    const throttledScroll = createThrottle(() => {
+        setScrollCount((c) => c + 1);
+    }, 1000);
 
-  // createCopy 示例
-  const [copied, copy] = createCopy();
+    // createCopy 示例
+    const [copied, copy] = createCopy();
 
-  // useClickOutside 示例
-  const [showDropdown, setShowDropdown] = createSignal(false);
-  let dropdownRef!: HTMLDivElement;
-  useClickOutside(() => dropdownRef, () => setShowDropdown(false));
+    // useClickOutside 示例
+    const [showDropdown, setShowDropdown] = createSignal(false);
+    let dropdownRef!: HTMLDivElement;
+    useClickOutside(
+        () => dropdownRef,
+        () => setShowDropdown(false),
+    );
 
-  // useKeyPress 示例
-  const [lastKey, setLastKey] = createSignal("");
-  useKeyPress(["Enter", "Escape", " ", "a", "b", "c"], (e: KeyboardEvent) => {
-    setLastKey(e.key);
-  });
-
-  // useResize 示例
-  const [size, setSize] = createSignal({ width: 0, height: 0 });
-  let resizeRef!: HTMLDivElement;
-  useResize(() => resizeRef, (entry) => {
-    setSize({
-      width: Math.round(entry.contentRect.width),
-      height: Math.round(entry.contentRect.height),
+    // useKeyPress 示例
+    const [lastKey, setLastKey] = createSignal("");
+    useKeyPress(["Enter", "Escape", " ", "a", "b", "c"], (e: KeyboardEvent) => {
+        setLastKey(e.key);
     });
-  });
 
-  // createFullscreen 示例
-  const { isFullscreen, toggleFullScreen } = createFullscreen();
+    // useResize 示例
+    const [size, setSize] = createSignal({ width: 0, height: 0 });
+    let resizeRef!: HTMLDivElement;
+    useResize(
+        () => resizeRef,
+        (entry) => {
+            setSize({
+                width: Math.round(entry.contentRect.width),
+                height: Math.round(entry.contentRect.height),
+            });
+        },
+    );
 
-  // useVis 示例
-  const [isVisible, setIsVisible] = createSignal(false);
-  let visRef!: HTMLDivElement;
-  useVis(() => visRef, (entry) => {
-    setIsVisible(entry.isIntersecting);
-  });
+    // createFullscreen 示例
+    const { isFullscreen, toggleFullScreen } = createFullscreen();
 
-  // createDebouncedSignal 示例
-  const [inputVal, setInputVal] = createSignal("");
-  const debouncedVal = createDebouncedSignal(inputVal, 300);
+    // useVis 示例
+    const [isVisible, setIsVisible] = createSignal(false);
+    let visRef!: HTMLDivElement;
+    useVis(
+        () => visRef,
+        (entry) => {
+            setIsVisible(entry.isIntersecting);
+        },
+    );
 
-  return (
-    <div class={styles.page}>
-      <h1 class={styles.title}>Hooks 示例</h1>
-      <p class={styles.desc}>展示常用 Hooks 的使用方式</p>
+    // createDebouncedSignal 示例
+    const [inputVal, setInputVal] = createSignal("");
+    const debouncedVal = createDebouncedSignal(inputVal, 300);
 
-      <FlexBox gap={16} wrap="wrap">
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>createDebounce 防抖</h2>
-          <TextInput
-            label="搜索（500ms 防抖）"
-            value={searchText()}
-            changed={(v) => {
-              setSearchText(v);
-              debouncedSearch(v);
-            }}
-          />
-          <p class={styles.note}>输入停止 500ms 后才会触发搜索</p>
-        </Card>
+    return (
+        <div class={styles.page}>
+            <h1 class={styles.title}>Hooks 示例</h1>
+            <p class={styles.desc}>展示常用 Hooks 的使用方式</p>
 
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>createThrottle 节流</h2>
-          <FilledButton
-            text="点击（1秒节流）"
-            tap={throttledScroll}
-          />
-          <p class={styles.note}>触发次数: {scrollCount()}（每秒最多1次）</p>
-        </Card>
-      </FlexBox>
+            <FlexBox gap={16} wrap="wrap">
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>createDebounce 防抖</h2>
+                    <TextInput
+                        label="搜索（500ms 防抖）"
+                        value={searchText()}
+                        changed={(v) => {
+                            setSearchText(v);
+                            debouncedSearch(v);
+                        }}
+                    />
+                    <p class={styles.note}>输入停止 500ms 后才会触发搜索</p>
+                </Card>
 
-      <FlexBox gap={16} wrap="wrap">
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>createCopy 复制</h2>
-          <FilledButton
-            text={copied() ? "已复制!" : "复制文本"}
-            tap={() => copy("Hello, SolidJS!")}
-          />
-          <p class={styles.note}>点击复制 "Hello, SolidJS!"</p>
-        </Card>
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>createThrottle 节流</h2>
+                    <FilledButton text="点击（1秒节流）" tap={throttledScroll} />
+                    <p class={styles.note}>触发次数: {scrollCount()}（每秒最多1次）</p>
+                </Card>
+            </FlexBox>
 
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useClickOutside 点击外部</h2>
-          <div ref={dropdownRef} class={styles.dropdownWrap}>
-            <OutlinedButton
-              text="切换下拉"
-              tap={() => { setShowDropdown(!showDropdown()); }}
-            />
-            <Show when={showDropdown()}>
-              <div class={styles.dropdown}>
-                <p>点击外部关闭</p>
-                <p>菜单项 1</p>
-                <p>菜单项 2</p>
-              </div>
-            </Show>
-          </div>
-        </Card>
-      </FlexBox>
+            <FlexBox gap={16} wrap="wrap">
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>createCopy 复制</h2>
+                    <FilledButton text={copied() ? "已复制!" : "复制文本"} tap={() => copy("Hello, SolidJS!")} />
+                    <p class={styles.note}>点击复制 "Hello, SolidJS!"</p>
+                </Card>
 
-      <FlexBox gap={16} wrap="wrap">
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useKeyPress 按键监听</h2>
-          <p>最后按下的键: <strong>{lastKey() || "无"}</strong></p>
-          <p class={styles.note}>按下 Enter、Escape、空格、a/b/c 键测试</p>
-        </Card>
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>useClickOutside 点击外部</h2>
+                    <div ref={dropdownRef} class={styles.dropdownWrap}>
+                        <OutlinedButton
+                            text="切换下拉"
+                            tap={() => {
+                                setShowDropdown(!showDropdown());
+                            }}
+                        />
+                        <Show when={showDropdown()}>
+                            <div class={styles.dropdown}>
+                                <p>点击外部关闭</p>
+                                <p>菜单项 1</p>
+                                <p>菜单项 2</p>
+                            </div>
+                        </Show>
+                    </div>
+                </Card>
+            </FlexBox>
 
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useResize 尺寸监听</h2>
-          <div ref={resizeRef} class={styles.resizeBox}>
-            <p>宽度: {size().width}px</p>
-            <p>高度: {size().height}px</p>
-            <p class={styles.note}>调整窗口大小查看变化</p>
-          </div>
-        </Card>
-      </FlexBox>
+            <FlexBox gap={16} wrap="wrap">
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>useKeyPress 按键监听</h2>
+                    <p>
+                        最后按下的键: <strong>{lastKey() || "无"}</strong>
+                    </p>
+                    <p class={styles.note}>按下 Enter、Escape、空格、a/b/c 键测试</p>
+                </Card>
 
-      <FlexBox gap={16} wrap="wrap">
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>createFullscreen 全屏</h2>
-          <FilledButton
-            text={isFullscreen() ? "退出全屏" : "进入全屏"}
-            tap={toggleFullScreen}
-          />
-          <p class={styles.note}>当前状态: {isFullscreen() ? "全屏" : "正常"}</p>
-        </Card>
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>useResize 尺寸监听</h2>
+                    <div ref={resizeRef} class={styles.resizeBox}>
+                        <p>宽度: {size().width}px</p>
+                        <p>高度: {size().height}px</p>
+                        <p class={styles.note}>调整窗口大小查看变化</p>
+                    </div>
+                </Card>
+            </FlexBox>
 
-        <Card class={styles.card}>
-          <h2 class={styles.cardTitle}>useVis 可见性检测</h2>
-          <div ref={visRef} class={styles.visBox}>
-            <p>元素可见: <strong>{isVisible() ? "是" : "否"}</strong></p>
-            <p class={styles.note}>滚动到此元素查看效果</p>
-          </div>
-        </Card>
-      </FlexBox>
+            <FlexBox gap={16} wrap="wrap">
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>createFullscreen 全屏</h2>
+                    <FilledButton text={isFullscreen() ? "退出全屏" : "进入全屏"} tap={toggleFullScreen} />
+                    <p class={styles.note}>当前状态: {isFullscreen() ? "全屏" : "正常"}</p>
+                </Card>
 
-      <Card class={styles.card}>
-        <h2 class={styles.cardTitle}>createDebouncedSignal 防抖信号</h2>
-        <TextInput
-          label="输入内容"
-          value={inputVal()}
-          changed={setInputVal}
-        />
-        <p class={styles.note}>原始值: {inputVal()}</p>
-        <p class={styles.note}>防抖值 (300ms): {debouncedVal() ?? "(等待输入...)"}</p>
-      </Card>
-    </div>
-  );
+                <Card class={styles.card}>
+                    <h2 class={styles.cardTitle}>useVis 可见性检测</h2>
+                    <div ref={visRef} class={styles.visBox}>
+                        <p>
+                            元素可见: <strong>{isVisible() ? "是" : "否"}</strong>
+                        </p>
+                        <p class={styles.note}>滚动到此元素查看效果</p>
+                    </div>
+                </Card>
+            </FlexBox>
+
+            <Card class={styles.card}>
+                <h2 class={styles.cardTitle}>createDebouncedSignal 防抖信号</h2>
+                <TextInput label="输入内容" value={inputVal()} changed={setInputVal} />
+                <p class={styles.note}>原始值: {inputVal()}</p>
+                <p class={styles.note}>防抖值 (300ms): {debouncedVal() ?? "(等待输入...)"}</p>
+            </Card>
+        </div>
+    );
 };
 
 export default HooksPage;

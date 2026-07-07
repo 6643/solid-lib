@@ -1,167 +1,323 @@
-import styles from "./ListBox.module.css"
-import { createEffect, createMemo, createSignal, For, untrack, type Element } from "solid-js"
+import styles from "./ListBox.module.css";
+import { createMemo, createSignal, createTrackedEffect, For, untrack, type Element } from "solid-js";
+import { useScrollEnd } from "../utils/useScrollEnd";
+
+type ListBoxRow<T> = {
+    item: T;
+    index: number;
+};
+
+type VisibleBounds = {
+    firstVisibleRow: HTMLElement;
+    lastVisibleRow: HTMLElement;
+    visibleCount: number;
+};
 
 export const ListBox = <T,>(props: {
-    items: T[]
-    children: (item: T, index: number) => Element
-    filter?: (item: T, index?: number) => boolean
-    overscan?: number
-    index?: number
-    itemHeight?: number
+    items: T[];
+    children: (item: T, index: number) => Element;
+    filter?: (item: T, index?: number) => boolean;
+    index?: number;
+    changed?: (index: number) => void;
 }) => {
-    const overscan = props.overscan ?? 16
-    const fallbackHeight = props.itemHeight ?? 48
+    const [getEl, setEl] = createSignal<HTMLElement>();
+    const [getStart, setStart] = createSignal(0);
+    const [getRows, setRows] = createSignal<ListBoxRow<T>[]>([]);
+    const [getVisibleCount, setVisibleCount] = createSignal(8);
+    const getItems = createMemo(() => (props.filter ? props.items.filter(props.filter) : props.items));
+    let ignoredScrollTop: number | undefined;
+    let ignoredIndex: number | undefined;
 
-    const [getEl, setEl] = createSignal<HTMLElement>()
-    const [start, setStart] = createSignal(0)
-    const [getSlice, setSlice] = createSignal<T[]>([])
-    const [getHeights, setHeights] = createSignal<Map<number, number>>(new Map())
-    const getItems = createMemo(() => props.filter ? props.items.filter(props.filter) : props.items)
+    const getHideItems = () => Math.max(0, Math.floor(getVisibleCount() / 3));
+    const getRenderCount = () => Math.max(1, getVisibleCount() + getHideItems() * 3);
 
-    const cumulativeHeight = (heights: Map<number, number>, to: number) => {
-        let total = 0
-        for (let i = 0; i < to; i++) total += heights.get(i) ?? fallbackHeight
-        return total
-    }
+    const clampStart = (start: number, itemCount: number, renderCount = getRenderCount()) => {
+        const maxStart = Math.max(0, itemCount - renderCount);
+        return Math.max(0, Math.min(start, maxStart));
+    };
 
-    const getTotalHeight = createMemo(() => {
-        const items = getItems()
-        const heights = getHeights()
-        return cumulativeHeight(heights, items.length)
-    })
+    const createRows = (items: T[], start: number, count = getRenderCount()): ListBoxRow<T>[] =>
+        items.slice(start, start + count).map((item, offset) => ({
+            item,
+            index: start + offset,
+        }));
 
-    const getOffset = createMemo(() => {
-        const heights = getHeights()
-        const s = start()
-        return s > 0 ? cumulativeHeight(heights, s) : 0
-    })
+    const appendRows = (rows: ListBoxRow<T>[], items: T[], start: number, delta: number, renderCount: number) => {
+        const keepCount = Math.max(0, rows.length - delta);
+        const appendCount = Math.max(0, renderCount - keepCount);
+        return [...rows.slice(delta), ...createRows(items, start + rows.length, appendCount)];
+    };
 
-    const findIndexAt = (scrollTop: number): number => {
-        const { items, heights } = untrack(() => ({ items: getItems(), heights: getHeights() }))
-        let acc = 0
-        for (let i = 0; i < items.length; i++) {
-            const h = heights.get(i) ?? fallbackHeight
-            if (acc + h > scrollTop) return i
-            acc += h
+    const prependRows = (rows: ListBoxRow<T>[], items: T[], start: number, delta: number, renderCount: number) => {
+        const keepCount = Math.max(0, rows.length - delta);
+        const prependCount = Math.max(0, renderCount - keepCount);
+        return [...createRows(items, start, prependCount), ...rows.slice(0, keepCount)];
+    };
+
+    const getRowEdgeOffset = (el: HTMLElement, index: number, edge: "top" | "bottom") => {
+        const row = el.querySelector<HTMLElement>(`[data-index="${index}"]`);
+        if (!row) return undefined;
+        const rowRect = row.getBoundingClientRect();
+        const containerRect = el.getBoundingClientRect();
+        return edge === "top" ? rowRect.top - containerRect.top : rowRect.bottom - containerRect.bottom;
+    };
+
+    const snapRowToEdge = (
+        el: HTMLElement,
+        index: number,
+        edge: "top" | "bottom",
+    ) => {
+        applyScrollTopOffset(el, getRowEdgeOffset(el, index, edge));
+    };
+
+    const applyScrollTopOffset = (el: HTMLElement, nextOffset: number | undefined) => {
+        if (nextOffset === undefined || nextOffset === 0) return;
+        setScrollTopWithoutSettling(el, Math.max(0, el.scrollTop + nextOffset));
+    };
+
+    const getSnapTarget = (
+        currentStart: number,
+        renderCount: number,
+        itemCount: number,
+        firstVisibleIndex: number,
+        lastVisibleIndex: number,
+    ): { index: number; edge: "top" | "bottom" } | undefined => {
+        if (currentStart === 0) {
+            return { index: firstVisibleIndex, edge: "top" };
         }
-        return items.length - 1
-    }
 
-    let lastStrat = -1
-    let lastEnd = -1
-
-    const updateSlice = (index: number, shouldScroll = false) => {
-        const items = untrack(getItems)
-        const _index = Math.max(0, Math.min(index, items.length - 1))
-        const strat = Math.max(0, _index - overscan)
-        const end = Math.min(items.length, _index + 2 * overscan + 1)
-
-        if (strat !== lastStrat || end !== lastEnd) {
-            lastStrat = strat
-            lastEnd = end
-            setStart(strat)
-            setSlice(items.slice(strat, end))
+        if (currentStart + renderCount >= itemCount) {
+            return { index: lastVisibleIndex, edge: "bottom" };
         }
 
-        if (!shouldScroll) return
+        return undefined;
+    };
+
+    const settleWindow = (
+        el: HTMLElement,
+        currentStart: number,
+        renderCount: number,
+        hideItems: number,
+        firstVisibleIndex: number,
+        firstVisibleRow: HTMLElement,
+    ) => {
+        const topHiddenCount = firstVisibleIndex - currentStart;
+        const targetTopHidden = currentStart === 0 ? 0 : hideItems;
+        const delta = topHiddenCount - targetTopHidden;
+
+        if (delta !== 0) {
+            shiftWindow(delta, el, firstVisibleRow, renderCount);
+            return false;
+        }
+
+        return true;
+    };
+
+    const settleEdge = (
+        el: HTMLElement,
+        currentStart: number,
+        renderCount: number,
+        items: T[],
+        visibleBounds?: VisibleBounds,
+    ) => {
+        if (!visibleBounds) return;
+
+        const firstVisibleIndex = Number(visibleBounds.firstVisibleRow.dataset.index);
+        const lastVisibleIndex = Number(visibleBounds.lastVisibleRow.dataset.index);
+        if (!Number.isFinite(firstVisibleIndex) || !Number.isFinite(lastVisibleIndex)) return;
+
+        const snapTarget = getSnapTarget(currentStart, renderCount, items.length, firstVisibleIndex, lastVisibleIndex);
+        if (!snapTarget) return;
+        snapRowToEdge(el, snapTarget.index, snapTarget.edge);
+    };
+
+    const getVisibleBounds = (el: HTMLElement): VisibleBounds | undefined => {
+        const containerRect = el.getBoundingClientRect();
+        const rows = Array.from(el.querySelectorAll<HTMLElement>("[data-index]"));
+        const visibleRows = rows.filter((row) => {
+            const rect = row.getBoundingClientRect();
+            return rect.bottom > containerRect.top && rect.top < containerRect.bottom;
+        });
+
+        if (visibleRows.length === 0) return undefined;
+
+        const firstVisibleRow = visibleRows[0];
+        const lastVisibleRow = visibleRows[visibleRows.length - 1];
+        if (!firstVisibleRow || !lastVisibleRow) return undefined;
+
+        return {
+            firstVisibleRow,
+            lastVisibleRow,
+            visibleCount: visibleRows.length,
+        };
+    };
+
+    const setWindow = (start: number, items = untrack(getItems), renderCount = getRenderCount()) => {
+        const nextStart = clampStart(start, items.length, renderCount);
+        setStart(nextStart);
+        setRows(createRows(items, nextStart, renderCount));
+        return nextStart;
+    };
+
+    const setShiftedRows = (
+        currentStart: number,
+        nextStart: number,
+        rows: ListBoxRow<T>[],
+        items: T[],
+        renderCount: number,
+    ) => {
+        const amount = Math.abs(nextStart - currentStart);
+        setStart(nextStart);
+        setRows(
+            nextStart > currentStart
+                ? appendRows(rows, items, currentStart, amount, renderCount)
+                : prependRows(rows, items, nextStart, amount, renderCount),
+        );
+    };
+
+    const shiftWindowToStart = (nextStart: number, items: T[], renderCount: number) => {
+        const currentStart = untrack(getStart);
+        const rows = untrack(getRows);
+        if (nextStart === currentStart && rows.length === renderCount) return;
+
+        const amount = Math.abs(nextStart - currentStart);
+        if (rows.length !== renderCount || amount >= renderCount) {
+            setWindow(nextStart, items, renderCount);
+            return;
+        }
+
+        setShiftedRows(currentStart, nextStart, rows, items, renderCount);
+    };
+
+    const scrollIndexIntoView = (index: number) => {
         queueMicrotask(() => {
-            const el = untrack(getEl)
-            if (!el) return
-            const current = getFirstVerticalUnobscuredChildIndex(el)
-            if (index !== -1 && current !== index) {
-                const target = el.querySelector(`[data-index="${index}"]`)
-                if (target) target.scrollIntoView()
+            const el = untrack(getEl);
+            if (!el) return;
+            const target = el.querySelector<HTMLElement>(`[data-index="${index}"]`);
+            const previousScrollTop = el.scrollTop;
+            target?.scrollIntoView({ block: "start" });
+            if (el.scrollTop !== previousScrollTop) ignoredScrollTop = el.scrollTop;
+        });
+    };
+
+    const setWindowForIndex = (index: number, items: T[]) => {
+        const renderCount = untrack(getRenderCount);
+        if (items.length === 0) {
+            setWindow(0, items, renderCount);
+            return;
+        }
+
+        const targetIndex = Math.max(0, Math.min(index, items.length - 1));
+        const start = clampStart(targetIndex, items.length, renderCount);
+        shiftWindowToStart(start, items, renderCount);
+        scrollIndexIntoView(targetIndex);
+    };
+
+    const setScrollTopWithoutSettling = (el: HTMLElement, nextScrollTop: number) => {
+        ignoredScrollTop = nextScrollTop;
+        el.scrollTop = nextScrollTop;
+    };
+
+    const shiftWindow = (delta: number, el: HTMLElement, anchorRow: HTMLElement, renderCount: number) => {
+        const items = untrack(getItems);
+        const currentStart = untrack(getStart);
+        const nextStart = clampStart(currentStart + delta, items.length, renderCount);
+        if (nextStart === currentStart) return;
+
+        const rows = untrack(getRows);
+        setShiftedRows(currentStart, nextStart, rows, items, renderCount);
+
+        queueMicrotask(() => {
+            const index = Number(anchorRow.dataset.index);
+            if (!Number.isFinite(index)) return;
+
+            applyScrollTopOffset(el, getRowEdgeOffset(el, index, "top"));
+
+            if (nextStart === 0 || nextStart + renderCount >= items.length) {
+                settleEdge(el, nextStart, renderCount, items, getVisibleBounds(el));
             }
-        })
-    }
+            notifyVisibleIndex(el);
+        });
+    };
 
-    let rafId = 0
-    const handleScroll = () => {
-        if (rafId) cancelAnimationFrame(rafId)
-        rafId = requestAnimationFrame(() => {
-            rafId = 0
-            const el = untrack(getEl)
-            if (!el) return
-            const index = findIndexAt(el.scrollTop)
-            updateSlice(index, false)
-        })
-    }
+    const notifyChanged = (index: number) => {
+        if (!props.changed) return;
+        ignoredIndex = index;
+        props.changed?.(index);
+        queueMicrotask(() => {
+            if (ignoredIndex === index) ignoredIndex = undefined;
+        });
+    };
 
-    createEffect(
-        () => props.index ?? 0,
-        (index) => updateSlice(index, true),
-    )
+    const notifyVisibleIndex = (el: HTMLElement) => {
+        const visibleBounds = getVisibleBounds(el);
+        if (!visibleBounds) return;
+        const index = Number(visibleBounds.firstVisibleRow.dataset.index);
+        if (!Number.isFinite(index)) return;
+        notifyChanged(index);
+    };
 
-    createEffect(
-        () => getItems(),
+    const queueNotifyVisibleIndex = (el: HTMLElement) => {
+        queueMicrotask(() => notifyVisibleIndex(el));
+    };
+
+    const settleScroll = (el: HTMLElement) => {
+        const currentScrollTop = el.scrollTop;
+        if (ignoredScrollTop === currentScrollTop) {
+            ignoredScrollTop = undefined;
+            return;
+        }
+
+        const items = untrack(getItems);
+        const visibleBounds = getVisibleBounds(el);
+        if (!visibleBounds) return;
+        const visibleCount = Math.max(1, visibleBounds.visibleCount);
+        const hideItems = Math.max(0, Math.floor(visibleCount / 3));
+        const renderCount = Math.max(1, visibleCount + hideItems * 3);
+        const currentRows = untrack(getRows);
+        const currentStart = untrack(getStart);
+        const firstVisibleRow = visibleBounds.firstVisibleRow;
+        const firstVisibleIndex = Number(firstVisibleRow.dataset.index);
+        if (!Number.isFinite(firstVisibleIndex)) return;
+
+        if (currentRows.length !== renderCount) {
+            setVisibleCount(visibleCount);
+            setWindow(firstVisibleIndex - hideItems, items, renderCount);
+            queueNotifyVisibleIndex(el);
+            return;
+        }
+
+        setVisibleCount(visibleCount);
+
+        if (!settleWindow(el, currentStart, renderCount, hideItems, firstVisibleIndex, firstVisibleRow)) {
+            return;
+        }
+        settleEdge(el, currentStart, renderCount, items, visibleBounds);
+        queueNotifyVisibleIndex(el);
+    };
+
+    createTrackedEffect(() => {
+        const items = getItems();
+        const index = props.index ?? 0;
+        if (ignoredIndex === index) {
+            ignoredIndex = undefined;
+            return;
+        }
+        setWindowForIndex(index, items);
+    });
+
+    useScrollEnd(
+        () => getEl(),
         () => {
-            lastStrat = -1
-            lastEnd = -1
-            setHeights(new Map())
-            updateSlice(0, true)
+            const el = getEl();
+            if (!el) return;
+            settleScroll(el);
         },
-    )
+    );
 
-    createEffect(
-        () => {
-            const el = getEl()
-            getSlice()
-            const viewport = el?.children[0]?.children[0] as HTMLElement | undefined
-            const heights = getHeights()
-            return { viewport, heights }
-        },
-        ({ viewport, heights }) => {
-            if (!viewport || viewport.children.length === 0) return
-            queueMicrotask(() => {
-                const next = new Map(heights)
-                let changed = false
-                for (let i = 0; i < viewport.children.length; i++) {
-                    const child = viewport.children[i] as HTMLElement
-                    const idx = child.dataset.index
-                    if (idx !== undefined) {
-                        const h = child.getBoundingClientRect().height
-                        const numIdx = Number(idx)
-                        if (next.get(numIdx) !== h) {
-                            next.set(numIdx, h)
-                            changed = true
-                        }
-                    }
-                }
-                if (changed) setHeights(() => next)
-            })
-        },
-    )
-
-    return <div class={styles.listBox} ref={setEl} onScroll={handleScroll}>
-        <div class={styles.inner} style={{ height: getTotalHeight() + "px" }}>
-            <div class={styles.viewport} style={{ transform: "translateY(" + getOffset() + "px)" }}>
-                <For each={getSlice()}>
-                    {(item, i) => {
-                        const index = untrack(() => start() + i())
-                        return <div data-index={index}>{props.children(item, index)}</div>
-                    }}
-                </For>
-            </div>
+    return (
+        <div class={styles.listBox} ref={setEl}>
+            <For each={getRows()}>{(row) => <div data-index={row.index}>{props.children(row.item, row.index)}</div>}</For>
         </div>
-    </div>
-}
-
-
-const getFirstVerticalUnobscuredChildIndex = (el: HTMLElement): number => {
-    if (!el) return -1
-
-    const elRect = el.getBoundingClientRect()
-    const viewport = el.children[0]?.children[0]
-    if (!viewport) return -1
-
-    const list = Array.from(viewport.children) as HTMLElement[]
-    const child = list.find((child) => {
-        if (child.dataset.index === undefined) return false
-        const childRect = child.getBoundingClientRect()
-        return childRect.bottom > elRect.top && childRect.top < elRect.bottom
-    })
-
-    if (child) return Number(child.dataset.index)
-
-    return -1
-}
+    );
+};

@@ -1,4 +1,4 @@
-import { createSignal, onSettled } from "solid-js";
+import { createSignal, createTrackedEffect } from "solid-js";
 
 /**
  * A hook that provides a function to toggle full screen mode for the document element.
@@ -9,7 +9,7 @@ export const createFullscreen = () => {
 
     const handleFullScreenChange = () => setIsFullscreen(!!document.fullscreenElement);
 
-    onSettled(() => {
+    createTrackedEffect(() => {
         document.addEventListener('fullscreenchange', handleFullScreenChange);
         return () => document.removeEventListener('fullscreenchange', handleFullScreenChange);
     });

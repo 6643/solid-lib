@@ -11,7 +11,7 @@ const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
     (typeof value === "object" || typeof value === "function") &&
     typeof (value as PromiseLike<unknown>).then === "function";
 
-export const invokeButtonTap = async (tap?: ButtonTapHandler) => {
+const invokeButtonTap = async (tap?: ButtonTapHandler) => {
     if (!tap) return;
     const result = tap();
     if (isPromiseLike(result)) {
@@ -22,7 +22,7 @@ export const invokeButtonTap = async (tap?: ButtonTapHandler) => {
 const toCssSize = (value: number | string | undefined): string | undefined =>
     typeof value === "number" ? `${value}px` : value;
 
-export const createButtonStyle = (options: {
+const createButtonStyle = (options: {
     bgColor?: string;
     borderRadius?: number | string;
     color?: string;

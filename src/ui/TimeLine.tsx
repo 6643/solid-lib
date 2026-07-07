@@ -29,7 +29,7 @@ export const TimeLine = (props: {
                     <div onClick={toggle}>
                         <span>{getEvents().length != props.children.length ? "展开" : "收起"}</span>
                         <SvgIcon
-                            color="var(--secondary-fg)"
+                            color="var(--sunken-fg)"
                             name={getEvents().length != props.children.length ? icon_expand_all : icon_unfold_less}
                         />
                     </div>

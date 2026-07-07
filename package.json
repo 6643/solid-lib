@@ -3,8 +3,7 @@
     "version": "0.0.0",
     "type": "module",
     "bin": {
-        "solid-build": "./src/builder/build.ts",
-        "solid-dev": "./src/builder/dev.ts"
+        "solid-lib": "./src/builder/cli.ts"
     },
     "exports": {
         "./builder": {
@@ -18,6 +17,10 @@
         "./ui": {
             "types": "./src/ui/_.ts",
             "import": "./src/ui/_.ts"
+        },
+        "./utils": {
+            "types": "./src/utils/_.ts",
+            "import": "./src/utils/_.ts"
         },
         "./ui.css": "./src/ui/_.css"
     },
@@ -35,18 +38,17 @@
         "test:unit": "bun test"
     },
     "dependencies": {
-        "@babel/core": "latest",
-        "@babel/preset-typescript": "latest",
-        "babel-preset-solid": "next",
-        "dom-expressions": "0.50.0-next.11",
-        "typescript": "latest"
+        "@babel/core": "7.29.0",
+        "@solidjs/web": "2.0.0-beta.15",
+        "babel-preset-solid": "2.0.0-beta.15",
+        "typescript": "6.0.3"
     },
     "devDependencies": {
-        "@types/babel__core": "latest",
-        "@types/bun": "latest",
-        "solid-js": "next"
+        "@types/babel__core": "7.20.5",
+        "@types/bun": "1.3.14",
+        "solid-js": "2.0.0-beta.15"
     },
     "peerDependencies": {
-        "solid-js": "next"
+        "solid-js": "2.0.0-beta.15"
     }
 }

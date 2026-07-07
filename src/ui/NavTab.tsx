@@ -1,7 +1,7 @@
 import styles from "./NavTab.module.css";
-import { createSignal, For, onSettled } from "solid-js";
-import { getPos, setPos, useKeepScroll } from "../use/useKeepScroll";
-import { createDebounce } from "../use/createDebounce";
+import { createSignal, createTrackedEffect, For } from "solid-js";
+import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
+import { createDebounce } from "../utils/createDebounce";
 
 const getChildsVis = (boxEl: HTMLElement): { ratio: number; offset: number }[] => {
     const containerRect = boxEl.getBoundingClientRect();
@@ -89,7 +89,7 @@ const useNavTab = (key: string) => {
 export const NavTab = (props: { children: { name: string; panel: () => any }[] }) => {
     const { getActives, getTop, getHeight, toIndex, onScroll, navRef, mainRef } = useNavTab("nav.tab");
 
-    onSettled(() => {
+    createTrackedEffect(() => {
         queueMicrotask(() => toIndex(getPos(location.pathname, "nav.tab")));
     });
 
