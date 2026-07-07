@@ -13,7 +13,7 @@ import {
 import { loadUserConfig } from "./config-file";
 
 export interface SolidBuildConfig {
-    appComponent?: string;
+    rootComponentFile?: string;
     mountId?: string;
     appTitle?: string;
     assetsDirs?: string[];
@@ -29,11 +29,9 @@ export interface LoadedAssetDir {
 
 export interface LoadedSolidBuildConfig {
     config: {
-        appComponent: string;
-        appComponentPath: string;
+        rootComponentFile: string;
         appTitle: string;
         assetsDirs: LoadedAssetDir[];
-        appSourceRootPath: string;
         devPort: number;
         mountId: string;
         outDir: string;
@@ -42,11 +40,13 @@ export interface LoadedSolidBuildConfig {
     configDependencyPaths: string[];
     configPath?: string;
     cwd: string;
+    rootComponentPath: string;
+    sourceRootPath: string;
     watchDirs: string[];
 }
 
 const DEFAULT_CONFIG: Required<Omit<SolidBuildConfig, "watchDirs">> & { watchDirs?: string[] } = {
-    appComponent: "src/_.tsx",
+    rootComponentFile: "src/_.tsx",
     appTitle: "Solid App",
     assetsDirs: ["assets"],
     devPort: 3000,
@@ -54,7 +54,7 @@ const DEFAULT_CONFIG: Required<Omit<SolidBuildConfig, "watchDirs">> & { watchDir
     outDir: "dist",
 };
 
-const ALLOWED_CONFIG_KEYS = new Set(["appComponent", "appTitle", "assetsDirs", "devPort", "mountId", "outDir", "watchDirs"]);
+const ALLOWED_CONFIG_KEYS = new Set(["appTitle", "assetsDirs", "devPort", "mountId", "outDir", "rootComponentFile", "watchDirs"]);
 const LEGACY_CONFIG_KEYS = new Set(["entry", "html", "naming", "solid", "splitting", "tsconfig"]);
 const DEFAULT_ASSET_DIR = "assets";
 const RESERVED_PROJECT_DIR_NAMES = new Set([".git", "node_modules"]);
@@ -113,7 +113,7 @@ const validateConfigKeys = (config: SolidBuildConfig): void => {
         }
     }
 
-    for (const field of ["appComponent", "appTitle", "mountId", "outDir"] as const) {
+    for (const field of ["rootComponentFile", "appTitle", "mountId", "outDir"] as const) {
         const value = config[field];
         if (value !== undefined && (typeof value !== "string" || value.length === 0)) {
             throw new Error(`solid-lib config field "${field}" must be a non-empty string`);
@@ -127,29 +127,29 @@ const validateMountId = (mountId: string): void => {
     }
 };
 
-const validateDefaultExport = async (appComponentPath: string): Promise<void> => {
-    const source = await Bun.file(appComponentPath).text();
-    const sourceFile = ts.createSourceFile(appComponentPath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+const validateDefaultExport = async (rootComponentPath: string): Promise<void> => {
+    const source = await Bun.file(rootComponentPath).text();
+    const sourceFile = ts.createSourceFile(rootComponentPath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 
     if (!hasDefaultExport(sourceFile)) {
-        throw new Error(`solid-lib app component must default export a component: ${appComponentPath}`);
+        throw new Error(`solid-lib root component file must default export a component: ${rootComponentPath}`);
     }
 };
 
-const getSourceTreePath = (cwd: string, appComponent: string): string | undefined => {
-    const appComponentPath = resolve(cwd, appComponent);
-    const relativeAppComponentPath = relative(cwd, appComponentPath);
+const getSourceTreePath = (cwd: string, rootComponentFile: string): string | undefined => {
+    const rootComponentPath = resolve(cwd, rootComponentFile);
+    const relativeRootComponentPath = relative(cwd, rootComponentPath);
 
     if (
-        relativeAppComponentPath === "" ||
-        relativeAppComponentPath.startsWith(`..${sep}`) ||
-        relativeAppComponentPath === ".." ||
-        isAbsolute(relativeAppComponentPath)
+        relativeRootComponentPath === "" ||
+        relativeRootComponentPath.startsWith(`..${sep}`) ||
+        relativeRootComponentPath === ".." ||
+        isAbsolute(relativeRootComponentPath)
     ) {
         return undefined;
     }
 
-    const normalizedRelativePath = relativeAppComponentPath.replace(/\\/g, "/");
+    const normalizedRelativePath = relativeRootComponentPath.replace(/\\/g, "/");
     const segments = normalizedRelativePath.split("/").filter(Boolean);
 
     if (segments.length < 2) {
@@ -177,7 +177,7 @@ const validateOutDirExistingAncestor = (cwd: string, outDirPath: string): void =
     }
 };
 
-const validateOutDir = (cwd: string, outDir: string, appComponent: string): string => {
+const validateOutDir = (cwd: string, outDir: string, rootComponentFile: string): string => {
     const outDirPath = resolve(cwd, outDir);
     const relativeOutDir = relative(cwd, outDirPath);
 
@@ -195,7 +195,7 @@ const validateOutDir = (cwd: string, outDir: string, appComponent: string): stri
     }
     validateOutDirExistingAncestor(cwd, outDirPath);
 
-    const sourceTreePath = getSourceTreePath(cwd, appComponent);
+    const sourceTreePath = getSourceTreePath(cwd, rootComponentFile);
     if (sourceTreePath && isSameOrSubpath(outDirPath, sourceTreePath)) {
         throw new Error(`solid-lib outDir must not be inside the app source tree: ${outDir}`);
     }
@@ -319,30 +319,28 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSol
 
     validateMountId(mergedConfig.mountId);
 
-    const appComponentPath = resolve(cwd, mergedConfig.appComponent);
-    validateProjectRootPath(cwd, appComponentPath, "app component", mergedConfig.appComponent);
+    const rootComponentPath = resolve(cwd, mergedConfig.rootComponentFile);
+    validateProjectRootPath(cwd, rootComponentPath, "root component file", mergedConfig.rootComponentFile);
 
-    if (!existsSync(appComponentPath)) {
-        throw new Error(`solid-lib app component was not found at ${appComponentPath}`);
+    if (!existsSync(rootComponentPath)) {
+        throw new Error(`solid-lib root component file was not found at ${rootComponentPath}`);
     }
-    validateExistingPathTarget(cwd, appComponentPath, "app component", mergedConfig.appComponent);
-    if (!statSync(appComponentPath).isFile()) {
-        throw new Error(`solid-lib app component must be a file: ${appComponentPath}`);
+    validateExistingPathTarget(cwd, rootComponentPath, "root component file", mergedConfig.rootComponentFile);
+    if (!statSync(rootComponentPath).isFile()) {
+        throw new Error(`solid-lib root component file must be a file: ${rootComponentPath}`);
     }
 
-    await validateDefaultExport(appComponentPath);
+    await validateDefaultExport(rootComponentPath);
 
-    const outDirPath = validateOutDir(cwd, mergedConfig.outDir, mergedConfig.appComponent);
+    const outDirPath = validateOutDir(cwd, mergedConfig.outDir, mergedConfig.rootComponentFile);
     const assetsDirs = resolveAssetsDirs(cwd, mergedConfig.assetsDirs);
     validateOutDirAssetOverlap(outDirPath, assetsDirs, mergedConfig.outDir);
 
     return {
         config: {
-            appComponent: mergedConfig.appComponent,
-            appComponentPath,
+            rootComponentFile: mergedConfig.rootComponentFile,
             appTitle: mergedConfig.appTitle,
             assetsDirs,
-            appSourceRootPath: getSourceTreePath(cwd, mergedConfig.appComponent) ?? resolve(appComponentPath, ".."),
             devPort: mergedConfig.devPort,
             mountId: mergedConfig.mountId,
             outDir: mergedConfig.outDir,
@@ -351,6 +349,8 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSol
         configDependencyPaths: loadedUserConfig.dependencyPaths,
         configPath: hasConfigFile ? configPath : undefined,
         cwd,
+        rootComponentPath,
+        sourceRootPath: getSourceTreePath(cwd, mergedConfig.rootComponentFile) ?? resolve(rootComponentPath, ".."),
         watchDirs: mergedConfig.watchDirs ?? [],
     };
 };

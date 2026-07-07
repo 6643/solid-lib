@@ -124,11 +124,11 @@ const listFiles = (rootPath: string): string[] => {
     return files;
 };
 
-const createWatchSignature = ({ config, configDependencyPaths, cwd, watchDirs }: LoadedSolidBuildConfig): string => {
+const createWatchSignature = ({ config, configDependencyPaths, cwd, sourceRootPath, watchDirs }: LoadedSolidBuildConfig): string => {
     const roots = new Set<string>([
         resolve(cwd, "./config.ts"),
         ...configDependencyPaths,
-        config.appSourceRootPath,
+        sourceRootPath,
         ...config.assetsDirs.map((assetDir) => assetDir.inputPath),
         ...watchDirs.map((dir) => resolve(cwd, dir)),
     ]);

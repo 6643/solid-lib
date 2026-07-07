@@ -2,8 +2,8 @@ import { expect, test } from "bun:test";
 
 import { APP_RUNTIME_MODULE, createBootstrapSource } from "../src/builder/bundle";
 
-test("builder bootstrap mounts the app with the configured mount id", () => {
-  expect(createBootstrapSource({ appComponentImportPath: "./src/_.tsx", mountId: "app" })).toBe(
+test("builder bootstrap mounts the root component with the configured mount id", () => {
+  expect(createBootstrapSource({ rootComponentImportPath: "./src/_.tsx", mountId: "app" })).toBe(
     [
       `import { render as mount } from "${APP_RUNTIME_MODULE}";`,
       'import App from "./src/_.tsx";',

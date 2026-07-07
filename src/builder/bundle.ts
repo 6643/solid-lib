@@ -15,15 +15,15 @@ export const DEFAULT_ENTRY_NAMING: Bun.BuildConfig["naming"] = {
 };
 
 export const createBootstrapSource = ({
-    appComponentImportPath,
+    rootComponentImportPath,
     mountId,
 }: {
-    appComponentImportPath: string;
+    rootComponentImportPath: string;
     mountId: string;
 }): string => {
     return [
         `import { render as mount } from "${APP_RUNTIME_MODULE}";`,
-        `import App from "${appComponentImportPath}";`,
+        `import App from "${rootComponentImportPath}";`,
         "",
         `let mountRoot = document.getElementById(${JSON.stringify(mountId)});`,
         "",
@@ -102,7 +102,7 @@ export const buildAppBundle = async (
     loadedConfig: LoadedSolidBuildConfig,
     options: BuildAppBundleOptions = {},
 ): Promise<BuiltAppBundle> => {
-    const { config, cwd } = loadedConfig;
+    const { config, cwd, rootComponentPath } = loadedConfig;
     const stagingBasePath = findWritableAncestorPath(cwd) ?? tmpdir();
     const tempDir = mkdtempSync(join(stagingBasePath, ".solid-app-"));
     const bootstrapPath = join(tempDir, "bootstrap.tsx");
@@ -129,7 +129,7 @@ export const buildAppBundle = async (
         await Bun.write(
             bootstrapPath,
             createBootstrapSource({
-                appComponentImportPath: normalizeImportPath(relative(tempDir, config.appComponentPath)),
+                rootComponentImportPath: normalizeImportPath(relative(tempDir, rootComponentPath)),
                 mountId: config.mountId,
             }),
         );

@@ -364,7 +364,7 @@ test("solid-lib dev watches the full app source tree, not only the entry directo
       'import { defineConfig } from "solid-lib/builder";',
       "",
       "export default defineConfig({",
-      '  appComponent: "src/app/_.tsx",',
+      '  rootComponentFile: "src/app/_.tsx",',
       "});",
       "",
     ].join("\n"),
@@ -391,7 +391,7 @@ test("solid-lib dev watches the full app source tree, not only the entry directo
   expect(jsSource).toContain("After sibling rebuild");
 });
 
-test("solid-lib dev also watches the full source tree when appComponent uses ./src path", async () => {
+test("solid-lib dev also watches the full source tree when rootComponentFile uses ./src path", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-dot-tree-"));
   createdDirs.push(appRoot);
 
@@ -437,7 +437,7 @@ test("solid-lib dev also watches the full source tree when appComponent uses ./s
       'import { defineConfig } from "solid-lib/builder";',
       "",
       "export default defineConfig({",
-      '  appComponent: "./src/app/_.tsx",',
+      '  rootComponentFile: "./src/app/_.tsx",',
       "});",
       "",
     ].join("\n"),
@@ -699,7 +699,7 @@ test("solid-lib dev warns that devPort changes require restart and keeps the cur
   }
 });
 
-test("loadConfig rejects app components that only mention export default in strings", async () => {
+test("loadConfig rejects root component files that only mention export default in strings", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-export-"));
   createdDirs.push(appRoot);
 
@@ -736,10 +736,10 @@ test("loadConfig rejects app components that only mention export default in stri
     ].join("\n"),
   );
 
-  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib app component must default export a component");
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib root component file must default export a component");
 });
 
-test("loadConfig rejects outDir inside the source tree when appComponent uses ./src path", async () => {
+test("loadConfig rejects outDir inside the source tree when rootComponentFile uses ./src path", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-outdir-"));
   createdDirs.push(appRoot);
 
@@ -781,7 +781,7 @@ test("loadConfig rejects outDir inside the source tree when appComponent uses ./
       'import { defineConfig } from "solid-lib/builder";',
       "",
       "export default defineConfig({",
-      '  appComponent: "./src/app/_.tsx",',
+      '  rootComponentFile: "./src/app/_.tsx",',
       '  outDir: "src/dist",',
       "});",
       "",
@@ -835,7 +835,7 @@ test("loadConfig rejects output directories that overlap configured assets direc
   await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib outDir must not overlap assetsDirs entries");
 });
 
-test("loadConfig rejects appComponent paths outside the project root", async () => {
+test("loadConfig rejects rootComponentFile paths outside the project root", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-outside-entry-"));
   createdDirs.push(appRoot);
 
@@ -872,19 +872,19 @@ test("loadConfig rejects appComponent paths outside the project root", async () 
         'import { defineConfig } from "solid-lib/builder";',
         "",
         "export default defineConfig({",
-        '  appComponent: "../.tmp-solid-config-external-app.tsx",',
+        '  rootComponentFile: "../.tmp-solid-config-external-app.tsx",',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib app component must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib root component file must stay inside the project root");
   } finally {
     rmSync(outsideComponentPath, { force: true });
   }
 });
 
-test("loadConfig rejects symlinked appComponent paths whose real target escapes the project root", async () => {
+test("loadConfig rejects symlinked rootComponentFile paths whose real target escapes the project root", async () => {
   const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-symlink-entry-"));
   createdDirs.push(appRoot);
 
@@ -922,13 +922,13 @@ test("loadConfig rejects symlinked appComponent paths whose real target escapes 
         'import { defineConfig } from "solid-lib/builder";',
         "",
         "export default defineConfig({",
-        '  appComponent: "src/link.tsx",',
+        '  rootComponentFile: "src/link.tsx",',
         "});",
         "",
       ].join("\n"),
     );
 
-    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib app component must stay inside the project root");
+    await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib root component file must stay inside the project root");
   } finally {
     rmSync(outsideComponentPath, { force: true });
   }
@@ -1192,7 +1192,7 @@ test("loadConfig uses the nested src directory as app source root", async () => 
       'import { defineConfig } from "solid-lib/builder";',
       "",
       "export default defineConfig({",
-      '  appComponent: "packages/web/src/_.tsx",',
+      '  rootComponentFile: "packages/web/src/_.tsx",',
       '  outDir: "packages/web-dist",',
       "});",
       "",
@@ -1200,7 +1200,10 @@ test("loadConfig uses the nested src directory as app source root", async () => 
   );
 
   const loaded = await loadConfig(appRoot);
-  expect(loaded.config.appSourceRootPath).toBe(join(appRoot, "packages", "web", "src"));
+  expect(loaded.rootComponentPath).toBe(join(appRoot, "packages", "web", "src", "_.tsx"));
+  expect(loaded.sourceRootPath).toBe(join(appRoot, "packages", "web", "src"));
+  expect("rootComponentPath" in loaded.config).toBe(false);
+  expect("sourceRootPath" in loaded.config).toBe(false);
   expect(loaded.config.outDirPath).toBe(join(appRoot, "packages", "web-dist"));
 });
 

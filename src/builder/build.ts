@@ -11,21 +11,13 @@ export interface BuildStaticAppResult {
     entryFile: string;
 }
 
-export const buildStaticApp = async ({
-    config,
-    configDependencyPaths,
-    configPath,
-    cwd,
-    watchDirs,
-}: LoadedSolidBuildConfig): Promise<BuildStaticAppResult> => {
+export const buildStaticApp = async (loadedConfig: LoadedSolidBuildConfig): Promise<BuildStaticAppResult> => {
+    const { config } = loadedConfig;
     const outdir = config.outDirPath;
 
     rmSync(outdir, { force: true, recursive: true });
 
-    const built = await buildAppBundle(
-        { config, configDependencyPaths, configPath, cwd, watchDirs },
-        { development: false, minify: true, sourcemap: "none" },
-    );
+    const built = await buildAppBundle(loadedConfig, { development: false, minify: true, sourcemap: "none" });
 
     for (const output of built.assets) {
         const { artifact, path } = output;
