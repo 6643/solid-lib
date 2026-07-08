@@ -1,7 +1,12 @@
 import { createSignal } from "solid-js";
 import styles from "./Button.module.css";
+import type { PropertiesHyphen } from "csstype";
 
 import { SvgIcon } from "./SvgIcon";
+
+type CSSProperties = PropertiesHyphen & {
+    [key: `-${string}`]: string | number | undefined;
+};
 
 export type ButtonTapHandler = () => void | Promise<void>;
 
@@ -18,9 +23,33 @@ const invokeButtonTap = async (tap?: ButtonTapHandler) => {
     }
 };
 
+const toCssSize = (value: number | string | undefined): string | undefined =>
+    typeof value === "number" ? `${value}px` : value;
+
+const createButtonStyle = (options: {
+    bgColor?: string;
+    borderRadius?: number | string;
+    color?: string;
+    height?: number | string;
+    width?: number | string;
+}): CSSProperties => {
+    const style: CSSProperties = {};
+    const borderRadius = toCssSize(options.borderRadius);
+    const height = toCssSize(options.height);
+    const width = toCssSize(options.width);
+
+    if (options.bgColor) style["--bg"] = options.bgColor;
+    if (borderRadius) style["--radius"] = borderRadius;
+    if (options.color) style["--color"] = options.color;
+    if (height) style["--height"] = height;
+    if (width) style["--width"] = width;
+
+    return style;
+};
+
 const BaseButton = (props: {
     mode: string | undefined;
-    style?: {};
+    style?: CSSProperties;
     tap?: ButtonTapHandler;
     disabled?: boolean;
     children: any;
@@ -99,13 +128,13 @@ export const FilledButton = (props: FilledButtonProps) => (
         mode={styles.filled}
         tap={props.tap}
         disabled={props.disabled}
-        style={{
+        style={createButtonStyle({
             bgColor: props.bgColor,
             borderRadius: props.borderRadius,
             color: props.color,
             height: props.height,
             width: props.width,
-        }}
+        })}
     >
         {props.icon && <SvgIcon name={props.icon} />}
         {props.children ?? (props.text ? <span>{props.text}</span> : null)}
@@ -129,12 +158,12 @@ export const OutlinedButton = (props: OutlinedButtonProps) => (
         mode={styles.outlined}
         tap={props.tap}
         disabled={props.disabled}
-        style={{
+        style={createButtonStyle({
             borderRadius: props.borderRadius,
             color: props.color,
             height: props.height,
             width: props.width,
-        }}
+        })}
     >
         {props.icon && <SvgIcon name={props.icon} />}
         {props.children ?? (props.text ? <span>{props.text}</span> : null)}

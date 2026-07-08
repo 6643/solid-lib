@@ -2,6 +2,8 @@ import styles from "./CountDown.module.css"
 import { createMemo, createSignal, createTrackedEffect, For, Show } from "solid-js"
 import { DigitWheel } from "./DigitWheel"
 
+const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 export const CountDown = (props: {
     value: number
     done?: VoidFunction
@@ -32,7 +34,7 @@ export const CountDown = (props: {
         <For each={digitSlots()}>{(i) =>
             <>
                 <Show when={isSplit(getHms(), i)}><span>:</span></Show>
-                <DigitWheel values={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} value={getHms()[i] ?? 0} direction={-1} />
+                <DigitWheel values={DIGITS} value={getHms()[i] ?? 0} direction={-1} />
             </>
         }</For>
     </div>

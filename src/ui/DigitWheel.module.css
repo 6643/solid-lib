@@ -1,8 +1,8 @@
 .viewport {
     position: relative;
     display: inline-block;
-    width: 1.1em;
-    height: 2.2rem;
+    width: 0.68em;
+    height: 1.08em;
     overflow: hidden;
     text-align: center;
 }
@@ -25,8 +25,8 @@
     font-weight: 400;
     font-variant-numeric: tabular-nums;
     color: var(--raised-fg);
-    font-size: 1.9rem;
-    line-height: 2.2rem;
+    font-size: 1rem;
+    line-height: 1;
     letter-spacing: 0;
 }
 

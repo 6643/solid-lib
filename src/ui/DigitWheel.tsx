@@ -1,8 +1,9 @@
-import { createMemo, createSignal, createTrackedEffect, onCleanup, untrack, type Accessor } from "solid-js";
+import { createMemo, createSignal, createTrackedEffect, onCleanup, type Accessor, untrack } from "solid-js";
 import styles from "./DigitWheel.module.css";
 
-const FRAME_MS = 16;
+const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const SPRING = 0.18;
+const FRAME_MS = 16;
 
 const normalizeIndex = (value: number, length: number) => ((value % length) + length) % length;
 
@@ -14,7 +15,11 @@ const resolveDirectionalTarget = (current: number, targetIndex: number, length: 
     return targetIndex + Math.ceil((current - targetIndex) / length) * length;
 };
 
-const useSpringNumber = (getTarget: Accessor<number>, getLength: Accessor<number>, getDirection: Accessor<number>) => {
+const useSpringNumber = (
+    getTarget: Accessor<number>,
+    getLength: Accessor<number>,
+    getDirection: Accessor<number>,
+) => {
     const [value, setValue] = createSignal(0);
     let timer: ReturnType<typeof setTimeout> | undefined;
     let target = 0;
@@ -64,19 +69,17 @@ export const DigitWheel = (props: { values: number[]; value: number; direction?:
     const targetIndex = createMemo(() => Math.max(0, values().indexOf(props.value)));
     const direction = createMemo(() => (props.direction && props.direction < 0 ? -1 : 1));
     const position = useSpringNumber(targetIndex, () => values().length, direction);
+    const currentIndex = createMemo(() => Math.floor(position()));
+    const nextIndex = createMemo(() => currentIndex() + 1);
+    const offset = createMemo(() => `${100 * (position() - currentIndex())}%`);
 
     return (
         <div class={styles.viewport}>
-            <div
-                class={styles.digits}
-                style={{
-                    "--offset": `${100 * (position() - Math.floor(position()))}%`,
-                }}
-            >
+            <div class={styles.digits} style={{ "--offset": offset() }}>
                 <strong class={styles.next} aria-hidden="true">
-                    {values()[normalizeIndex(Math.floor(position()) + 1, values().length)]}
+                    {values()[normalizeIndex(nextIndex(), values().length)]}
                 </strong>
-                <strong class={styles.current}>{values()[normalizeIndex(Math.floor(position()), values().length)]}</strong>
+                <strong class={styles.current}>{values()[normalizeIndex(currentIndex(), values().length)]}</strong>
             </div>
         </div>
     );

@@ -4,6 +4,8 @@ import { IconButton } from "./Button";
 import { icon_remove, icon_add } from "./svgicons";
 import { DigitWheel } from "./DigitWheel";
 
+const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
 export const Counter = (props: {
     value?: number;
     change?: (value: number) => void;
@@ -42,7 +44,7 @@ export const Counter = (props: {
             <Show when={getVal() < 0}>
                 <span>-</span>
             </Show>
-            <For each={digitSlots()}>{(i) => <DigitWheel values={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} value={getNums()[i] ?? 0} direction={getDirection()} />}</For>
+            <For each={digitSlots()}>{(i) => <DigitWheel values={DIGITS} value={getNums()[i] ?? 0} direction={getDirection()} />}</For>
             <IconButton tap={increment} icon={icon_add} />
         </div>
     );
