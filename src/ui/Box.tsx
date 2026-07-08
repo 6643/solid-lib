@@ -1,13 +1,12 @@
 import styles from "./Box.module.css";
-import { Show } from "solid-js";
-import type { JSX } from "@solidjs/web";
+import { type Element, Show } from "solid-js";
 
 export const Block = (props: {
-    children: JSX.Element;
+    children: Element;
     headerTitle?: string;
-    headerActions?: JSX.Element;
+    headerActions?: Element;
     footerLeft?: string;
-    footerRight?: JSX.Element;
+    footerRight?: Element;
 }) => {
     return (
         <section class={styles.block}>

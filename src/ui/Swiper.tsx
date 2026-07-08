@@ -1,13 +1,13 @@
 import styles from "./Swiper.module.css"
 
 import { children, createMemo, createTrackedEffect, omit } from "solid-js"
-import type { JSX } from "@solidjs/web"
+import type { Element } from "solid-js"
 import { Dynamic } from "@solidjs/web"
 import { For } from "solid-js"
 import { loadScript } from "../utils/loadScript"
 
 export const Swiper = <T,>(props: {
-    children: JSX.Element | JSX.Element[]
+    children: Element
     [key: string]: any
 }) => {
     loadScript("https://unpkg.com/swiper/swiper-element-bundle.min.js")

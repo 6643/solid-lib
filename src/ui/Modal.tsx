@@ -1,10 +1,10 @@
 import styles from "./Modal.module.css";
 import { createSignal, createTrackedEffect, Show } from "solid-js";
+import type { Element } from "solid-js";
 import { Portal } from "@solidjs/web";
-import type { JSX } from "@solidjs/web";
 
 interface ModalProps {
-    children: JSX.Element;
+    children: Element;
     open: boolean;
     class?: string;
     onClose?: VoidFunction;
@@ -62,7 +62,13 @@ const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: strin
     return (
         <Show when={isMounted()}>
             <Portal>
-                <dialog ref={setEl} class={[props.modeClass, getClassName()]} onKeyDown={onKeyDown} onClick={closeDialog} aria-label={props.ariaLabel}>
+                <dialog
+                    ref={setEl}
+                    class={[props.modeClass, getClassName()]}
+                    onKeyDown={onKeyDown}
+                    onClick={closeDialog}
+                    aria-label={props.ariaLabel}
+                >
                     <div class={styles.overlay} />
                     <div
                         class={[styles.content, props.contentClass]}

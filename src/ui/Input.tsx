@@ -1,6 +1,6 @@
 import styles from "./Input.module.css";
-import { createSignal, createTrackedEffect, createMemo, Show, untrack, For } from "solid-js";
-import type { JSX } from "@solidjs/web";
+import { createSignal, createTrackedEffect, createMemo, Show, untrack } from "solid-js";
+import type { Element } from "solid-js";
 import { IconButton } from "./Button";
 import { icon_add, icon_remove, icon_content_paste } from "./svgicons";
 
@@ -49,8 +49,8 @@ const Input = (props: {
     label: string;
     value?: string;
     validate?: (value: string) => ValidateResult;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
+    left?: () => Element;
+    right?: () => Element;
     children: any;
 }) => {
     const { error, checking } = useField(() => props.value ?? "", props.validate);
@@ -80,8 +80,8 @@ export const RangeInput = (props: {
     max?: number;
     step?: number;
     unit?: string;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
+    left?: () => Element;
+    right?: () => Element;
 }) => {
     const [value, setValue] = createSignal(untrack(() => props.value) ?? untrack(() => props.min) ?? 0);
 
@@ -127,8 +127,8 @@ export const TextInput = (props: {
     changed?: (value: string) => void;
     minLen?: number;
     maxLen?: number;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
+    left?: () => Element;
+    right?: () => Element;
     validate?: (value: string) => ValidateResult;
 }) => {
     const value = createMemo(() => props.value ?? "");
@@ -240,8 +240,8 @@ export const PasswordInput = (props: {
     changed?: (value: string) => void;
     minLen?: number;
     maxLen?: number;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
+    left?: () => Element;
+    right?: () => Element;
     validate?: (value: string) => ValidateResult;
 }) => {
     const value = createMemo(() => props.value ?? "");
@@ -271,8 +271,8 @@ export const NumberInput = (props: {
     max?: number;
     step?: number;
     unit?: string;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
+    left?: () => Element;
+    right?: () => Element;
     validate?: (value: string) => ValidateResult;
 }) => {
     const [value, setValue] = createSignal(untrack(() => props.value) ?? 0);
@@ -350,8 +350,8 @@ export const EmailInput = (props: {
     changed?: (value: string) => void;
     minLen?: number;
     maxLen?: number;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
+    left?: () => Element;
+    right?: () => Element;
     validate?: (value: string) => ValidateResult;
 }) => {
     const value = createMemo(() => props.value ?? "");
@@ -385,8 +385,8 @@ export const TelInput = (props: {
     changed?: (value: string) => void;
     minLen?: number;
     maxLen?: number;
-    left?: () => JSX.Element;
-    right?: () => JSX.Element;
+    left?: () => Element;
+    right?: () => Element;
     validate?: (value: string) => ValidateResult;
     pattern?: string;
 }) => {
@@ -482,7 +482,7 @@ export const CaptchaInput = (props: {
                 input.value = current;
                 return;
             }
-            const ch = [...e.data].find(c => pattern().test(c));
+            const ch = [...e.data].find((c) => pattern().test(c));
             if (!ch) {
                 input.value = current;
                 return;
@@ -495,7 +495,7 @@ export const CaptchaInput = (props: {
 
         if (e.inputType === "insertFromPaste") {
             const text = input.value;
-            const matched = [...text].filter(c => pattern().test(c)).slice(0, len());
+            const matched = [...text].filter((c) => pattern().test(c)).slice(0, len());
             const result = matched.join("");
             input.value = result;
             props.changed?.(result);
@@ -508,7 +508,7 @@ export const CaptchaInput = (props: {
 
     const handlePaste = async () => {
         const text = await navigator.clipboard.readText();
-        const matched = [...text].filter(c => pattern().test(c)).slice(0, len());
+        const matched = [...text].filter((c) => pattern().test(c)).slice(0, len());
         props.changed?.(matched.join(""));
     };
 
@@ -517,7 +517,9 @@ export const CaptchaInput = (props: {
     return (
         <Input label={props.label} right={() => right}>
             <input
-                ref={(el: HTMLInputElement) => { inputEl = el; }}
+                ref={(el: HTMLInputElement) => {
+                    inputEl = el;
+                }}
                 class={styles.captchaInput}
                 type="text"
                 inputmode="numeric"

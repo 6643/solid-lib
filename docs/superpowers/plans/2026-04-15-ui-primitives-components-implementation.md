@@ -205,9 +205,9 @@ Expected: FAIL because the component files and CSS modules do not exist yet.
 
 ```ts
 import styles from "./Card.module.css";
-import type { JSX } from "solid-js";
+import type { ComponentProps } from "@solidjs/web";
 
-export type CardProps = JSX.HTMLAttributes<HTMLDivElement>;
+export type CardProps = ComponentProps<"div">;
 
 export const Card = (props: CardProps) => <div {...props} class={`${styles.card} ${props.class ?? ""}`.trim()} />;
 ```
@@ -216,9 +216,9 @@ export const Card = (props: CardProps) => <div {...props} class={`${styles.card}
 
 ```ts
 import styles from "./Input.module.css";
-import type { JSX } from "solid-js";
+import type { ComponentProps } from "@solidjs/web";
 
-export type InputProps = JSX.InputHTMLAttributes<HTMLInputElement>;
+export type InputProps = ComponentProps<"input">;
 
 export const Input = (props: InputProps) => <input {...props} class={`${styles.input} ${props.class ?? ""}`.trim()} />;
 ```

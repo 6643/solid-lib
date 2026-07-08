@@ -1,5 +1,4 @@
-import { type Component, createComponent, createTrackedEffect, onCleanup, untrack } from "solid-js";
-import type { JSX } from "@solidjs/web";
+import { type Component, type Element, createComponent, createTrackedEffect, onCleanup, untrack } from "solid-js";
 
 import { isFallbackRoutePath, matchesExactRoute } from "./match";
 import { handleAnchorClick } from "./navigation";
@@ -13,7 +12,7 @@ export type RouteProps = {
 
 type RouteRenderer = () => ReturnType<typeof createComponent> | undefined;
 
-export const Route = (props: RouteProps): JSX.Element => {
+export const Route = (props: RouteProps): Element => {
   const routePath = untrack(() => props.path);
   const RouteComponent = untrack(() => props.component);
   const readWhen = () => {
@@ -55,5 +54,5 @@ export const Route = (props: RouteProps): JSX.Element => {
     return rendered;
   };
 
-  return renderRoute as RouteRenderer & JSX.Element;
+  return renderRoute as Element;
 };
