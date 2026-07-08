@@ -168,6 +168,29 @@ const createHtmlResponse = (html: string): Response => createNoStoreResponse(htm
 
 const createBundledAssetResponse = (asset: InMemoryAsset): Response => createNoStoreResponse(asset.body, asset.contentType);
 
+const getRequestKind = (pathname: string): string => {
+    if (pathname === "/" || pathname === "/index.html") {
+        return "document";
+    }
+    if (pathname === DEV_EVENTS_PATH) {
+        return "event-stream";
+    }
+    if (pathname.endsWith(".js") || pathname.endsWith(".mjs") || pathname.endsWith(".ts") || pathname.endsWith(".tsx")) {
+        return "script";
+    }
+    if (pathname.endsWith(".css")) {
+        return "style";
+    }
+    if (pathname.startsWith("/assets/")) {
+        return "asset";
+    }
+    return "other";
+};
+
+const logDevRequest = (request: Request, pathname: string) => {
+    console.log(`[dev] ${request.method} ${pathname} (${getRequestKind(pathname)})`);
+};
+
 const pruneDisconnectedClients = (clients: Set<DevClientController>): void => {
     for (const client of clients) {
         if (client.desiredSize === null) {
@@ -297,6 +320,7 @@ export const startDevServer = async (
         fetch: (request) => {
             const url = new URL(request.url);
             const pathname = url.pathname === "/index.html" ? "/" : url.pathname;
+            logDevRequest(request, pathname);
 
             if (pathname === "/") {
                 return createHtmlResponse(currentBuild.html);
@@ -309,11 +333,13 @@ export const startDevServer = async (
             const assetPath = pathname.replace(/^\//, "");
             const asset = currentBuild.assets.get(assetPath);
             if (asset) {
+                console.log(`[dev] -> ${assetPath} (${asset.contentType})`);
                 return createBundledAssetResponse(asset);
             }
 
             const sourceAssetResponse = createSourceAssetResponse(assetPath, currentConfig);
             if (sourceAssetResponse) {
+                console.log(`[dev] -> ${assetPath} (source asset)`);
                 return sourceAssetResponse;
             }
 
