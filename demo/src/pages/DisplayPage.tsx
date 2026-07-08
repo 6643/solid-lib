@@ -14,7 +14,7 @@ import {
     NumberInput,
     CaptchaInput,
 } from "../../../src/ui/_";
-import { icon_drag_handle, icon_add, icon_remove } from "../../../src/ui/svgicons";
+import { icon_drag_handle, icon_add, icon_remove } from "solid-lib/ui";
 
 import styles from "./Pages.module.css";
 

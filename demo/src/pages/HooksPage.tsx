@@ -1,5 +1,5 @@
 import { createSignal, Show } from "solid-js";
-import { Card, FlexBox, FilledButton, OutlinedButton, TextInput } from "../../../src/ui/_";
+import { Card, FlexBox, FilledButton, OutlinedButton, TextInput } from "solid-lib/ui";
 import {
     createDebounce,
     createThrottle,
@@ -10,7 +10,7 @@ import {
     createFullscreen,
     useVis,
     createDebouncedSignal,
-} from "../../../src/ui/_";
+} from "solid-lib/utils";
 
 import styles from "./Pages.module.css";
 

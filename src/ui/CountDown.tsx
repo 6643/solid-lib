@@ -1,5 +1,6 @@
 import styles from "./CountDown.module.css"
 import { createMemo, createSignal, createTrackedEffect, For, Show } from "solid-js"
+import { DigitWheel } from "./DigitWheel"
 
 export const CountDown = (props: {
     value: number
@@ -7,6 +8,7 @@ export const CountDown = (props: {
 }) => {
     const [getVal, setVal] = createSignal(props.value)
     const getHms = createMemo(() => parseTime(getVal()))
+    const digitSlots = createMemo(() => Array.from({ length: getHms().length }, (_, i) => i));
     const isSplit = (array: number[], index: number) => {
         const length = array.length;
         const isSecondToLast = (length >= 2) && (index === length - 2)
@@ -27,22 +29,12 @@ export const CountDown = (props: {
 
 
     return <div class={styles.countdown}>
-        <For each={getHms()}>{(num, index) =>
+        <For each={digitSlots()}>{(i) =>
             <>
-                <Show when={isSplit(getHms(), index())}><span>:</span></Show>
-                <Down val={num} />
+                <Show when={isSplit(getHms(), i)}><span>:</span></Show>
+                <DigitWheel values={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} value={getHms()[i] ?? 0} direction={-1} />
             </>
         }</For>
-    </div>
-}
-
-
-
-const Down = (props: { val: number }) => {
-    return <div class={styles.move}>
-        <div>{props.val + 1 > 9 ? 0 : props.val + 1}</div>
-        <div>{props.val}</div>
-        <div>{props.val - 1 < 0 ? 9 : props.val - 1}</div>
     </div>
 }
 

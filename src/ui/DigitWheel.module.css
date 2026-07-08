@@ -1,0 +1,40 @@
+.viewport {
+    position: relative;
+    display: inline-block;
+    width: 1.1em;
+    height: 2.2rem;
+    overflow: hidden;
+    text-align: center;
+}
+
+.digits {
+    position: absolute;
+    inset: 0;
+    transform: translateY(var(--offset));
+    will-change: transform;
+}
+
+.digits strong {
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    color: var(--raised-fg);
+    font-size: 1.9rem;
+    line-height: 2.2rem;
+    letter-spacing: 0;
+}
+
+.current {
+    top: 0;
+}
+
+.next {
+    top: -100%;
+    user-select: none;
+}

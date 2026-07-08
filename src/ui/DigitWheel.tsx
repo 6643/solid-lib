@@ -6,12 +6,15 @@ const SPRING = 0.18;
 
 const normalizeIndex = (value: number, length: number) => ((value % length) + length) % length;
 
-const nearestEquivalent = (current: number, targetIndex: number, length: number) => {
-    const loop = Math.round((current - targetIndex) / length);
-    return targetIndex + loop * length;
+const resolveDirectionalTarget = (current: number, targetIndex: number, length: number, direction: number) => {
+    if (direction < 0) {
+        return targetIndex + Math.floor((current - targetIndex) / length) * length;
+    }
+
+    return targetIndex + Math.ceil((current - targetIndex) / length) * length;
 };
 
-const useSpringNumber = (getTarget: Accessor<number>, getLength: Accessor<number>) => {
+const useSpringNumber = (getTarget: Accessor<number>, getLength: Accessor<number>, getDirection: Accessor<number>) => {
     const [value, setValue] = createSignal(0);
     let timer: ReturnType<typeof setTimeout> | undefined;
     let target = 0;
@@ -38,8 +41,9 @@ const useSpringNumber = (getTarget: Accessor<number>, getLength: Accessor<number
     createTrackedEffect(() => {
         const length = getLength();
         const nextTarget = getTarget();
+        const direction = getDirection();
         const current = untrack(value);
-        const resolvedTarget = initialized ? nearestEquivalent(current, nextTarget, length) : nextTarget;
+        const resolvedTarget = initialized ? resolveDirectionalTarget(current, nextTarget, length, direction) : nextTarget;
         initialized = true;
         target = resolvedTarget;
         if (!timer) {
@@ -55,20 +59,19 @@ const useSpringNumber = (getTarget: Accessor<number>, getLength: Accessor<number
     return value;
 };
 
-export const DigitWheel = (props: { values: number[]; value: number }) => {
+export const DigitWheel = (props: { values: number[]; value: number; direction?: number }) => {
     const values = createMemo(() => (props.values.length > 0 ? props.values : [0]));
     const targetIndex = createMemo(() => Math.max(0, values().indexOf(props.value)));
-    const position = useSpringNumber(targetIndex, () => values().length);
+    const direction = createMemo(() => (props.direction && props.direction < 0 ? -1 : 1));
+    const position = useSpringNumber(targetIndex, () => values().length, direction);
 
     return (
         <div class={styles.viewport}>
             <div
                 class={styles.digits}
-                style={
-                    {
-                        "--offset": `${100 * (position() - Math.floor(position()))}%`,
-                    } as any
-                }
+                style={{
+                    "--offset": `${100 * (position() - Math.floor(position()))}%`,
+                }}
             >
                 <strong class={styles.next} aria-hidden="true">
                     {values()[normalizeIndex(Math.floor(position()) + 1, values().length)]}

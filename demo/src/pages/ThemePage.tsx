@@ -1,4 +1,14 @@
-import { Card, FlexBox, FilledButton, OutlinedButton, TextButton, TextInput, Counter, ThemeSwitch, AccentSelector } from "../../../src/ui/_";
+import {
+    Card,
+    FlexBox,
+    FilledButton,
+    OutlinedButton,
+    TextButton,
+    TextInput,
+    Counter,
+    ThemeSwitch,
+    AccentSelector,
+} from "solid-lib/ui";
 import styles from "./Pages.module.css";
 
 const ThemePage = () => {

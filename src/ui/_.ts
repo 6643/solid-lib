@@ -1,3 +1,6 @@
+import "./_.css";
+export * from "./svgicons";
+
 export { Card, type CardProps } from "./Card";
 export {
     FilledButton,

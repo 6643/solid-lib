@@ -1,6 +1,4 @@
-import "../../src/ui/_.css";
-
-import { MenuTab, NavTab, TopTab, BottomTab, initTheme, initAccent } from "../../src/ui/_";
+import { MenuTab, NavTab, TopTab, BottomTab, initTheme, initAccent } from "solid-lib/ui";
 import {
     icon_dashboard,
     icon_edit,

@@ -53,6 +53,14 @@
     resize: vertical;
 }
 
+.field .inputGrow > input {
+    display: block;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 0 8px;
+    line-height: 36px;
+}
+
 .field input[type="number"]::-webkit-inner-spin-button,
 .field input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -252,7 +260,6 @@
 
 input.captchaInput {
     letter-spacing: 4px;
-    padding-left: 8px;
     appearance: none;
     outline: none;
     font-family: monospace;
@@ -269,9 +276,4 @@ input.captchaInput:disabled {
     color: var(--disabled-color);
     border-color: var(--disabled-color);
     cursor: not-allowed;
-}
-
-input.captchaInput::selection {
-    background-color: transparent;
-    color: inherit;
 }
