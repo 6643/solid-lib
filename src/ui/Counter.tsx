@@ -1,5 +1,5 @@
 import styles from "./Counter.module.css";
-import { createSignal, createMemo, createTrackedEffect, For, Show, untrack } from "solid-js";
+import { createSignal, createMemo, createEffect, For, Show, untrack } from "solid-js";
 import { IconButton } from "./Button";
 import { icon_remove, icon_add } from "./svgicons";
 import { DigitWheel } from "./DigitWheel";
@@ -18,9 +18,19 @@ export const Counter = (props: {
     const digitSlots = createMemo(() => Array.from({ length: getNums().length }, (_, i) => i));
     const [getDirection, setDirection] = createSignal(1);
 
-    createTrackedEffect(() => {
-        props.change?.(getVal());
-    });
+    createEffect(
+        () => props.value,
+        (external) => {
+            if (external !== undefined) setVal(external);
+        },
+    );
+
+    createEffect(
+        () => getVal(),
+        (value) => {
+            props.change?.(value);
+        },
+    );
 
     const increment = () => {
         const currentValue = getVal();

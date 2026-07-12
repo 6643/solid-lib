@@ -3,4 +3,4 @@ import type { ComponentProps } from "@solidjs/web";
 
 export type CardProps = ComponentProps<"div">;
 
-export const Card = (props: CardProps) => <div {...props} class={`${styles.card} ${props.class ?? ''}`} />;
+export const Card = (props: CardProps) => <div {...props} class={[styles.card, props.class]} />;

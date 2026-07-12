@@ -1,5 +1,5 @@
 import styles from "./CityPicker.module.css";
-import { createMemo, createSignal, createTrackedEffect, For, type Signal } from "solid-js";
+import { createMemo, createSignal, createEffect, For, type Signal, untrack } from "solid-js";
 import type { Element } from "solid-js";
 import { SvgIcon } from "./SvgIcon";
 import { icon_chevron_right } from "./svgicons";
@@ -13,7 +13,7 @@ export const CityPicker = (props: {
     url: string;
 }) => {
     const [getVis, setVis] = props.vis;
-    const [getPickCode, setPickCode] = createSignal(props.cityCode ?? 0);
+    const [getPickCode, setPickCode] = createSignal(untrack(() => props.cityCode) ?? 0);
     const getPickCity = createMemo(() => getCity(getPickCode() ?? 0).reverse());
 
     const pick = (city: City) => {
@@ -23,9 +23,12 @@ export const CityPicker = (props: {
         props.change?.({ code: city.code, names: getCity(city.code).reverse().map(c => c.name) });
     };
 
-    createTrackedEffect(() => {
-        if (getVis() && props.url && getCities().length == 0) initCities(props.url);
-    });
+    createEffect(
+        () => ({ open: getVis(), url: props.url, empty: getCities().length === 0 }),
+        ({ open, url, empty }) => {
+            if (open && url && empty) void initCities(url);
+        },
+    );
 
     return <>{props.children}</>;
 };

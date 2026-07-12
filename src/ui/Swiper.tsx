@@ -1,6 +1,6 @@
 import styles from "./Swiper.module.css"
 
-import { children, createMemo, createTrackedEffect, omit } from "solid-js"
+import { children, createMemo, onSettled, omit } from "solid-js"
 import type { Element } from "solid-js"
 import { Dynamic } from "@solidjs/web"
 import { For } from "solid-js"
@@ -48,7 +48,7 @@ export const Swiper = <T,>(props: {
             slideChangeHandler();
         });
 
-        createTrackedEffect(() => {
+        onSettled(() => () => {
             destroyed = true;
             if (!swiper) return;
             allVideos.forEach((video: HTMLVideoElement) => {

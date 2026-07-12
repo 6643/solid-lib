@@ -1,4 +1,4 @@
-import { type Component, type Element, createComponent, createTrackedEffect, onCleanup, untrack } from "solid-js";
+import { type Component, type Element, createComponent, onSettled, untrack } from "solid-js";
 
 import { isFallbackRoutePath, matchesExactRoute, normalizePathname } from "./match";
 import { handleAnchorClick } from "./navigation";
@@ -32,9 +32,9 @@ export const Route = (props: RouteProps): Element => {
   });
   let rendered: ReturnType<typeof createComponent> | undefined;
 
-  createTrackedEffect(() => {
+  onSettled(() => {
     ensureRouteState(handleAnchorClick);
-    onCleanup(() => unregisterRoute(routeId));
+    return () => unregisterRoute(routeId);
   });
 
   const renderRoute: RouteRenderer = () => {

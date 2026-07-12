@@ -90,14 +90,14 @@ export const AccentSelector = () => {
                     setOpen((v) => !v);
                 }}
             />
-            <div class={`${styles.picker} ${open() ? styles.open : ""}`}>
+            <div class={[styles.picker, { [styles.open!]: open() }]}>
                 <For each={accents}>
                     {(item) => (
                         <button
                             type="button"
                             onClick={() => setAccent(item.value)}
                             title={item.name}
-                            class={`${styles.swatch} ${accent() === item.value ? styles.selected : ""}`}
+                            class={[styles.swatch, { [styles.selected!]: accent() === item.value }]}
                             style={{ background: item.value }}
                         />
                     )}

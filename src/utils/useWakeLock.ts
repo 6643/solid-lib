@@ -1,4 +1,5 @@
-import { createSignal, createTrackedEffect } from 'solid-js';
+import { createSignal, onSettled } from "solid-js";
+import { isServer } from "@solidjs/web";
 
 /**
  * A hook to manage the Screen Wake Lock API.
@@ -6,23 +7,22 @@ import { createSignal, createTrackedEffect } from 'solid-js';
  * @returns An object containing support status, active status signal, and a setter function.
  */
 export const useWakeLock = () => {
-    const [isSupported] = createSignal('wakeLock' in navigator);
+    const [isSupported] = createSignal(!isServer && "wakeLock" in navigator);
     const [isActive, setIsActive] = createSignal(false);
     let wakeLock: WakeLockSentinel | null = null;
 
     const request = async () => {
         if (!isSupported() || isActive()) return;
         try {
-            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock = await navigator.wakeLock.request("screen");
             setIsActive(true);
-            console.log('Screen Wake Lock is active.');
-            wakeLock.addEventListener('release', () => {
-                console.log('Screen Wake Lock was released.');
+            wakeLock.addEventListener("release", () => {
                 setIsActive(false);
-                wakeLock = null; // Sentinel is released, clear our reference
+                wakeLock = null;
             });
-        } catch (err: any) {
-            console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? `${err.name}, ${err.message}` : String(err);
+            console.error(`Wake Lock request failed: ${message}`);
             setIsActive(false);
             wakeLock = null;
         }
@@ -31,24 +31,23 @@ export const useWakeLock = () => {
     const release = async () => {
         if (isActive() && wakeLock) {
             await wakeLock.release();
-            // The 'release' event listener will handle setting isActive to false.
         }
     };
 
-    // Automatically re-acquire the lock when the page becomes visible again
-    createTrackedEffect(() => {
-        const visibilityState = document.visibilityState;
-        const handleVisibilityChange = () => {
-            if (isActive() && visibilityState === 'visible') {
-                request();
-            }
-        };
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    });
+    if (!isServer) {
+        onSettled(() => {
+            const handleVisibilityChange = () => {
+                if (isActive() && document.visibilityState === "visible") {
+                    void request();
+                }
+            };
+            document.addEventListener("visibilitychange", handleVisibilityChange);
+            return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+        });
+    }
 
     const setActive = (active: boolean) => {
-        active ? request() : release();
+        active ? void request() : void release();
     };
 
     return { isSupportedWakeLock: isSupported, isWakeLockActive: isActive, setWakeLockActive: setActive };

@@ -1,20 +1,19 @@
-import { type Accessor, createStore, createTrackedEffect, getOwner, onCleanup, untrack } from "solid-js"
-import { useScrollEnd } from "./useScrollEnd.ts"
-
+import { type Accessor, createEffect, createStore, untrack } from "solid-js";
+import { useScrollEnd } from "./useScrollEnd.ts";
 
 interface ScrollPositionsStore {
     [page: string]: {
-        [key: string]: number
-    }
+        [key: string]: number;
+    };
 }
 
 const [scrollPos, setScrollPos] = createStore<ScrollPositionsStore>({});
 
 export const setPos = (page: string, key: string, value: number) =>
     setScrollPos((store) => {
+        // Solid 2.0: store setters are draft-first; mutate in place (no return).
         if (!store[page]) store[page] = {};
         store[page][key] = value;
-        return store;
     });
 
 export const getPos = (page: string, key: string): number => untrack(() => scrollPos[page]?.[key] ?? 0);
@@ -22,10 +21,8 @@ export const getPos = (page: string, key: string): number => untrack(() => scrol
 export const delPos = (page: string) =>
     setScrollPos((store) => {
         delete store[page];
-        return store;
     });
 
-// --- Keep Scroll Hook ---
 export const useKeepScroll = (
     ref: HTMLElement | Accessor<HTMLElement | undefined>,
     page: string,
@@ -43,17 +40,13 @@ export const useKeepScroll = (
         return () => clearTimeout(timer);
     };
 
-    if (typeof ref !== "function") {
-        useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs);
-        const cleanup = restoreScrollTop(ref);
-        if (cleanup && getOwner()) onCleanup(cleanup);
-        return;
-    }
+    useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs);
 
-    createTrackedEffect(() => {
-        const el = ref();
-        if (!el) return;
-        useScrollEnd(el, (top) => setPos(page, key, top), debounceMs);
-        return restoreScrollTop(el);
-    });
+    createEffect(
+        () => (typeof ref === "function" ? ref() : ref),
+        (el) => {
+            if (!el) return;
+            return restoreScrollTop(el);
+        },
+    );
 };

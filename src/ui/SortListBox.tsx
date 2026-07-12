@@ -1,5 +1,5 @@
 import styles from "./SortListBox.module.css";
-import { createSignal, createTrackedEffect, For } from "solid-js";
+import { createSignal, onSettled, For } from "solid-js";
 import type { Element } from "solid-js";
 import { SvgIcon } from "./SvgIcon";
 import { icon_drag_handle } from "./svgicons";
@@ -153,7 +153,7 @@ export const SortListBox = <T,>(props: {
         setDragState(null);
     };
 
-    createTrackedEffect(() => cleanUpDrag());
+    onSettled(() => () => cleanUpDrag());
 
     return (
         <div class={styles.sort_list_box} ref={containerEl} onPointerDown={handlePointerDown}>

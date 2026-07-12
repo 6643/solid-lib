@@ -1,8 +1,26 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { createSignal, lazy } from "solid-js";
+import { readdir } from "node:fs/promises";
+import { join } from "node:path";
 
 import { Route, getRouteBackPath, parseParam, parseParams, pushRoute, replaceRoute } from "../src/route/_";
 import { resetRouteForTests } from "../src/route/testing";
+
+test("route sources use Solid 2.0 onSettled and never onCleanup/onMount/createTrackedEffect", async () => {
+  const routeDir = join(import.meta.dir, "..", "src", "route");
+  const files = (await readdir(routeDir)).filter((name) => /\.(ts|tsx)$/.test(name));
+  const sources = await Promise.all(files.map((name) => Bun.file(join(routeDir, name)).text()));
+
+  for (const source of sources) {
+    expect(source).not.toContain("onCleanup");
+    expect(source).not.toContain("onMount");
+    expect(source).not.toContain("createTrackedEffect");
+  }
+
+  const routeSource = await Bun.file(join(routeDir, "Route.tsx")).text();
+  expect(routeSource).toContain("onSettled");
+  expect(routeSource).toContain("unregisterRoute");
+});
 
 type Listener = (event: any) => void;
 

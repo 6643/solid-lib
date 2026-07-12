@@ -35,7 +35,8 @@
         "test:local-consumer": "bun ./test/demo-local-consumer.ts",
         "test:packed-consumer": "bun ./test/demo-local-consumer.ts pack",
         "test:smoke": "bun run test:local-consumer && bun run test:packed-consumer",
-        "test:unit": "bun test"
+        "test:unit": "bun test",
+        "postinstall": "bun scripts/patch-solid-jsx-runtime.mjs"
     },
     "dependencies": {
         "@babel/core": "7.29.0",

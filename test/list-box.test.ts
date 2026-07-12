@@ -98,7 +98,7 @@ test("ListBox keeps props.index as an external jump target", async () => {
   const source = await readListBoxSource();
 
   expect(source).toContain("changed?: (index: number) => void;");
-  expect(source).toContain("const index = props.index ?? 0;");
+  expect(source).toContain("index: props.index ?? 0");
   expect(source).toContain("setWindowForIndex(index, items);");
   expect(source).toContain("const start = clampStart(targetIndex, items.length, renderCount);");
   expect(source).toContain("shiftWindowToStart(start, items, renderCount);");
@@ -106,6 +106,8 @@ test("ListBox keeps props.index as an external jump target", async () => {
   expect(source).toContain("const previousScrollTop = el.scrollTop;");
   expect(source).toContain("if (el.scrollTop !== previousScrollTop) ignoredScrollTop = el.scrollTop;");
   expect(source).not.toContain("untrack(() => setWindowForIndex(props.index ?? 0, items));");
+  expect(source).toContain("createEffect(");
+  expect(source).not.toContain("createTrackedEffect");
 });
 
 test("ListBox shifts overlapping external index jumps incrementally", async () => {

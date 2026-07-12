@@ -1,5 +1,5 @@
 import styles from "./TimeLine.module.css";
-import { createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
 import { SvgIcon } from "./SvgIcon";
 import { icon_expand_all, icon_unfold_less } from "./svgicons";
 export const TimeLine = (props: {
@@ -7,9 +7,10 @@ export const TimeLine = (props: {
     children: { time: number; info: string; url?: string }[];
     visCount?: number;
 }) => {
-    const initEvents = props.children.slice(0, props.visCount ?? 3);
-    const [getEvents, setEvents] = createSignal(initEvents);
-    const toggle = () => setEvents(getEvents().length != props.children.length ? props.children : initEvents);
+    const collapsed = createMemo(() => props.children.slice(0, props.visCount ?? 3));
+    const [expanded, setExpanded] = createSignal(false);
+    const getEvents = createMemo(() => (expanded() ? props.children : collapsed()));
+    const toggle = () => setExpanded((v) => !v);
 
     return (
         <div class={styles.time_line}>
@@ -23,14 +24,14 @@ export const TimeLine = (props: {
                     </Show>
                 )}
             </For>
-            <Show when={props.children.length > initEvents.length}>
+            <Show when={props.children.length > collapsed().length}>
                 <div class={styles.toggle}>
                     <span></span>
                     <div onClick={toggle}>
-                        <span>{getEvents().length != props.children.length ? "展开" : "收起"}</span>
+                        <span>{expanded() ? "收起" : "展开"}</span>
                         <SvgIcon
                             color="var(--sunken-fg)"
-                            name={getEvents().length != props.children.length ? icon_expand_all : icon_unfold_less}
+                            name={expanded() ? icon_unfold_less : icon_expand_all}
                         />
                     </div>
                 </div>

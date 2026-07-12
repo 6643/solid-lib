@@ -1,5 +1,5 @@
 import styles from "./Modal.module.css";
-import { createSignal, createTrackedEffect, Show } from "solid-js";
+import { createSignal, createEffect, Show } from "solid-js";
 import type { Element } from "solid-js";
 import { Portal } from "@solidjs/web";
 
@@ -22,25 +22,30 @@ const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: strin
     const [el, setEl] = createSignal<HTMLDialogElement>();
     let closingTimer: ReturnType<typeof setTimeout> | undefined;
 
-    createTrackedEffect(() => {
-        const currentEl = el();
-        if (!currentEl) return;
-        if (isMounted() && !currentEl.open) currentEl.showModal();
-        if (!isMounted() && currentEl.open) currentEl.close();
-    });
+    createEffect(
+        () => ({ currentEl: el(), mounted: isMounted() }),
+        ({ currentEl, mounted }) => {
+            if (!currentEl) return;
+            if (mounted && !currentEl.open) currentEl.showModal();
+            if (!mounted && currentEl.open) currentEl.close();
+        },
+    );
 
-    createTrackedEffect(() => {
-        if (props.open) {
-            clearTimeout(closingTimer);
-            setMounted(true);
-            queueMicrotask(() => setAnimating(true));
-            return;
-        }
+    createEffect(
+        () => props.open,
+        (open) => {
+            if (open) {
+                clearTimeout(closingTimer);
+                setMounted(true);
+                queueMicrotask(() => setAnimating(true));
+                return;
+            }
 
-        setAnimating(false);
-        closingTimer = setTimeout(() => setMounted(false), 256);
-        return () => clearTimeout(closingTimer);
-    });
+            setAnimating(false);
+            closingTimer = setTimeout(() => setMounted(false), 256);
+            return () => clearTimeout(closingTimer);
+        },
+    );
 
     const onKeyDown = (e: KeyboardEvent) => {
         if (e.key !== "Escape") return;
@@ -53,18 +58,12 @@ const BaseModal = (props: ModalProps & { modeClass: string; contentClass?: strin
         props.onClose?.();
     };
 
-    const getClassName = () => {
-        const classes = [styles.modal!, isAnimating() ? styles.active! : ""];
-        if (props.class) classes.push(props.class);
-        return classes.filter(Boolean).join(" ");
-    };
-
     return (
         <Show when={isMounted()}>
             <Portal>
                 <dialog
                     ref={setEl}
-                    class={[props.modeClass, getClassName()]}
+                    class={[props.modeClass, styles.modal, { [styles.active!]: isAnimating() }, props.class]}
                     onKeyDown={onKeyDown}
                     onClick={closeDialog}
                     aria-label={props.ariaLabel}

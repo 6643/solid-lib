@@ -1,7 +1,7 @@
 import styles from "./FlexBox.module.css"
-import { children, createMemo, createTrackedEffect } from "solid-js"
+import { children, createMemo, createEffect, type Element } from "solid-js"
 export const FlexBox = (props: {
-    children: any
+    children: Element
     dir?: "row" | "row-reverse" | "column" | "column-reverse"
     wrap?: "nowrap" | "wrap" | "wrap-reverse"
     ai?: "flex-start" | "flex-end" | "center" | "baseline" | "stretch"
@@ -18,7 +18,7 @@ export const FlexBox = (props: {
     style?: Record<string, string | number>
 }) => {
 
-    const get_class = createMemo(() => [styles.flex_box, props.class].filter(Boolean).join(" "))
+    const get_class = createMemo(() => [styles.flex_box, props.class])
     const get_style = createMemo(() => {
         return {
             "--dir": props.dir,
@@ -32,24 +32,27 @@ export const FlexBox = (props: {
     })
 
     const resolved = children(() => props.children)
-    createTrackedEffect(() => {
-        const nodes = resolved.toArray();
-        const as = props.as;
-        const fg = props.fg;
-        const fs = props.fs;
-        const order = props.order;
-
-        nodes.forEach((child: any, i: number) => {
-            if (!(child instanceof HTMLElement)) return
-            if (as) child.style.alignSelf = as[i]!
-            if (fg) child.style.flexGrow = String(fg[i])
-            if (fs) child.style.flexShrink = String(fs[i])
-            if (order) child.style.order = String(order[i])
-        })
-    })
+    createEffect(
+        () => ({
+            nodes: resolved.toArray(),
+            as: props.as,
+            fg: props.fg,
+            fs: props.fs,
+            order: props.order,
+        }),
+        ({ nodes, as, fg, fs, order }) => {
+            nodes.forEach((child, i) => {
+                if (!(child instanceof HTMLElement)) return;
+                if (as) child.style.alignSelf = as[i]!;
+                if (fg) child.style.flexGrow = String(fg[i]);
+                if (fs) child.style.flexShrink = String(fs[i]);
+                if (order) child.style.order = String(order[i]);
+            });
+        },
+    );
 
     return <div class={get_class()} style={get_style()}>
-        {resolved() as any}
+        {resolved()}
     </div>
 
 }

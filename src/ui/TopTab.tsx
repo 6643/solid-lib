@@ -1,5 +1,5 @@
 import styles from "./TopTab.module.css";
-import { createSignal, createTrackedEffect, For, Show } from "solid-js";
+import { createSignal, onSettled, For, Show } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { SvgIcon } from "./SvgIcon.tsx";
 
@@ -20,14 +20,14 @@ const useTopTab = (key: string) => {
 export const TopTab = (props: { children: { name?: string; icon?: string; panel: () => any }[] }) => {
     const { getActiveIndex, toIndex, mainRef } = useTopTab("top.tab");
 
-    createTrackedEffect(() => toIndex(getPos(location.pathname, "top.tab")));
+    onSettled(() => toIndex(getPos(location.pathname, "top.tab")));
 
     return (
         <div class={styles.topTab}>
             <nav style={{ "--count": props.children.length, "--index": getActiveIndex() }}>
                 <For each={props.children}>
                     {({ name, icon }, index) => (
-                        <div class={index() === getActiveIndex() ? styles.active : ""} onClick={() => toIndex(index())}>
+                        <div class={{ [styles.active!]: index() === getActiveIndex() }} onClick={() => toIndex(index())}>
                             {icon && <SvgIcon size={24} name={icon} />}
                             {name && <span>{name}</span>}
                         </div>

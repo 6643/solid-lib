@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, type Element } from "solid-js";
 import styles from "./Button.module.css";
 import type { PropertiesHyphen } from "csstype";
 
@@ -52,7 +52,7 @@ const BaseButton = (props: {
     style?: CSSProperties;
     tap?: ButtonTapHandler;
     disabled?: boolean;
-    children: any;
+    children?: Element;
 }) => {
     const [busy, setBusy] = createSignal(false);
     let btnRef: HTMLButtonElement | undefined;
@@ -73,7 +73,7 @@ const BaseButton = (props: {
 
     return (
         <button
-            ref={btnRef}
+            ref={(el: HTMLButtonElement) => { btnRef = el; }}
             class={[styles.button, props.mode]}
             disabled={props.disabled || busy()}
             onClick={handleClick}
@@ -100,7 +100,7 @@ export type TextButtonProps = {
     icon?: string;
     tap?: ButtonTapHandler;
     disabled?: boolean;
-    children?: any;
+    children?: Element;
 };
 
 export const TextButton = (props: TextButtonProps) => (
@@ -120,7 +120,7 @@ export type FilledButtonProps = {
     height?: number | string;
     tap?: ButtonTapHandler;
     disabled?: boolean;
-    children?: any;
+    children?: Element;
 };
 
 export const FilledButton = (props: FilledButtonProps) => (
@@ -150,7 +150,7 @@ export type OutlinedButtonProps = {
     text?: string;
     disabled?: boolean;
     tap?: ButtonTapHandler;
-    children?: any;
+    children?: Element;
 };
 
 export const OutlinedButton = (props: OutlinedButtonProps) => (

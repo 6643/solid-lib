@@ -1,5 +1,5 @@
 import styles from "./ListBox.module.css";
-import { createMemo, createSignal, createTrackedEffect, For, untrack, type Element } from "solid-js";
+import { createMemo, createSignal, createEffect, For, untrack, type Element } from "solid-js";
 import { useScrollEnd } from "../utils/useScrollEnd";
 
 type ListBoxRow<T> = {
@@ -296,15 +296,16 @@ export const ListBox = <T,>(props: {
         queueNotifyVisibleIndex(el);
     };
 
-    createTrackedEffect(() => {
-        const items = getItems();
-        const index = props.index ?? 0;
-        if (ignoredIndex === index) {
-            ignoredIndex = undefined;
-            return;
-        }
-        setWindowForIndex(index, items);
-    });
+    createEffect(
+        () => ({ items: getItems(), index: props.index ?? 0 }),
+        ({ items, index }) => {
+            if (ignoredIndex === index) {
+                ignoredIndex = undefined;
+                return;
+            }
+            setWindowForIndex(index, items);
+        },
+    );
 
     useScrollEnd(
         () => getEl(),

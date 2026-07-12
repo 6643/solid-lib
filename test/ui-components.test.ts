@@ -51,8 +51,8 @@ test("generic helpers live under src/utils instead of src/ui", async () => {
   expect(utilsSource).toContain('export { loadStyle } from "./loadStyle";');
 });
 
-test("ui source no longer depends on onSettled for lifecycle management", async () => {
-  const sources = await Promise.all([
+test("ui and utils use Solid 2.0 lifecycle primitives instead of createTrackedEffect", async () => {
+  const paths = [
     "src/ui/BottomTab.tsx",
     "src/ui/CountDown.tsx",
     "src/ui/LeftTab.tsx",
@@ -66,11 +66,161 @@ test("ui source no longer depends on onSettled for lifecycle management", async 
     "src/utils/useClass.ts",
     "src/utils/useKeepScroll.ts",
     "src/route/Route.tsx",
-  ].map((path) => Bun.file(join(import.meta.dir, "..", path)).text()));
+  ];
+  const sources = await Promise.all(paths.map((path) => Bun.file(join(import.meta.dir, "..", path)).text()));
 
   for (const source of sources) {
-    expect(source).not.toContain("onSettled");
+    expect(source).not.toContain("createTrackedEffect");
   }
+
+  // Component-level one-shot setup uses onSettled.
+  for (const path of [
+    "src/ui/BottomTab.tsx",
+    "src/ui/CountDown.tsx",
+    "src/ui/LeftTab.tsx",
+    "src/ui/MenuTab.tsx",
+    "src/ui/NavTab.tsx",
+    "src/ui/SortListBox.tsx",
+    "src/ui/TopTab.tsx",
+    "src/utils/createFullscreen.ts",
+    "src/route/Route.tsx",
+  ]) {
+    const source = await Bun.file(join(import.meta.dir, "..", path)).text();
+    expect(source).toContain("onSettled");
+  }
+
+  // Reactive side effects use createEffect(compute, apply).
+  for (const path of ["src/ui/Modal.tsx", "src/utils/useClass.ts", "src/utils/useKeepScroll.ts"]) {
+    const source = await Bun.file(join(import.meta.dir, "..", path)).text();
+    expect(source).toContain("createEffect");
+  }
+});
+
+test("src packages use Solid 2.0 APIs and never 1.x-removed or app-forbidden primitives", async () => {
+  const { readdir } = await import("node:fs/promises");
+  const packages = ["builder", "route", "ui", "utils"] as const;
+  // App-level forbidden names (still may exist in solid-js for internals).
+  const bannedTokens = [
+    "onCleanup",
+    "onMount",
+    "createTrackedEffect",
+    "createRenderEffect",
+    "createResource",
+    "createComputed",
+    "createMutable",
+    "mergeProps",
+    "splitProps",
+    "createSelector",
+    "createDeferred",
+    "startTransition",
+    "useTransition",
+    "ErrorBoundary",
+    "SuspenseList",
+    "catchError",
+    "classList=",
+  ] as const;
+  // 1.x solid helpers that must not be imported from solid-js.
+  const bannedSolidImports = new Set([
+    "onCleanup",
+    "onMount",
+    "createTrackedEffect",
+    "createRenderEffect",
+    "createResource",
+    "createComputed",
+    "batch",
+    "produce",
+    "Index",
+    "Suspense",
+    "mergeProps",
+    "splitProps",
+    "on",
+    "from",
+    "observable",
+  ]);
+
+  const files: string[] = [];
+  for (const pkg of packages) {
+    const dir = join(import.meta.dir, "..", "src", pkg);
+    const walk = async (current: string) => {
+      for (const entry of await readdir(current, { withFileTypes: true })) {
+        const full = join(current, entry.name);
+        if (entry.isDirectory()) {
+          await walk(full);
+          continue;
+        }
+        if (!/\.(ts|tsx)$/.test(entry.name)) continue;
+        if (entry.name === "svgicons.ts") continue;
+        files.push(full);
+      }
+    };
+    await walk(dir);
+  }
+
+  expect(files.length).toBeGreaterThan(40);
+
+  let createEffectCount = 0;
+  let onSettledCount = 0;
+
+  for (const file of files) {
+    const source = await Bun.file(file).text();
+    const rel = file.slice(file.indexOf("/src/") + 1);
+
+    for (const token of bannedTokens) {
+      expect(source, `${rel} must not use ${token}`).not.toContain(token);
+    }
+
+    // Removed package paths (allow prose comments that only mention the migration).
+    expect(source).not.toMatch(/from\s+["']solid-js\/(?:web|store|jsx-runtime|h|html|universal)["']/);
+    expect(source).not.toMatch(/["']solid-js\/web["']/);
+    expect(source).not.toMatch(/["']solid-js\/store["']/);
+
+    // Collect identifiers imported from solid-js / @solidjs/*.
+    for (const importMatch of source.matchAll(/import\s+(type\s+)?\{([^}]+)\}\s+from\s+["'](solid-js|@solidjs\/[^"']+)["']/g)) {
+      const names = importMatch[2]!
+        .split(",")
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .map((part) => part.replace(/^type\s+/, "").split(/\s+as\s+/)[0]!.trim());
+      for (const name of names) {
+        expect(bannedSolidImports.has(name), `${rel} imports forbidden solid API: ${name}`).toBe(false);
+      }
+    }
+
+    // createEffect must be dual-arg when present (single-arg form is removed in 2.0).
+    const effectMatches = source.matchAll(/\bcreateEffect\s*\(/g);
+    for (const match of effectMatches) {
+      createEffectCount += 1;
+      const start = match.index! + match[0].length;
+      let depth = 1;
+      let i = start;
+      let topCommas = 0;
+      let inString: string | null = null;
+      while (i < source.length && depth > 0) {
+        const c = source[i]!;
+        if (inString) {
+          if (c === "\\") {
+            i += 2;
+            continue;
+          }
+          if (c === inString) inString = null;
+          i += 1;
+          continue;
+        }
+        if (c === '"' || c === "'" || c === "`") {
+          inString = c;
+        } else if (c === "(") depth += 1;
+        else if (c === ")") depth -= 1;
+        else if (c === "," && depth === 1) topCommas += 1;
+        i += 1;
+      }
+      expect(topCommas, `${rel} createEffect must have >=2 args`).toBeGreaterThanOrEqual(1);
+    }
+
+    if (/\bonSettled\s*\(/.test(source)) onSettledCount += 1;
+  }
+
+  expect(createEffectCount).toBeGreaterThan(20);
+  expect(onSettledCount).toBeGreaterThan(5);
 });
 
 test("Button source converts numeric dimensions into css sizes", async () => {

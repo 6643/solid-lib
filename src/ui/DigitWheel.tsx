@@ -1,4 +1,4 @@
-import { createMemo, createSignal, createTrackedEffect, onCleanup, type Accessor, untrack } from "solid-js";
+import { createMemo, createSignal, createEffect, type Accessor, untrack } from "solid-js";
 import styles from "./DigitWheel.module.css";
 
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -43,24 +43,30 @@ const useSpringNumber = (
         timer = setTimeout(tick, FRAME_MS);
     };
 
-    createTrackedEffect(() => {
-        const length = getLength();
-        const nextTarget = getTarget();
-        const direction = getDirection();
-        const current = untrack(value);
-        const resolvedTarget = initialized ? resolveDirectionalTarget(current, nextTarget, length, direction) : nextTarget;
-        initialized = true;
-        target = resolvedTarget;
-        if (!timer) {
-            if (current !== resolvedTarget) {
-                tick();
-            } else {
-                setValue(resolvedTarget);
+    createEffect(
+        () => ({
+            length: getLength(),
+            nextTarget: getTarget(),
+            direction: getDirection(),
+        }),
+        ({ length, nextTarget, direction }) => {
+            const current = untrack(value);
+            const resolvedTarget = initialized
+                ? resolveDirectionalTarget(current, nextTarget, length, direction)
+                : nextTarget;
+            initialized = true;
+            target = resolvedTarget;
+            if (!timer) {
+                if (current !== resolvedTarget) {
+                    tick();
+                } else {
+                    setValue(resolvedTarget);
+                }
             }
-        }
-    });
+            return stop;
+        },
+    );
 
-    onCleanup(stop);
     return value;
 };
 

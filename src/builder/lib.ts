@@ -180,7 +180,7 @@ export const createSolidPlugin = (options: SolidPluginOptions = {}): Bun.BunPlug
                                   dev: options.development ?? false,
                                   generate: options.generate ?? "dom",
                                   hydratable: options.hydratable ?? false,
-                                  moduleName: options.moduleName ?? "solid-js/web",
+                                  moduleName: options.moduleName ?? "@solidjs/web",
                               },
                           ],
                       ],
@@ -241,7 +241,8 @@ const replaceDirectory = (sourceDir: string, targetDir: string): void => {
 export const buildLibrary = async (options: BuildLibraryOptions): Promise<BuildLibraryResult> => {
     const outdir = validateLibraryOutdir(options.outdir);
     const entrypoints = options.entrypoints.map((entrypoint) => resolve(entrypoint));
-    const external = Array.from(new Set(["solid-js", "solid-js/web", ...(options.external ?? [])]));
+    // Solid 2.0: DOM runtime is @solidjs/web; solid-js/web subpath is gone.
+    const external = Array.from(new Set(["solid-js", "@solidjs/web", "@solidjs/signals", ...(options.external ?? [])]));
     const stagingBasePath = findWritableAncestorPath(dirname(outdir)) ?? tmpdir();
     const tempOutDir = mkdtempSync(join(stagingBasePath, ".solid-lib-build-"));
 

@@ -1,18 +1,24 @@
-import { createSignal, createTrackedEffect } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
+import { isServer } from "@solidjs/web";
 
 export const useMediaQuery = (query: string): (() => boolean) => {
     const [matches, setMatches] = createSignal(false);
 
-    createTrackedEffect(() => {
-        const mql = globalThis.matchMedia?.(query);
-        if (!mql) return;
+    if (isServer) return matches;
 
-        setMatches(() => mql.matches);
+    createEffect(
+        () => query,
+        (currentQuery) => {
+            const mql = globalThis.matchMedia?.(currentQuery);
+            if (!mql) return;
 
-        const listener = (e: MediaQueryListEvent) => setMatches(() => e.matches);
-        mql.addEventListener("change", listener);
-        return () => mql.removeEventListener("change", listener);
-    });
+            setMatches(() => mql.matches);
+
+            const listener = (e: MediaQueryListEvent) => setMatches(() => e.matches);
+            mql.addEventListener("change", listener);
+            return () => mql.removeEventListener("change", listener);
+        },
+    );
 
     return matches;
 };

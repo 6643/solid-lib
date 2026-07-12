@@ -1,5 +1,5 @@
 import styles from "./MenuTab.module.css";
-import { createSignal, createTrackedEffect, For } from "solid-js";
+import { createSignal, onSettled, For } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { IconButton } from "./Button";
 import { icon_menu } from "./svgicons";
@@ -39,7 +39,7 @@ const useMenuTab = (key: string) => {
 export const MenuTab = (props: { children: { name: string; panel: () => any }[] }) => {
     const { getActiveIndex, getIndicator, toIndex, mainRef, listRef } = useMenuTab("scroll.tab");
 
-    createTrackedEffect(() => toIndex(getPos(location.pathname, "scroll.tab")));
+    onSettled(() => toIndex(getPos(location.pathname, "scroll.tab")));
 
     const active = () => props.children[getActiveIndex()];
 
@@ -49,7 +49,7 @@ export const MenuTab = (props: { children: { name: string; panel: () => any }[] 
                 <div class={styles.navList} ref={listRef}>
                     <For each={props.children}>
                         {({ name }, index) => (
-                            <div onClick={() => toIndex(index())} class={index() === getActiveIndex() ? styles.active : ""}>
+                            <div onClick={() => toIndex(index())} class={{ [styles.active!]: index() === getActiveIndex() }}>
                                 {name}
                             </div>
                         )}

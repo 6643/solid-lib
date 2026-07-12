@@ -1,5 +1,5 @@
 import styles from "./LeftTab.module.css";
-import { createSignal, createTrackedEffect, For, Show } from "solid-js";
+import { createSignal, onSettled, For, Show } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 
 const useLeftTab = (key: string) => {
@@ -27,7 +27,7 @@ const useLeftTab = (key: string) => {
 export const LeftTab = (props: { children: { name: string; panel: () => any }[] }) => {
     const { getActiveIndex, isToUp, getTop, toIndex, navRef, mainRef } = useLeftTab("left.tab");
 
-    createTrackedEffect(() => toIndex(getPos(location.pathname, "left.tab")));
+    onSettled(() => toIndex(getPos(location.pathname, "left.tab")));
 
     return (
         <div class={styles.leftTab}>
@@ -36,7 +36,7 @@ export const LeftTab = (props: { children: { name: string; panel: () => any }[] 
                     {({ name }, index) => (
                         <div
                             onClick={() => toIndex(index())}
-                            class={index() === getActiveIndex() ? styles.active : ""}
+                            class={{ [styles.active!]: index() === getActiveIndex() }}
                         >
                             {name}
                         </div>

@@ -1,5 +1,5 @@
 import styles from "./NavTab.module.css";
-import { createSignal, createTrackedEffect, For } from "solid-js";
+import { createSignal, onSettled, For } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { createDebounce } from "../utils/createDebounce";
 
@@ -89,7 +89,7 @@ const useNavTab = (key: string) => {
 export const NavTab = (props: { children: { name: string; panel: () => any }[] }) => {
     const { getActives, getTop, getHeight, toIndex, onScroll, navRef, mainRef } = useNavTab("nav.tab");
 
-    createTrackedEffect(() => {
+    onSettled(() => {
         queueMicrotask(() => toIndex(getPos(location.pathname, "nav.tab")));
     });
 
@@ -98,7 +98,7 @@ export const NavTab = (props: { children: { name: string; panel: () => any }[] }
             <nav ref={navRef} style={{ "--top": getTop(), "--height": getHeight() }}>
                 <For each={props.children}>
                     {({ name }, index) => (
-                        <div onClick={() => toIndex(index())} class={getActives()[index()] ? styles.active : ""}>
+                        <div onClick={() => toIndex(index())} class={{ [styles.active!]: !!getActives()[index()] }}>
                             {name}
                         </div>
                     )}

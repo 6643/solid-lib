@@ -1,5 +1,5 @@
 import styles from "./Input.module.css";
-import { createSignal, createTrackedEffect, createMemo, Show, untrack } from "solid-js";
+import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
 import type { Element } from "solid-js";
 import { IconButton } from "./Button";
 import { icon_add, icon_remove, icon_content_paste } from "./svgicons";
@@ -15,30 +15,32 @@ const useField = (value: () => string, validate?: (value: string) => ValidateRes
     const [checking, setChecking] = createSignal(false);
     let seq = 0;
 
-    createTrackedEffect(() => {
-        const v = value();
-        if (!validate) {
-            setError(undefined);
-            return;
-        }
+    createEffect(
+        () => value(),
+        (v) => {
+            if (!validate) {
+                setError(undefined);
+                return;
+            }
 
-        const id = ++seq;
-        const result = validate(v);
+            const id = ++seq;
+            const result = validate(v);
 
-        if (result instanceof Promise) {
-            setChecking(true);
-            result
-                .then((msg) => {
-                    if (id === seq) setError(msg);
-                })
-                .finally(() => {
-                    if (id === seq) setChecking(false);
-                });
-            return;
-        }
+            if (result instanceof Promise) {
+                setChecking(true);
+                result
+                    .then((msg) => {
+                        if (id === seq) setError(msg);
+                    })
+                    .finally(() => {
+                        if (id === seq) setChecking(false);
+                    });
+                return;
+            }
 
-        setError(result);
-    });
+            setError(result);
+        },
+    );
 
     return { error, checking };
 };
@@ -51,12 +53,12 @@ const Input = (props: {
     validate?: (value: string) => ValidateResult;
     left?: () => Element;
     right?: () => Element;
-    children: any;
+    children: Element;
 }) => {
     const { error, checking } = useField(() => props.value ?? "", props.validate);
 
     return (
-        <label class={[styles.field, error() && styles.error]}>
+        <label class={[styles.field, { [styles.error!]: !!error() }]}>
             <div>
                 <span>{props.label}</span>
                 <span class={styles.fieldError}>{checking() ? "校验中..." : (error() ?? "")}</span>
@@ -85,9 +87,10 @@ export const RangeInput = (props: {
 }) => {
     const [value, setValue] = createSignal(untrack(() => props.value) ?? untrack(() => props.min) ?? 0);
 
-    createTrackedEffect(() => {
-        setValue(props.value ?? props.min ?? 0);
-    });
+    createEffect(
+        () => props.value ?? props.min ?? 0,
+        (next) => setValue(next),
+    );
 
     const inputed = (e: Event) => {
         const v = (e.target as HTMLInputElement).valueAsNumber;
@@ -193,15 +196,17 @@ export const TextArea = (props: {
         renderLineNumbers();
     };
 
-    createTrackedEffect(() => {
-        const el = lineNumRef;
-        if (!el) return;
-        const v = value();
-        const c = v ? v.split("\n").length : 1;
-        let t = "";
-        for (let i = 1; i <= c; i++) t += i + "\n";
-        el.innerText = t;
-    });
+    createEffect(
+        () => value(),
+        (v) => {
+            const el = lineNumRef;
+            if (!el) return;
+            const c = v ? v.split("\n").length : 1;
+            let text = "";
+            for (let i = 1; i <= c; i++) text += i + "\n";
+            el.innerText = text;
+        },
+    );
 
     const textarea = (extra: Record<string, unknown>) => (
         <textarea
@@ -277,9 +282,10 @@ export const NumberInput = (props: {
 }) => {
     const [value, setValue] = createSignal(untrack(() => props.value) ?? 0);
 
-    createTrackedEffect(() => {
-        setValue(props.value ?? 0);
-    });
+    createEffect(
+        () => props.value ?? 0,
+        (next) => setValue(next),
+    );
 
     const step = () => props.step ?? 1;
 

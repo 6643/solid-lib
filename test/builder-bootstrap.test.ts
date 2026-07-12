@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { join } from "node:path";
 
 import { APP_RUNTIME_MODULE, createBootstrapSource } from "../src/builder/bundle";
 
@@ -29,4 +30,21 @@ test("builder bootstrap JSON-escapes import paths to prevent source injection", 
 
   expect(source).toContain(`import App from ${JSON.stringify(`./foo"; import "evil`)}`);
   expect(source).not.toContain('from "./foo"; import "evil"');
+});
+
+test("builder targets Solid 2.0 runtime packages instead of solid-js/web", async () => {
+  expect(APP_RUNTIME_MODULE).toBe("@solidjs/web");
+
+  const libSource = await Bun.file(join(import.meta.dir, "..", "src", "builder", "lib.ts")).text();
+  const bundleSource = await Bun.file(join(import.meta.dir, "..", "src", "builder", "bundle.ts")).text();
+
+  // babel-preset-solid moduleName + library external must not pull 1.x solid-js/web.
+  expect(libSource).toContain('moduleName: options.moduleName ?? "@solidjs/web"');
+  expect(libSource).toContain('"@solidjs/web"');
+  expect(libSource).toContain('"@solidjs/signals"');
+  expect(libSource).not.toContain('"solid-js/web"');
+  expect(libSource).not.toContain("'solid-js/web'");
+
+  expect(bundleSource).toContain('export const APP_RUNTIME_MODULE = "@solidjs/web"');
+  expect(bundleSource).not.toContain("solid-js/web");
 });

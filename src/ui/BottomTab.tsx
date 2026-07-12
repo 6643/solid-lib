@@ -1,5 +1,5 @@
 import styles from "./BottomTab.module.css";
-import { createSignal, createTrackedEffect, For, Show } from "solid-js";
+import { createSignal, onSettled, For, Show } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { SvgIcon } from "./SvgIcon.tsx";
 
@@ -23,7 +23,7 @@ const useBottomTab = (key: string) => {
 export const BottomTab = (props: { children: { icon: string; panel: () => any }[] }) => {
     const { getActiveIndex, spinDeg, toIndex, mainRef } = useBottomTab("app.tab");
 
-    createTrackedEffect(() => toIndex(getPos(location.pathname, "app.tab")));
+    onSettled(() => toIndex(getPos(location.pathname, "app.tab")));
 
     return (
         <div class={styles.bottomTab}>
@@ -43,7 +43,7 @@ export const BottomTab = (props: { children: { icon: string; panel: () => any }[
             <nav style={{ "--len": props.children.length, "--index": getActiveIndex(), "--spin": spinDeg() }}>
                 <For each={props.children}>
                     {({ icon }, index) => (
-                        <div class={index() === getActiveIndex() ? styles.active : ""} onClick={() => toIndex(index())}>
+                        <div class={{ [styles.active!]: index() === getActiveIndex() }} onClick={() => toIndex(index())}>
                             <SvgIcon size={24} name={icon} />
                         </div>
                     )}
