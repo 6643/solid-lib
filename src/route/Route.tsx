@@ -1,6 +1,6 @@
 import { type Component, type Element, createComponent, createTrackedEffect, onCleanup, untrack } from "solid-js";
 
-import { isFallbackRoutePath, matchesExactRoute } from "./match";
+import { isFallbackRoutePath, matchesExactRoute, normalizePathname } from "./match";
 import { handleAnchorClick } from "./navigation";
 import { ensureRouteState, getCurrentPathname, hasActiveExactRoute, registerRoute, unregisterRoute } from "./state";
 
@@ -13,7 +13,8 @@ export type RouteProps = {
 type RouteRenderer = () => ReturnType<typeof createComponent> | undefined;
 
 export const Route = (props: RouteProps): Element => {
-  const routePath = untrack(() => props.path);
+  const rawPath = untrack(() => props.path);
+  const routePath = isFallbackRoutePath(rawPath) ? rawPath : normalizePathname(rawPath);
   const RouteComponent = untrack(() => props.component);
   const readWhen = () => {
     const when = props.when;

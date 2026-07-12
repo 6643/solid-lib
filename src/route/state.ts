@@ -1,9 +1,11 @@
 import { createSignal, flush, runWithOwner } from "solid-js";
 
 import type { BrowserClickEvent } from "./browser";
-import { isFallbackRoutePath, matchesExactRoute } from "./match";
+import { resolveInternalRoutePath } from "./browser";
+import { isFallbackRoutePath, matchesExactRoute, normalizePathname } from "./match";
 
 const ROUTE_HISTORY_KEY = "__solid_route__";
+const ROUTE_HISTORY_HOST_KEY = "__solid_route_host__";
 
 type RouteHistoryMeta = {
     backPath?: string;
@@ -79,6 +81,9 @@ const registeredRoutes = new Map<symbol, RegisteredRoute>();
 
 const getBrowser = (): BrowserLike | undefined => (globalThis as Record<string, unknown>).window as BrowserLike | undefined;
 
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+    !!value && typeof value === "object" && !Array.isArray(value);
+
 const createSnapshot = (browser?: BrowserLike): RouteSnapshot => {
     const location = browser?.location;
 
@@ -90,36 +95,72 @@ const createSnapshot = (browser?: BrowserLike): RouteSnapshot => {
     };
 };
 
-const readHistoryMeta = (state: unknown): RouteHistoryMeta => {
-    if (!state || typeof state !== "object") {
+const sanitizeBackPath = (backPath: unknown, origin: string, baseHref: string): string | undefined => {
+    if (typeof backPath !== "string" || backPath.length === 0) {
+        return undefined;
+    }
+
+    return resolveInternalRoutePath(backPath, baseHref, origin);
+};
+
+const readHistoryMeta = (historyState: unknown, origin: string, baseHref: string): RouteHistoryMeta => {
+    if (!isPlainObject(historyState)) {
         return {};
     }
 
-    const meta = (state as Record<string, unknown>)[ROUTE_HISTORY_KEY];
-    if (!meta || typeof meta !== "object") {
+    const meta = historyState[ROUTE_HISTORY_KEY];
+    if (!isPlainObject(meta)) {
         return {};
     }
 
-    const backPath = (meta as Record<string, unknown>).backPath;
     return {
-        backPath: typeof backPath === "string" ? backPath : undefined,
+        backPath: sanitizeBackPath(meta.backPath, origin, baseHref),
     };
 };
 
-const writeHistoryMeta = (state: unknown, meta: RouteHistoryMeta) => {
-    if (state && typeof state === "object" && !Array.isArray(state)) {
+const writeHistoryMeta = (historyState: unknown, meta: RouteHistoryMeta) => {
+    if (isPlainObject(historyState)) {
+        if (ROUTE_HISTORY_HOST_KEY in historyState) {
+            const host = historyState[ROUTE_HISTORY_HOST_KEY];
+            if (isPlainObject(host)) {
+                return {
+                    ...host,
+                    [ROUTE_HISTORY_KEY]: meta,
+                };
+            }
+
+            return {
+                [ROUTE_HISTORY_KEY]: meta,
+                [ROUTE_HISTORY_HOST_KEY]: host,
+            };
+        }
+
         return {
-            ...(state as Record<string, unknown>),
+            ...historyState,
             [ROUTE_HISTORY_KEY]: meta,
         };
     }
 
+    if (historyState === undefined || historyState === null) {
+        return {
+            [ROUTE_HISTORY_KEY]: meta,
+        };
+    }
+
+    // Preserve array / primitive history state beside route metadata.
     return {
         [ROUTE_HISTORY_KEY]: meta,
+        [ROUTE_HISTORY_HOST_KEY]: historyState,
     };
 };
 
 const currentInternalPath = () => `${state.pathname()}${state.search()}${state.hash()}`;
+
+const getNavigationContext = (browser: BrowserLike) => {
+    const origin = browser.location?.origin ?? "";
+    const baseHref = browser.location?.href || (origin ? `${origin}/` : "");
+    return { origin, baseHref };
+};
 
 const ensureCurrentEntryMeta = (browser: BrowserLike) => {
     const history = browser.history;
@@ -129,15 +170,12 @@ const ensureCurrentEntryMeta = (browser: BrowserLike) => {
         return;
     }
 
-    if (
-        history.state &&
-        typeof history.state === "object" &&
-        ROUTE_HISTORY_KEY in (history.state as Record<string, unknown>)
-    ) {
+    if (isPlainObject(history.state) && ROUTE_HISTORY_KEY in history.state) {
         return;
     }
 
-    const existingMeta = readHistoryMeta(history.state);
+    const { origin, baseHref } = getNavigationContext(browser);
+    const existingMeta = readHistoryMeta(history.state, origin, baseHref);
     history.replaceState(writeHistoryMeta(history.state, existingMeta), "", location.href);
 };
 
@@ -156,6 +194,39 @@ const syncFromBrowser = (browser?: BrowserLike) => {
     runWithOwner(null, () => {
         state.setSnapshot(snapshot);
     });
+};
+
+const navigateBrowserEntry = (
+    mode: "push" | "replace",
+    path: string,
+    backPath: string | undefined,
+) => {
+    const browser = getBrowser();
+    const location = browser?.location;
+    const history = browser?.history;
+    const historyMethod = mode === "push" ? history?.pushState : history?.replaceState;
+
+    if (!browser || !location?.href || !historyMethod) {
+        syncFromBrowser(undefined);
+        return;
+    }
+
+    const { origin, baseHref } = getNavigationContext(browser);
+    if (!origin) {
+        syncFromBrowser(browser);
+        return;
+    }
+
+    const resolvedPath = resolveInternalRoutePath(path, baseHref, origin);
+    if (!resolvedPath) {
+        throw new Error(`solid-lib route path must be a same-origin http(s) path: ${path}`);
+    }
+
+    const safeBackPath = sanitizeBackPath(backPath, origin, baseHref);
+    // Push inherits the current entry's app state so SPA state is not wiped on navigation.
+    const nextState = writeHistoryMeta(history?.state, { backPath: safeBackPath });
+    historyMethod.call(history, nextState, "", resolvedPath);
+    syncFromBrowser(browser);
 };
 
 export const ensureRouteState = (clickListener?: (event: BrowserClickEvent) => void) => {
@@ -203,33 +274,11 @@ export const ensureRouteState = (clickListener?: (event: BrowserClickEvent) => v
 };
 
 export const replaceBrowserEntry = (path: string, backPath: string | undefined) => {
-    const browser = getBrowser();
-    const location = browser?.location;
-    const history = browser?.history;
-
-    if (!browser || !location?.href || !history?.replaceState) {
-        syncFromBrowser(undefined);
-        return;
-    }
-
-    const nextUrl = new URL(path, location.href);
-    history.replaceState(writeHistoryMeta(history.state, { backPath }), "", nextUrl.href);
-    syncFromBrowser(browser);
+    navigateBrowserEntry("replace", path, backPath);
 };
 
 export const pushBrowserEntry = (path: string, backPath: string | undefined) => {
-    const browser = getBrowser();
-    const location = browser?.location;
-    const history = browser?.history;
-
-    if (!browser || !location?.href || !history?.pushState) {
-        syncFromBrowser(undefined);
-        return;
-    }
-
-    const nextUrl = new URL(path, location.href);
-    history.pushState(writeHistoryMeta(undefined, { backPath }), "", nextUrl.href);
-    syncFromBrowser(browser);
+    navigateBrowserEntry("push", path, backPath);
 };
 
 export const getCurrentPathname = () => state.pathname();
@@ -242,15 +291,29 @@ export const getCurrentHash = () => state.hash();
 
 export const getCurrentOrigin = () => activeBrowser?.location?.origin ?? getBrowser()?.location?.origin ?? "";
 
-export const getCurrentBackPath = () => readHistoryMeta(activeBrowser?.history?.state).backPath;
+export const getCurrentBackPath = () => {
+    const browser = activeBrowser ?? getBrowser();
+    if (!browser) {
+        return undefined;
+    }
+
+    const { origin, baseHref } = getNavigationContext(browser);
+    if (!origin || !baseHref) {
+        return undefined;
+    }
+
+    return readHistoryMeta(browser.history?.state, origin, baseHref).backPath;
+};
 
 export const getCurrentInternalPath = () => currentInternalPath();
 
 export const registerRoute = (route: Omit<RegisteredRoute, "id">) => {
     const id = Symbol("route");
+    const path = isFallbackRoutePath(route.path) ? route.path : normalizePathname(route.path);
     registeredRoutes.set(id, {
         ...route,
         id,
+        path,
         fallback: route.fallback || isFallbackRoutePath(route.path),
     });
     return id;

@@ -2,8 +2,16 @@ import { afterEach, expect, test } from "bun:test";
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { buildStaticApp } from "../src/builder/build";
+import {
+  createHtmlShell,
+  getAssetContentType,
+  normalizeArtifactPath,
+} from "../src/builder/bundle";
 import { loadConfig } from "../src/builder/config";
 import { startDevServer } from "../src/builder/dev";
+import { buildLibrary } from "../src/builder/lib";
+import { toFileUrlHref } from "../src/builder/path";
 
 const noProxyHosts = ["127.0.0.1", "localhost", "::1"];
 const existingNoProxy = process.env.NO_PROXY ?? process.env.no_proxy;
@@ -1585,6 +1593,204 @@ test("solid-lib dev works when the project root is read-only", async () => {
   }
 });
 
+test("loadConfig rejects non-array watchDirs values", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-watch-type-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+
+  writeFileSync(
+    join(appRoot, "config.ts"),
+    [
+      'import { defineConfig } from "solid-lib/builder";',
+      "",
+      "export default defineConfig({",
+      '  watchDirs: "src" as unknown as string[],',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow('solid-lib config field "watchDirs" must be an array of directory paths');
+});
+
+test("loadConfig rejects missing watchDirs entries", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-watch-missing-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+
+  writeFileSync(
+    join(appRoot, "config.ts"),
+    [
+      'import { defineConfig } from "solid-lib/builder";',
+      "",
+      "export default defineConfig({",
+      '  watchDirs: ["does-not-exist"],',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib watchDirs entry was not found");
+});
+
+test("loadConfig rejects non-directory watchDirs entries", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-watch-file-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+  writeFileSync(join(appRoot, "note.txt"), "not a directory\n");
+
+  writeFileSync(
+    join(appRoot, "config.ts"),
+    [
+      'import { defineConfig } from "solid-lib/builder";',
+      "",
+      "export default defineConfig({",
+      '  watchDirs: ["note.txt"],',
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  await expect(loadConfig(appRoot)).rejects.toThrow("solid-lib watchDirs entry must be a directory");
+});
+
+test("loadConfig accepts relative watchDirs outside the project root when they exist", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-config-watch-outside-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+
+  const outsideDir = mkdtempSync(join(process.cwd(), ".tmp-solid-config-watch-outside-target-"));
+  createdDirs.push(outsideDir);
+
+  writeFileSync(
+    join(appRoot, "config.ts"),
+    [
+      'import { defineConfig } from "solid-lib/builder";',
+      "",
+      "export default defineConfig({",
+      `  watchDirs: [${JSON.stringify(outsideDir)}],`,
+      "});",
+      "",
+    ].join("\n"),
+  );
+
+  const loaded = await loadConfig(appRoot);
+  expect(loaded.watchDirs).toEqual([outsideDir]);
+});
+
+test("buildStaticApp preserves previous dist contents when the build fails", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-build-preserve-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+  mkdirSync(join(appRoot, "dist"), { recursive: true });
+  writeFileSync(join(appRoot, "dist", "keep.txt"), "important previous build\n");
+
+  writeFileSync(
+    join(appRoot, "src", "_.tsx"),
+    [
+      'import missing from "./definitely-missing-module";',
+      "export default () => {",
+      "  return <main>{String(missing)}</main>;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const loaded = await loadConfig(appRoot);
+  await expect(buildStaticApp(loaded)).rejects.toThrow();
+  expect(existsSync(join(appRoot, "dist", "keep.txt"))).toBe(true);
+  expect(await Bun.file(join(appRoot, "dist", "keep.txt")).text()).toContain("important previous build");
+});
+
+test("solid-lib dev serves SPA html for dotted route segments without static extensions", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-dev-spa-dot-"));
+  createdDirs.push(appRoot);
+  writeMinimalApp(appRoot);
+
+  const loadedConfig = await loadConfig(appRoot);
+  const devServer = await startDevServer(loadedConfig, { host: "127.0.0.1", port: 0 });
+  stopFns.push(() => devServer.stop());
+
+  const response = await fetch(`${devServer.origin}/users/john.doe`);
+  expect(response.status).toBe(200);
+  const html = await response.text();
+  expect(html).toContain('<div id="app"></div>');
+  expect(html).toContain("/__solid_dev/events");
+});
+
+test("createHtmlShell escapes entry and css paths in attributes", () => {
+  const html = createHtmlShell({
+    appTitle: "t",
+    cssFiles: [`x" onload="alert(1)`],
+    entryFile: `x.js"></script><script>alert(1)</script>`,
+    mountId: "app",
+  });
+
+  expect(html).toContain('href="./x&quot; onload=&quot;alert(1)"');
+  expect(html).toContain('src="./x.js&quot;&gt;&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;"');
+  expect(html).not.toContain("<script>alert(1)</script>");
+  expect(html).not.toContain('onload="alert(1)"');
+});
+
+test("normalizeArtifactPath only renames CSS content-typed assets", () => {
+  expect(
+    normalizeArtifactPath({
+      path: "./style.js",
+      kind: "asset",
+      type: "text/css;charset=utf-8",
+      loader: "js",
+    } as Bun.BuildArtifact),
+  ).toBe("style.css");
+
+  expect(
+    normalizeArtifactPath({
+      path: "./chunk.js",
+      kind: "asset",
+      type: "text/javascript;charset=utf-8",
+      loader: "file",
+    } as Bun.BuildArtifact),
+  ).toBe("chunk.js");
+});
+
+test("getAssetContentType covers common asset extensions", () => {
+  const artifact = { loader: "file" } as Bun.BuildArtifact;
+  expect(getAssetContentType("a.js", artifact)).toContain("javascript");
+  expect(getAssetContentType("a.css", artifact)).toContain("text/css");
+  expect(getAssetContentType("a.png", artifact)).toBe("image/png");
+  expect(getAssetContentType("a.wasm", artifact)).toBe("application/wasm");
+  expect(getAssetContentType("a.js.map", artifact)).toContain("json");
+});
+
+test("toFileUrlHref encodes path characters without double-encoding percent signs", () => {
+  const withSpace = toFileUrlHref("/tmp/foo bar/config.ts");
+  expect(withSpace).toContain("%20");
+  expect(withSpace).not.toContain(" ");
+
+  const withPercent = toFileUrlHref("/tmp/foo%41bar/x.ts");
+  expect(withPercent).toContain("%2541");
+});
+
+test("buildLibrary keeps previous outdir contents when the build fails", async () => {
+  const appRoot = mkdtempSync(join(process.cwd(), ".tmp-solid-lib-build-preserve-"));
+  createdDirs.push(appRoot);
+  const outdir = join(appRoot, "out");
+  mkdirSync(outdir, { recursive: true });
+  writeFileSync(join(outdir, "precious.txt"), "keep me\n");
+
+  writeFileSync(join(appRoot, "entry.ts"), 'import missing from "./nope";\nexport const value = missing;\n');
+
+  await expect(
+    buildLibrary({
+      entrypoints: [join(appRoot, "entry.ts")],
+      outdir,
+      packages: "external",
+    }),
+  ).rejects.toThrow();
+
+  expect(existsSync(join(outdir, "precious.txt"))).toBe(true);
+  expect(await Bun.file(join(outdir, "precious.txt")).text()).toContain("keep me");
+});
+
 const readReloadEvent = async (stream: ReadableStream<Uint8Array>): Promise<string> => {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
@@ -1603,4 +1809,4 @@ const readReloadEvent = async (stream: ReadableStream<Uint8Array>): Promise<stri
   }
 
   throw new Error(`Expected reload event, received: ${received}`);
-}
+};

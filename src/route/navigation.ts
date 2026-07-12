@@ -1,6 +1,7 @@
 import {
     ensureRouteState,
     getCurrentBackPath,
+    getCurrentHref,
     getCurrentInternalPath,
     getCurrentOrigin,
     hasActiveExactRoute,
@@ -8,7 +9,14 @@ import {
     pushBrowserEntry,
     replaceBrowserEntry,
 } from "./state";
-import { type AnchorLike, type BrowserClickEvent, findAnchor, parseUrl } from "./browser";
+import {
+    type AnchorLike,
+    type BrowserClickEvent,
+    findAnchor,
+    parseUrl,
+    resolveInternalRoutePath,
+    toInternalPath,
+} from "./browser";
 
 const isPrimaryPlainClick = (event: BrowserClickEvent) => {
     if (event.defaultPrevented) {
@@ -22,8 +30,12 @@ const isPrimaryPlainClick = (event: BrowserClickEvent) => {
     return !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
 };
 
+/** Intercept when target is absent, empty, or _self; leave real browsing contexts to the browser. */
 const hasBrowserManagedTarget = (anchor: AnchorLike) => {
-    if (anchor.target || anchor.getAttribute?.("target")) {
+    const rawTarget = anchor.getAttribute?.("target") ?? anchor.target;
+    const target = typeof rawTarget === "string" ? rawTarget.trim() : "";
+
+    if (target && target.toLowerCase() !== "_self") {
         return true;
     }
 
@@ -48,10 +60,12 @@ const getInterceptableAnchorUrl = (event: BrowserClickEvent, anchor: AnchorLike 
     }
 
     const nextUrl = parseUrl(anchor.href, currentOrigin);
-    if (!nextUrl) {
+    if (!nextUrl || nextUrl.origin !== currentOrigin) {
         return undefined;
     }
-    if (nextUrl.origin !== currentOrigin) {
+
+    // Only handle http(s) same-origin navigations; leave javascript:/data:/mailto: alone.
+    if (nextUrl.protocol !== "http:" && nextUrl.protocol !== "https:") {
         return undefined;
     }
 
@@ -66,18 +80,33 @@ const getInterceptableAnchorUrl = (event: BrowserClickEvent, anchor: AnchorLike 
     return nextUrl;
 };
 
-const toInternalPath = (path: string) => path || "/";
+const requireInternalRoutePath = (path: string): string => {
+    const origin = getCurrentOrigin();
+    if (!origin) {
+        // No browser context: keep a path-shaped string for callers that only track signals.
+        return path || "/";
+    }
+
+    // Resolve relative segments against the current location, not only the origin root.
+    const baseHref = getCurrentHref() || `${origin}/`;
+    const resolved = resolveInternalRoutePath(path, baseHref, origin);
+    if (!resolved) {
+        throw new Error(`solid-lib route path must be a same-origin http(s) path: ${path}`);
+    }
+
+    return resolved;
+};
 
 const canRouteToPath = (pathname: string) => hasActiveExactRoute(pathname) || hasActiveFallbackRoute();
 
 export const pushRoute = (path: string) => {
     ensureRouteState(handleAnchorClick);
-    pushBrowserEntry(toInternalPath(path), getCurrentInternalPath());
+    pushBrowserEntry(requireInternalRoutePath(path), getCurrentInternalPath());
 };
 
 export const replaceRoute = (path: string) => {
     ensureRouteState(handleAnchorClick);
-    replaceBrowserEntry(toInternalPath(path), getCurrentBackPath());
+    replaceBrowserEntry(requireInternalRoutePath(path), getCurrentBackPath());
 };
 
 export const getRouteBackPath = () => {
@@ -97,5 +126,5 @@ export const handleAnchorClick = (event: BrowserClickEvent) => {
     }
 
     event.preventDefault?.();
-    pushRoute(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+    pushRoute(toInternalPath(nextUrl));
 };

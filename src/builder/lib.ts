@@ -1,5 +1,8 @@
-import { rmSync } from "node:fs";
-import { dirname, resolve, sep } from "node:path";
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, renameSync, rmSync } from "node:fs";
+import { dirname, join, resolve, sep } from "node:path";
+import { tmpdir } from "node:os";
+
+import { findWritableAncestorPath } from "./path";
 
 import { transformAsync } from "@babel/core";
 import * as ts from "typescript";
@@ -197,33 +200,77 @@ export const createSolidPlugin = (options: SolidPluginOptions = {}): Bun.BunPlug
     },
 });
 
+const validateLibraryOutdir = (outdir: string): string => {
+    const resolvedOutdir = resolve(outdir);
+
+    if (resolvedOutdir === resolve(sep) || resolvedOutdir === dirname(resolvedOutdir)) {
+        throw new Error("solid-lib library outdir must not point at a filesystem root");
+    }
+
+    if (existsSync(resolvedOutdir) && lstatSync(resolvedOutdir).isSymbolicLink()) {
+        throw new Error(`solid-lib library outdir must not be a symbolic link: ${outdir}`);
+    }
+
+    return resolvedOutdir;
+};
+
+const replaceDirectory = (sourceDir: string, targetDir: string): void => {
+    const parentDir = dirname(targetDir);
+    mkdirSync(parentDir, { recursive: true });
+
+    const backupDir = existsSync(targetDir) ? join(parentDir, `.solid-lib-lib-prev-${process.hrtime.bigint()}`) : undefined;
+
+    if (backupDir) {
+        renameSync(targetDir, backupDir);
+    }
+
+    try {
+        renameSync(sourceDir, targetDir);
+    } catch (error) {
+        if (backupDir && existsSync(backupDir)) {
+            renameSync(backupDir, targetDir);
+        }
+        throw error;
+    }
+
+    if (backupDir) {
+        rmSync(backupDir, { force: true, recursive: true });
+    }
+};
+
 export const buildLibrary = async (options: BuildLibraryOptions): Promise<BuildLibraryResult> => {
-    const outdir = resolve(options.outdir);
+    const outdir = validateLibraryOutdir(options.outdir);
     const entrypoints = options.entrypoints.map((entrypoint) => resolve(entrypoint));
     const external = Array.from(new Set(["solid-js", "solid-js/web", ...(options.external ?? [])]));
+    const stagingBasePath = findWritableAncestorPath(dirname(outdir)) ?? tmpdir();
+    const tempOutDir = mkdtempSync(join(stagingBasePath, ".solid-lib-build-"));
 
-    rmSync(outdir, { force: true, recursive: true });
+    try {
+        const bundle = await Bun.build({
+            entrypoints,
+            external,
+            format: options.format ?? "esm",
+            minify: options.minify ?? false,
+            naming: options.naming ?? {
+                asset: "assets/[name]-[hash].[ext]",
+                chunk: "chunks/[name]-[hash].js",
+                entry: "[name].js",
+            },
+            outdir: tempOutDir,
+            packages: options.packages ?? "external",
+            plugins: [createSolidPlugin(options.solid)],
+            sourcemap: options.sourcemap ?? "none",
+            target: options.target ?? "browser",
+            throw: true,
+            tsconfig: options.tsconfig ? resolve(options.tsconfig) : undefined,
+        });
 
-    const bundle = await Bun.build({
-        entrypoints,
-        external,
-        format: options.format ?? "esm",
-        minify: options.minify ?? false,
-        naming: options.naming ?? {
-            asset: "assets/[name]-[hash].[ext]",
-            chunk: "chunks/[name]-[hash].js",
-            entry: "[name].js",
-        },
-        outdir,
-        packages: options.packages ?? "external",
-        plugins: [createSolidPlugin(options.solid)],
-        sourcemap: options.sourcemap ?? "none",
-        target: options.target ?? "browser",
-        throw: true,
-        tsconfig: options.tsconfig ? resolve(options.tsconfig) : undefined,
-    });
+        const declarations = await maybeBuildDeclarations(options, entrypoints, tempOutDir);
+        replaceDirectory(tempOutDir, outdir);
 
-    const declarations = await maybeBuildDeclarations(options, entrypoints, outdir);
-
-    return { bundle, declarations };
+        return { bundle, declarations };
+    } catch (error) {
+        rmSync(tempOutDir, { force: true, recursive: true });
+        throw error;
+    }
 };

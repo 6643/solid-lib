@@ -47,7 +47,50 @@ const DEV_CLIENT_SNIPPET = [
     "  </script>",
 ].join("\n");
 
-const injectDevClient = (html: string): string => html.replace("</body>", `${DEV_CLIENT_SNIPPET}\n</body>`);
+const injectDevClient = (html: string): string => {
+    if (/<\/body>/i.test(html)) {
+        return html.replace(/<\/body>/i, `${DEV_CLIENT_SNIPPET}\n</body>`);
+    }
+
+    if (/<\/html>/i.test(html)) {
+        return html.replace(/<\/html>/i, `${DEV_CLIENT_SNIPPET}\n</html>`);
+    }
+
+    return `${html}\n${DEV_CLIENT_SNIPPET}\n`;
+};
+
+// Known static asset extensions — SPA routes may contain dots (e.g. /users/john.doe).
+const STATIC_ASSET_EXTENSIONS = new Set([
+    "js",
+    "mjs",
+    "cjs",
+    "css",
+    "map",
+    "json",
+    "wasm",
+    "svg",
+    "png",
+    "jpg",
+    "jpeg",
+    "gif",
+    "webp",
+    "avif",
+    "ico",
+    "woff",
+    "woff2",
+    "ttf",
+    "eot",
+    "txt",
+    "html",
+    "htm",
+    "xml",
+    "pdf",
+    "mp3",
+    "mp4",
+    "webm",
+    "ogg",
+    "wav",
+]);
 
 const isSpaRequest = (request: Request, pathname: string): boolean => {
     if (request.method !== "GET" && request.method !== "HEAD") {
@@ -58,10 +101,13 @@ const isSpaRequest = (request: Request, pathname: string): boolean => {
         return false;
     }
 
-    // SPA fallback: treat as SPA when last segment has no dot (no file extension).
-    // Known limitation: paths like /users/john.doe are not treated as SPA routes.
     const lastSegment = pathname.split("/").at(-1) ?? "";
-    return !lastSegment.includes(".");
+    const extension = lastSegment.includes(".") ? lastSegment.split(".").at(-1)?.toLowerCase() : undefined;
+    if (extension && STATIC_ASSET_EXTENSIONS.has(extension)) {
+        return false;
+    }
+
+    return true;
 };
 
 const safeLstat = (filePath: string): Stats | undefined => {
@@ -388,14 +434,21 @@ const getNetworkOrigins = (port: number): string[] => {
 
 export const runDevCommand = async (cwd: string = process.cwd()): Promise<StartedDevServer> => {
     const loadedConfig = await loadConfig(cwd);
-    const server = await startDevServer(loadedConfig, { host: "0.0.0.0" });
+    // Bind to all interfaces so LAN devices can reach the app; no auth is applied.
+    // Prefer SOLID_LIB_DEV_HOST=127.0.0.1 when working on untrusted networks.
+    const host = process.env.SOLID_LIB_DEV_HOST || "0.0.0.0";
+    const server = await startDevServer(loadedConfig, { host });
 
     console.log("Dev server running");
     console.log("");
     console.log(`- Local:   http://127.0.0.1:${server.port}`);
 
-    for (const origin of getNetworkOrigins(server.port)) {
-        console.log(`- Network: ${origin}`);
+    if (host === "0.0.0.0" || host === "::") {
+        for (const origin of getNetworkOrigins(server.port)) {
+            console.log(`- Network: ${origin}`);
+        }
+    } else if (host !== "127.0.0.1" && host !== "localhost") {
+        console.log(`- Host:    http://${host}:${server.port}`);
     }
 
     return server;

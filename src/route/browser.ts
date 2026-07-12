@@ -57,3 +57,28 @@ export const parseUrl = (value: string, base: string): URL | undefined => {
         return undefined;
     }
 };
+
+const isHttpProtocol = (protocol: string) => protocol === "http:" || protocol === "https:";
+
+/** Same-origin http(s) URL only — rejects javascript:, data:, protocol-relative cross-origin, etc. */
+export const isSameOriginHttpUrl = (url: URL, origin: string): boolean =>
+    isHttpProtocol(url.protocol) && url.origin === origin;
+
+export const toInternalPath = (url: URL): string => {
+    const path = `${url.pathname}${url.search}${url.hash}`;
+    return path || "/";
+};
+
+/**
+ * Resolve a navigation target to a same-origin internal path (pathname + search + hash).
+ * Returns undefined when the target escapes the current origin or uses a non-http(s) scheme.
+ */
+export const resolveInternalRoutePath = (path: string, baseHref: string, origin: string): string | undefined => {
+    const input = path || "/";
+    const url = parseUrl(input, baseHref);
+    if (!url || !isSameOriginHttpUrl(url, origin)) {
+        return undefined;
+    }
+
+    return toInternalPath(url);
+};

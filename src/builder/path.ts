@@ -1,5 +1,6 @@
 import { accessSync, constants, existsSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { pathToFileURL } from "node:url";
 
 export const isSameOrSubpath = (targetPath: string, basePath: string): boolean => {
     const relativePath = relative(basePath, targetPath);
@@ -81,8 +82,4 @@ export const validateExistingPathTarget = (cwd: string, targetPath: string, labe
     }
 };
 
-export const toFileUrlHref = (filePath: string): string => {
-    const url = new URL("file:///");
-    url.pathname = resolve(filePath).replace(/%/g, "%25").replace(/\\/g, "/");
-    return url.href;
-};
+export const toFileUrlHref = (filePath: string): string => pathToFileURL(resolve(filePath)).href;

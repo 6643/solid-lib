@@ -14,6 +14,11 @@ export const DEFAULT_ENTRY_NAMING: Bun.BuildConfig["naming"] = {
     entry: "[hash].js",
 };
 
+const isCssArtifact = (artifact: BuildArtifact): boolean => {
+    const contentType = artifact.type ?? "";
+    return contentType.includes("text/css") || contentType.includes("stylesheet");
+};
+
 export const createBootstrapSource = ({
     rootComponentImportPath,
     mountId,
@@ -22,13 +27,13 @@ export const createBootstrapSource = ({
     mountId: string;
 }): string => {
     return [
-        `import { render as mount } from "${APP_RUNTIME_MODULE}";`,
-        `import App from "${rootComponentImportPath}";`,
+        `import { render as mount } from ${JSON.stringify(APP_RUNTIME_MODULE)};`,
+        `import App from ${JSON.stringify(rootComponentImportPath)};`,
         "",
         `let mountRoot = document.getElementById(${JSON.stringify(mountId)});`,
         "",
         "if (!mountRoot) {",
-        "  mountRoot = document.createElement(\"div\");",
+        '  mountRoot = document.createElement("div");',
         `  mountRoot.id = ${JSON.stringify(mountId)};`,
         "  document.body.append(mountRoot);",
         "}",
@@ -48,7 +53,9 @@ export const createHtmlShell = ({
     entryFile: string;
     mountId: string;
 }): string => {
-    const styles = cssFiles.map((file) => `  <link rel="stylesheet" href="./${file}">`).join("\n");
+    const styles = cssFiles
+        .map((file) => `  <link rel="stylesheet" href="./${escapeHtml(file)}">`)
+        .join("\n");
 
     return [
         "<!DOCTYPE html>",
@@ -61,7 +68,7 @@ export const createHtmlShell = ({
         "</head>",
         "<body>",
         `  <div id="${escapeHtml(mountId)}"></div>`,
-        `  <script type="module" src="./${entryFile}"></script>`,
+        `  <script type="module" src="./${escapeHtml(entryFile)}"></script>`,
         "</body>",
         "</html>",
         "",
@@ -190,26 +197,51 @@ export const buildAppBundle = async (
 const resolveIfExists = (specifier: string, targetPath: string): Record<string, string> =>
     existsSync(targetPath) ? { [specifier]: targetPath } : {};
 
-// Bun emits CSS assets with a .js extension in the artifact list; rename to actual extension.
+// Bun may emit CSS assets with a .js path; only rename when content-type is CSS.
 export const normalizeArtifactPath = (artifact: BuildArtifact): string => {
     const relativePath = artifact.path.replace(/^\.\//, "");
 
-    if (artifact.kind === "asset" && relativePath.endsWith(".js")) {
+    if (artifact.kind === "asset" && relativePath.endsWith(".js") && isCssArtifact(artifact)) {
         return `${relativePath.slice(0, -3)}.css`;
     }
 
     return relativePath;
 };
 
+const CONTENT_TYPES: Array<[RegExp, string]> = [
+    [/\.m?js$/i, "text/javascript; charset=utf-8"],
+    [/\.css$/i, "text/css; charset=utf-8"],
+    [/\.json$/i, "application/json; charset=utf-8"],
+    [/\.map$/i, "application/json; charset=utf-8"],
+    [/\.wasm$/i, "application/wasm"],
+    [/\.svg$/i, "image/svg+xml"],
+    [/\.png$/i, "image/png"],
+    [/\.jpe?g$/i, "image/jpeg"],
+    [/\.gif$/i, "image/gif"],
+    [/\.webp$/i, "image/webp"],
+    [/\.avif$/i, "image/avif"],
+    [/\.ico$/i, "image/x-icon"],
+    [/\.woff2$/i, "font/woff2"],
+    [/\.woff$/i, "font/woff"],
+    [/\.ttf$/i, "font/ttf"],
+    [/\.txt$/i, "text/plain; charset=utf-8"],
+    [/\.html?$/i, "text/html; charset=utf-8"],
+];
+
 export const getAssetContentType = (assetPath: string, artifact: BuildArtifact): string => {
-    if (assetPath.endsWith(".js")) {
-        return "text/javascript; charset=utf-8";
+    for (const [pattern, contentType] of CONTENT_TYPES) {
+        if (pattern.test(assetPath)) {
+            return contentType;
+        }
     }
-    if (assetPath.endsWith(".css")) {
-        return "text/css; charset=utf-8";
-    }
+
     if (artifact.loader === "json") {
         return "application/json; charset=utf-8";
     }
+
+    if (artifact.type) {
+        return artifact.type;
+    }
+
     return "application/octet-stream";
 };

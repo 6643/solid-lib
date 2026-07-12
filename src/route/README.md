@@ -45,6 +45,18 @@
 
 这组 API 通过浏览器 history entry metadata 保存 back-path, 不维护独立的内存栈。
 
+安全约束:
+
+- `path` 必须解析为 **同源** 的 `http:` / `https:` 路径
+- 拒绝绝对跨源 URL, 协议相对 URL (`//host/...`), 以及 `javascript:` / `data:` 等非 http(s) scheme
+- 违规输入会抛出错误, 不会写入 history
+- `getRouteBackPath()` 只会返回通过校验的同源 internal path
+
+history state:
+
+- `push` / `replace` 都会合并当前 entry 上的 plain object state, 并写入 `__solid_route__` 元数据
+- 若当前 state 是 array / primitive, 会以 `__solid_route_host__` 保留原值, 避免静默丢弃
+
 ### 查询参数 API
 
 - `parseParam(name, parserOrFallback)`
@@ -52,17 +64,21 @@
 
 这两个工具直接从当前 route 的 query string 读取原始值, 并在页面组件内部完成类型转换。
 
+数字 fallback 仅接受有限数字 (`Number.isFinite`); `Infinity` / `NaN` 回退到 fallback.
+
 ## 匹配规则
 
 ### 精确路由
 
 - 普通 `path` 采用静态精确匹配
+- 匹配前会规范化 pathname: percent-decode, 折叠重复 `/`, 去掉末尾 `/` (根路径 `/` 除外)
 - 多条精确 route 可以同时命中并同时渲染
 
 ### Fallback
 
 - 仅支持 `path="/*"`
 - 只有在当前没有任何精确 route 命中时才生效
+- 多条 `/*` 在同时启用时会全部渲染 (与精确路由的多命中策略一致)
 
 ### Query 与 Hash
 
@@ -77,7 +93,7 @@
 - 左键点击
 - 未被 `preventDefault()`
 - 无修饰键
-- 无 `target`
+- `target` 为空或 `_self` (其他 target 放行浏览器)
 - 无 `download`
 - 非仅 hash 变化
 - 目标路径当前存在可生效的 route

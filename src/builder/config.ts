@@ -103,6 +103,10 @@ const validateConfigKeys = (config: SolidBuildConfig): void => {
         throw new Error('solid-lib config field "assetsDirs" must be an array of directory paths');
     }
 
+    if (config.watchDirs !== undefined && !Array.isArray(config.watchDirs)) {
+        throw new Error('solid-lib config field "watchDirs" must be an array of directory paths');
+    }
+
     if (config.devPort !== undefined && (!Number.isInteger(config.devPort) || config.devPort <= 0 || config.devPort > 65535)) {
         throw new Error('solid-lib config field "devPort" must be an integer between 1 and 65535');
     }
@@ -113,12 +117,48 @@ const validateConfigKeys = (config: SolidBuildConfig): void => {
         }
     }
 
+    for (const watchDir of config.watchDirs ?? []) {
+        if (typeof watchDir !== "string" || watchDir.length === 0) {
+            throw new Error('solid-lib config field "watchDirs" must contain non-empty strings');
+        }
+    }
+
     for (const field of ["rootComponentFile", "appTitle", "mountId", "outDir"] as const) {
         const value = config[field];
         if (value !== undefined && (typeof value !== "string" || value.length === 0)) {
             throw new Error(`solid-lib config field "${field}" must be a non-empty string`);
         }
     }
+};
+
+const resolveWatchDirs = (cwd: string, watchDirs: string[]): string[] => {
+    const resolved: string[] = [];
+
+    for (const watchDir of watchDirs) {
+        const inputPath = resolve(cwd, watchDir);
+
+        if (!existsSync(inputPath)) {
+            throw new Error(`solid-lib watchDirs entry was not found at ${inputPath}`);
+        }
+
+        const stats = lstatSync(inputPath);
+        if (stats.isSymbolicLink()) {
+            const realPath = resolveExistingRealPath(inputPath);
+            if (!statSync(realPath).isDirectory()) {
+                throw new Error(`solid-lib watchDirs entry must be a directory: ${watchDir}`);
+            }
+            resolved.push(realPath);
+            continue;
+        }
+
+        if (!stats.isDirectory()) {
+            throw new Error(`solid-lib watchDirs entry must be a directory: ${watchDir}`);
+        }
+
+        resolved.push(inputPath);
+    }
+
+    return resolved;
 };
 
 const validateMountId = (mountId: string): void => {
@@ -335,6 +375,7 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSol
     const outDirPath = validateOutDir(cwd, mergedConfig.outDir, mergedConfig.rootComponentFile);
     const assetsDirs = resolveAssetsDirs(cwd, mergedConfig.assetsDirs);
     validateOutDirAssetOverlap(outDirPath, assetsDirs, mergedConfig.outDir);
+    const watchDirs = resolveWatchDirs(cwd, mergedConfig.watchDirs ?? []);
 
     return {
         config: {
@@ -351,6 +392,6 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<LoadedSol
         cwd,
         rootComponentPath,
         sourceRootPath: getSourceTreePath(cwd, mergedConfig.rootComponentFile) ?? resolve(rootComponentPath, ".."),
-        watchDirs: mergedConfig.watchDirs ?? [],
+        watchDirs,
     };
 };

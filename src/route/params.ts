@@ -26,7 +26,7 @@ const toParamParser = <T>(parserOrFallback: ParamParser<T> | ParamFallback): Par
             }
 
             const parsed = Number(raw);
-            return Number.isNaN(parsed) ? parserOrFallback : parsed;
+            return Number.isFinite(parsed) ? parsed : parserOrFallback;
         }) as ParamParser<T>;
     }
 

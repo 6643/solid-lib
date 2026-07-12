@@ -642,4 +642,116 @@ describe("anchor navigation", () => {
     expect(targetBlankEvent.defaultPrevented).toBe(false);
     expect(browser.location.search).toBe("?page=1");
   });
+
+  test("intercepts target=_self anchors", () => {
+    const browser = installBrowser("/search?page=1");
+    Route({ path: "/search", component: () => "search" });
+
+    getRouteBackPath();
+
+    const anchor = browser.createAnchor("/search?page=2", { target: "_self" });
+    const event = browser.createClickEvent(anchor);
+    browser.document.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(browser.location.search).toBe("?page=2");
+  });
+});
+
+describe("navigation safety", () => {
+  test("rejects cross-origin absolute paths", () => {
+    installBrowser("/search");
+    expect(() => pushRoute("https://evil.example/phish")).toThrow("same-origin");
+    expect(() => replaceRoute("https://evil.example/phish")).toThrow("same-origin");
+  });
+
+  test("rejects protocol-relative and non-http schemes", () => {
+    installBrowser("/search");
+    expect(() => pushRoute("//evil.example/x")).toThrow("same-origin");
+    expect(() => pushRoute("javascript:alert(1)")).toThrow("same-origin");
+    expect(() => pushRoute("data:text/html,hi")).toThrow("same-origin");
+  });
+
+  test("accepts same-origin absolute http paths", () => {
+    const browser = installBrowser("/search");
+    pushRoute("https://example.com/search?page=9");
+    expect(browser.location.pathname).toBe("/search");
+    expect(browser.location.search).toBe("?page=9");
+  });
+
+  test("preserves plain object history state across push", () => {
+    const browser = installBrowser("/search");
+    browser.history.replaceState({ appData: 42, nested: { x: 1 } }, "", browser.location.href);
+
+    getRouteBackPath();
+    pushRoute("/search?page=2");
+
+    expect((browser.history.state as Record<string, unknown>).appData).toBe(42);
+    expect((browser.history.state as { nested: { x: number } }).nested.x).toBe(1);
+    expect(getRouteBackPath()).toBe("/search");
+  });
+
+  test("preserves array history state beside route metadata", () => {
+    const browser = installBrowser("/search");
+    browser.history.replaceState(["array-state"], "", browser.location.href);
+
+    getRouteBackPath();
+    const state = browser.history.state as Record<string, unknown>;
+    expect(state.__solid_route_host__).toEqual(["array-state"]);
+    expect(state.__solid_route__).toBeDefined();
+  });
+
+  test("sanitizes external backPath values", () => {
+    installBrowser("/search");
+    pushRoute("/search?page=2");
+    // Craft an external backPath into history, then ensure the public API hides it.
+    const browser = globalThis.window as unknown as FakeWindow;
+    browser.history.replaceState(
+      {
+        __solid_route__: { backPath: "https://evil.example/" },
+      },
+      "",
+      browser.location.href,
+    );
+
+    expect(getRouteBackPath()).toBeUndefined();
+  });
+});
+
+describe("path matching normalization", () => {
+  test("matches trailing-slash variants of the same path", () => {
+    installBrowser("/search/");
+
+    const SearchRoute = Route({ path: "/search", component: () => "search" }) as () => unknown;
+    expect(SearchRoute()).toBe("search");
+  });
+
+  test("matches percent-encoded and decoded pathnames", () => {
+    installBrowser("/%E4%B8%AD%E6%96%87");
+
+    const CnRoute = Route({ path: "/中文", component: () => "cn" }) as () => unknown;
+    expect(CnRoute()).toBe("cn");
+  });
+
+  test("matches spaces against percent-encoded pathnames", () => {
+    installBrowser("/a%20b");
+
+    const SpaceRoute = Route({ path: "/a b", component: () => "space" }) as () => unknown;
+    expect(SpaceRoute()).toBe("space");
+  });
+});
+
+describe("parseParam finite numbers", () => {
+  test("falls back when the raw value is not a finite number", () => {
+    installBrowser("/x?n=Infinity");
+
+    const n = parseParam("n", 0);
+    expect(n()).toBe(0);
+
+    pushRoute("/x?n=-Infinity");
+    expect(n()).toBe(0);
+
+    pushRoute("/x?n=1e3");
+    expect(n()).toBe(1000);
+  });
 });
