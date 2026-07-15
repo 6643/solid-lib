@@ -59,7 +59,7 @@ const TabsPage = () => {
                                             style={{
                                                 height: "400px",
                                                 background: "var(--inset-bg)",
-                                                borderRadius: "8px",
+                                                "border-radius": "8px",
                                                 padding: "16px",
                                             }}
                                         >
@@ -143,7 +143,7 @@ const TabsPage = () => {
                                             style={{
                                                 height: "600px",
                                                 background: "var(--inset-bg)",
-                                                borderRadius: "8px",
+                                                "border-radius": "8px",
                                                 padding: "16px",
                                             }}
                                         >

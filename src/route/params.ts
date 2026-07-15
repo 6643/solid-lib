@@ -68,17 +68,29 @@ export const parseParam: ParseParam = <T>(name: string, parserOrFallback: ParamP
     };
 };
 
-export const parseParams = <T extends ParamSchema>(schema: T): { readonly [K in keyof T]: Accessor<T[K]> } => {
+export const parseParams = <T extends ParamSchema>(
+    schema: T,
+): { readonly [K in keyof T]: Accessor<ParsedParams<T>[K]> } => {
     ensureRouteState();
 
-    const result = {} as Record<string, Accessor<unknown>>;
+    const result = {} as { [K in keyof T]: Accessor<ParsedParams<T>[K]> };
+    let cachedSearch: string | undefined;
+    let cachedParams: URLSearchParams | undefined;
 
-    for (const [key, parser] of Object.entries(schema)) {
-        result[key] = () => {
-            const searchParams = new URLSearchParams(getCurrentSearch());
-            return (parser as ParamParser<unknown>)(searchParams.get(key));
-        };
+    const getSearchParams = () => {
+        const search = getCurrentSearch();
+        if (cachedParams && search === cachedSearch) {
+            return cachedParams;
+        }
+        cachedSearch = search;
+        cachedParams = new URLSearchParams(search);
+        return cachedParams;
+    };
+
+    for (const key of Object.keys(schema) as Array<keyof T & string>) {
+        const parser = schema[key] as ParamParser<ParsedParams<T>[typeof key]>;
+        result[key] = () => parser(getSearchParams().get(key));
     }
 
-    return result as { readonly [K in keyof T]: Accessor<T[K]> };
+    return result;
 };

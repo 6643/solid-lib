@@ -1,4 +1,5 @@
 import { createEffect, type Accessor } from "solid-js";
+import { readEl } from "./readEl";
 
 const resizeObserverStore = new Map<Element, (entry: ResizeObserverEntry | undefined) => void>();
 let resizeObserver: ResizeObserver | undefined;
@@ -22,7 +23,7 @@ export const useResize = (
     callback: (entry: ResizeObserverEntry) => void,
 ) => {
     createEffect(
-        () => (typeof ref === "function" ? ref() : ref),
+        () => readEl(ref),
         (el) => {
             if (!el) return;
 

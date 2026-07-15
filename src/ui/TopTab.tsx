@@ -1,9 +1,11 @@
 import styles from "./TopTab.module.css";
-import { createSignal, onSettled, For, Show } from "solid-js";
+import type { Element } from "solid-js";
+import { createSignal, For, getOwner, Show } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { SvgIcon } from "./SvgIcon.tsx";
 
 const useTopTab = (key: string) => {
+    const owner = getOwner();
     const [getActiveIndex, setActiveIndex] = createSignal(getPos(location.pathname, key));
 
     const toIndex = (index: number) => {
@@ -12,15 +14,13 @@ const useTopTab = (key: string) => {
         setActiveIndex(index);
     };
 
-    const mainRef = (index: number) => (el: HTMLElement) => useKeepScroll(el, location.pathname, `${key}.${index}`);
+    const mainRef = (index: number) => (el: HTMLElement) => useKeepScroll(el, location.pathname, `${key}.${index}`, 32, owner);
 
     return { getActiveIndex, toIndex, mainRef };
 };
 
-export const TopTab = (props: { children: { name?: string; icon?: string; panel: () => any }[] }) => {
+export const TopTab = (props: { children: { name?: string; icon?: string; panel: () => Element }[] }) => {
     const { getActiveIndex, toIndex, mainRef } = useTopTab("top.tab");
-
-    onSettled(() => toIndex(getPos(location.pathname, "top.tab")));
 
     return (
         <div class={styles.topTab}>
@@ -38,7 +38,13 @@ export const TopTab = (props: { children: { name?: string; icon?: string; panel:
             <For each={props.children}>
                 {({ panel }, index) => (
                     <Show when={index() === getActiveIndex()}>
-                        <main ref={mainRef(index())} class={index() < getActiveIndex() ? styles.moveRight : styles.moveLeft}>
+                        <main
+                            ref={mainRef(index())}
+                            class={{
+                                [styles.moveRight!]: index() < getActiveIndex(),
+                                [styles.moveLeft!]: index() >= getActiveIndex(),
+                            }}
+                        >
                             {panel()}
                         </main>
                     </Show>

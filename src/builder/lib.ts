@@ -1,8 +1,8 @@
-import { existsSync, lstatSync, mkdirSync, mkdtempSync, renameSync, rmSync } from "node:fs";
+import { existsSync, lstatSync, mkdtempSync, rmSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { tmpdir } from "node:os";
 
-import { findWritableAncestorPath } from "./path";
+import { findNearestExistingPath, findWritableAncestorPath, replaceDirectory } from "./path";
 
 import { transformAsync } from "@babel/core";
 import * as ts from "typescript";
@@ -211,31 +211,13 @@ const validateLibraryOutdir = (outdir: string): string => {
         throw new Error(`solid-lib library outdir must not be a symbolic link: ${outdir}`);
     }
 
+    // Nearest existing ancestor must not be a symlink — writing through it would land at the realpath target.
+    const nearestExisting = findNearestExistingPath(resolvedOutdir);
+    if (nearestExisting && lstatSync(nearestExisting).isSymbolicLink()) {
+        throw new Error(`solid-lib library outdir must not escape through a symbolic link ancestor: ${outdir}`);
+    }
+
     return resolvedOutdir;
-};
-
-const replaceDirectory = (sourceDir: string, targetDir: string): void => {
-    const parentDir = dirname(targetDir);
-    mkdirSync(parentDir, { recursive: true });
-
-    const backupDir = existsSync(targetDir) ? join(parentDir, `.solid-lib-lib-prev-${process.hrtime.bigint()}`) : undefined;
-
-    if (backupDir) {
-        renameSync(targetDir, backupDir);
-    }
-
-    try {
-        renameSync(sourceDir, targetDir);
-    } catch (error) {
-        if (backupDir && existsSync(backupDir)) {
-            renameSync(backupDir, targetDir);
-        }
-        throw error;
-    }
-
-    if (backupDir) {
-        rmSync(backupDir, { force: true, recursive: true });
-    }
 };
 
 export const buildLibrary = async (options: BuildLibraryOptions): Promise<BuildLibraryResult> => {
@@ -267,7 +249,7 @@ export const buildLibrary = async (options: BuildLibraryOptions): Promise<BuildL
         });
 
         const declarations = await maybeBuildDeclarations(options, entrypoints, tempOutDir);
-        replaceDirectory(tempOutDir, outdir);
+        replaceDirectory(tempOutDir, outdir, ".solid-lib-lib-prev-");
 
         return { bundle, declarations };
     } catch (error) {

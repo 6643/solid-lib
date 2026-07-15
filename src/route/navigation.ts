@@ -13,6 +13,7 @@ import {
     type AnchorLike,
     type BrowserClickEvent,
     findAnchor,
+    isSameOriginHttpUrl,
     parseUrl,
     resolveInternalRoutePath,
     toInternalPath,
@@ -60,12 +61,7 @@ const getInterceptableAnchorUrl = (event: BrowserClickEvent, anchor: AnchorLike 
     }
 
     const nextUrl = parseUrl(anchor.href, currentOrigin);
-    if (!nextUrl || nextUrl.origin !== currentOrigin) {
-        return undefined;
-    }
-
-    // Only handle http(s) same-origin navigations; leave javascript:/data:/mailto: alone.
-    if (nextUrl.protocol !== "http:" && nextUrl.protocol !== "https:") {
+    if (!nextUrl || !isSameOriginHttpUrl(nextUrl, currentOrigin)) {
         return undefined;
     }
 

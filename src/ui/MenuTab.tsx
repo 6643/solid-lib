@@ -1,13 +1,16 @@
 import styles from "./MenuTab.module.css";
-import { createSignal, onSettled, For } from "solid-js";
+import type { Element } from "solid-js";
+import { createSignal, getOwner, onSettled, For } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { IconButton } from "./Button";
 import { icon_menu } from "./svgicons";
 
 const useMenuTab = (key: string) => {
+    const owner = getOwner();
     const [getActiveIndex, setActiveIndex] = createSignal(getPos(location.pathname, key));
     const [getIndicator, setIndicator] = createSignal({ left: 0, width: 0 });
     const [getListEl, setListEl] = createSignal<HTMLElement>();
+    let indicatorTimer: ReturnType<typeof setTimeout> | undefined;
 
     const initIndicator = (index: number) => {
         const listEl = getListEl();
@@ -27,19 +30,25 @@ const useMenuTab = (key: string) => {
         setActiveIndex(index);
     };
 
-    const mainRef = (index: number) => (el: HTMLElement) => useKeepScroll(el, location.pathname, `${key}.${index}`);
+    const mainRef = (index: number) => (el: HTMLElement) => useKeepScroll(el, location.pathname, `${key}.${index}`, 32, owner);
     const listRef = (el: HTMLElement) => {
         setListEl(el);
-        setTimeout(() => initIndicator(getActiveIndex()));
+        if (indicatorTimer !== undefined) clearTimeout(indicatorTimer);
+        indicatorTimer = setTimeout(() => {
+            indicatorTimer = undefined;
+            initIndicator(getActiveIndex());
+        });
     };
+
+    onSettled(() => () => {
+        if (indicatorTimer !== undefined) clearTimeout(indicatorTimer);
+    });
 
     return { getActiveIndex, getIndicator, toIndex, mainRef, listRef };
 };
 
-export const MenuTab = (props: { children: { name: string; panel: () => any }[] }) => {
+export const MenuTab = (props: { children: { name: string; panel: () => Element }[] }) => {
     const { getActiveIndex, getIndicator, toIndex, mainRef, listRef } = useMenuTab("scroll.tab");
-
-    onSettled(() => toIndex(getPos(location.pathname, "scroll.tab")));
 
     const active = () => props.children[getActiveIndex()];
 

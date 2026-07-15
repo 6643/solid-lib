@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, renameSync, rmSync } from "node:fs";
+import { cpSync, mkdtempSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
 import { buildAppBundle } from "./bundle";
 import { loadConfig, type LoadedSolidBuildConfig } from "./config";
-import { findWritableAncestorPath } from "./path";
+import { findWritableAncestorPath, replaceDirectory, resolveContainedOutputPath } from "./path";
 
 export interface BuildStaticAppResult {
     bundle: Bun.BuildOutput;
@@ -22,7 +22,7 @@ const writeBuildOutputs = async (
 
     for (const output of built.assets) {
         const { artifact, path } = output;
-        await Bun.write(resolve(targetDir, path), artifact);
+        await Bun.write(resolveContainedOutputPath(targetDir, path), artifact);
     }
 
     for (const assetsDir of config.assetsDirs) {
@@ -33,33 +33,9 @@ const writeBuildOutputs = async (
         });
     }
 
-    await Bun.write(resolve(targetDir, "./index.html"), built.html);
+    await Bun.write(resolveContainedOutputPath(targetDir, "index.html"), built.html);
 
     return { bundle: built.bundle, entryFile: built.entryFile };
-};
-
-const replaceDirectory = (sourceDir: string, targetDir: string): void => {
-    const parentDir = dirname(targetDir);
-    mkdirSync(parentDir, { recursive: true });
-
-    const backupDir = existsSync(targetDir) ? join(parentDir, `.solid-lib-prev-${process.hrtime.bigint()}`) : undefined;
-
-    if (backupDir) {
-        renameSync(targetDir, backupDir);
-    }
-
-    try {
-        renameSync(sourceDir, targetDir);
-    } catch (error) {
-        if (backupDir && existsSync(backupDir)) {
-            renameSync(backupDir, targetDir);
-        }
-        throw error;
-    }
-
-    if (backupDir) {
-        rmSync(backupDir, { force: true, recursive: true });
-    }
 };
 
 export const buildStaticApp = async (loadedConfig: LoadedSolidBuildConfig): Promise<BuildStaticAppResult> => {
@@ -70,7 +46,7 @@ export const buildStaticApp = async (loadedConfig: LoadedSolidBuildConfig): Prom
 
     try {
         const result = await writeBuildOutputs(loadedConfig, tempOutDir);
-        replaceDirectory(tempOutDir, outdir);
+        replaceDirectory(tempOutDir, outdir, ".solid-lib-prev-");
         return result;
     } catch (error) {
         rmSync(tempOutDir, { force: true, recursive: true });

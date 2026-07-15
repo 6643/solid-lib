@@ -1,5 +1,6 @@
-import { createEffect, type Accessor } from "solid-js";
+import { createEffect, getOwner, runWithOwner, type Accessor, type Owner } from "solid-js";
 import { createDebounce } from "./createDebounce";
+import { readEl } from "./readEl";
 
 const listenScrollEnd = (el: HTMLElement, hook: (top: number) => void, debounceMs: number) => {
     const debouncedScroll = createDebounce((event: Event) => {
@@ -7,19 +8,28 @@ const listenScrollEnd = (el: HTMLElement, hook: (top: number) => void, debounceM
     }, debounceMs);
 
     el.addEventListener("scroll", debouncedScroll);
-    return () => el.removeEventListener("scroll", debouncedScroll);
+    return () => {
+        debouncedScroll.cancel();
+        el.removeEventListener("scroll", debouncedScroll);
+    };
 };
 
 export const useScrollEnd = (
     ref: HTMLElement | Accessor<HTMLElement | undefined>,
     hook: (top: number) => void,
     debounceMs: number = 32,
+    owner?: Owner | null,
 ): void => {
-    createEffect(
-        () => (typeof ref === "function" ? ref() : ref),
-        (el) => {
-            if (!el) return;
-            return listenScrollEnd(el, hook, debounceMs);
-        },
-    );
+    const setup = () =>
+        createEffect(
+            () => readEl(ref),
+            (el) => {
+                if (!el) return;
+                return listenScrollEnd(el, hook, debounceMs);
+            },
+        );
+
+    const currentOwner = owner ?? getOwner();
+    if (currentOwner) runWithOwner(currentOwner, setup);
+    else setup();
 };

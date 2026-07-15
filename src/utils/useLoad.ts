@@ -1,22 +1,23 @@
-import { type Accessor, createSignal } from "solid-js"
-import { useScrollEnd } from "./useScrollEnd.ts"
+import { type Accessor, createSignal } from "solid-js";
+import { readEl } from "./readEl";
+import { useScrollEnd } from "./useScrollEnd.ts";
 
 const getDistanceToViewportBottom = (el: HTMLElement): number => {
-    const rect = el.getBoundingClientRect()
-    return rect.top - globalThis.innerHeight
-}
+    const rect = el.getBoundingClientRect();
+    return rect.top - globalThis.innerHeight;
+};
 
 export const useLoad = <T>(
     ref: HTMLElement | Accessor<HTMLElement | undefined>,
     more: (page: number, args: T) => Promise<boolean>,
     initialArgs: T | Accessor<T>,
-    threshold = 320
+    threshold = 320,
 ) => {
     const [getHasMore, setHasMore] = createSignal(true);
     const [getPage, setPage] = createSignal(0);
     const [isLoading, setLoading] = createSignal(false);
-    const getArgs = typeof initialArgs === "function" ? (initialArgs as Accessor<T>) : (() => initialArgs) as Accessor<T>;
-    const getElement = () => typeof ref === "function" ? ref() : ref;
+    const getArgs = typeof initialArgs === "function" ? (initialArgs as Accessor<T>) : (() => initialArgs as T);
+    const getElement = () => readEl(ref);
 
     const load = async () => {
         const el = getElement();
@@ -36,7 +37,7 @@ export const useLoad = <T>(
     };
 
     const reset = () => {
-        const el = typeof ref === "function" ? ref() : ref;
+        const el = getElement();
         if (!el) return;
 
         setPage(0);

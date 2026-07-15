@@ -92,12 +92,28 @@ const STATIC_ASSET_EXTENSIONS = new Set([
     "wav",
 ]);
 
-const isSpaRequest = (request: Request, pathname: string): boolean => {
-    if (request.method !== "GET" && request.method !== "HEAD") {
+/** True when pathname is under a configured assetsDirs outputDirName (e.g. /public/...). */
+export const isConfiguredAssetPathname = (pathname: string, assetDirNames: readonly string[]): boolean => {
+    for (const name of assetDirNames) {
+        if (!name) continue;
+        if (pathname === `/${name}` || pathname === `/${name}/` || pathname.startsWith(`/${name}/`)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+/** Pure SPA classifier used by the dev server (asset prefixes come from config, not hard-coded /assets/). */
+export const isSpaPathname = (
+    method: string,
+    pathname: string,
+    assetDirNames: readonly string[],
+): boolean => {
+    if (method !== "GET" && method !== "HEAD") {
         return false;
     }
 
-    if (pathname === DEV_EVENTS_PATH || pathname.startsWith("/assets/")) {
+    if (pathname === DEV_EVENTS_PATH || isConfiguredAssetPathname(pathname, assetDirNames)) {
         return false;
     }
 
@@ -109,6 +125,9 @@ const isSpaRequest = (request: Request, pathname: string): boolean => {
 
     return true;
 };
+
+const isSpaRequest = (request: Request, pathname: string, assetDirNames: readonly string[]): boolean =>
+    isSpaPathname(request.method, pathname, assetDirNames);
 
 const safeLstat = (filePath: string): Stats | undefined => {
     try {
@@ -214,7 +233,7 @@ const createHtmlResponse = (html: string): Response => createNoStoreResponse(htm
 
 const createBundledAssetResponse = (asset: InMemoryAsset): Response => createNoStoreResponse(asset.body, asset.contentType);
 
-const getRequestKind = (pathname: string): string => {
+const getRequestKind = (pathname: string, assetDirNames: readonly string[]): string => {
     if (pathname === "/" || pathname === "/index.html") {
         return "document";
     }
@@ -227,14 +246,14 @@ const getRequestKind = (pathname: string): string => {
     if (pathname.endsWith(".css")) {
         return "style";
     }
-    if (pathname.startsWith("/assets/")) {
+    if (isConfiguredAssetPathname(pathname, assetDirNames)) {
         return "asset";
     }
     return "other";
 };
 
-const logDevRequest = (request: Request, pathname: string) => {
-    console.log(`[dev] ${request.method} ${pathname} (${getRequestKind(pathname)})`);
+const logDevRequest = (request: Request, pathname: string, assetDirNames: readonly string[]) => {
+    console.log(`[dev] ${request.method} ${pathname} (${getRequestKind(pathname, assetDirNames)})`);
 };
 
 const pruneDisconnectedClients = (clients: Set<DevClientController>): void => {
@@ -354,8 +373,9 @@ export const startDevServer = async (
         }
 
         const nextSignature = createWatchSignature(currentConfig);
+        // Only compare here; previousSignature updates after a successful rebuild
+        // so a failed rebuild can retry on the next poll without requiring another edit.
         if (nextSignature !== previousSignature) {
-            previousSignature = nextSignature;
             void rebuild();
         }
     }, pollIntervalMs);
@@ -366,7 +386,8 @@ export const startDevServer = async (
         fetch: (request) => {
             const url = new URL(request.url);
             const pathname = url.pathname === "/index.html" ? "/" : url.pathname;
-            logDevRequest(request, pathname);
+            const assetDirNames = currentConfig.config.assetsDirs.map((dir) => dir.outputDirName);
+            logDevRequest(request, pathname, assetDirNames);
 
             if (pathname === "/") {
                 return createHtmlResponse(currentBuild.html);
@@ -389,7 +410,7 @@ export const startDevServer = async (
                 return sourceAssetResponse;
             }
 
-            if (isSpaRequest(request, pathname)) {
+            if (isSpaRequest(request, pathname, assetDirNames)) {
                 return createHtmlResponse(currentBuild.html);
             }
 

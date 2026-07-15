@@ -73,20 +73,24 @@ test("ui and utils use Solid 2.0 lifecycle primitives instead of createTrackedEf
     expect(source).not.toContain("createTrackedEffect");
   }
 
-  // Component-level one-shot setup uses onSettled.
+  // Component-level one-shot setup/teardown uses onSettled (Tabs restore index via createSignal init).
   for (const path of [
-    "src/ui/BottomTab.tsx",
     "src/ui/CountDown.tsx",
-    "src/ui/LeftTab.tsx",
     "src/ui/MenuTab.tsx",
     "src/ui/NavTab.tsx",
     "src/ui/SortListBox.tsx",
-    "src/ui/TopTab.tsx",
     "src/utils/createFullscreen.ts",
     "src/route/Route.tsx",
   ]) {
     const source = await Bun.file(join(import.meta.dir, "..", path)).text();
     expect(source).toContain("onSettled");
+  }
+
+  // Simple tabs restore index from store at signal init; no no-op onSettled(toIndex(getPos)).
+  for (const path of ["src/ui/BottomTab.tsx", "src/ui/LeftTab.tsx", "src/ui/TopTab.tsx"]) {
+    const source = await Bun.file(join(import.meta.dir, "..", path)).text();
+    expect(source).not.toContain("onSettled");
+    expect(source).toContain("getPos(location.pathname");
   }
 
   // Reactive side effects use createEffect(compute, apply).
@@ -319,4 +323,26 @@ test("button ripple css uses the existing radial overlay implementation", async 
   expect(buttonCss).toContain("background-size: 1000% 1000%");
   expect(buttonCss).toContain("background-size: 0 0");
   expect(buttonCss).not.toContain("scale(0)");
+});
+
+test("ui public surface keeps CityPicker and Carousel as real components", async () => {
+  const [barrel, cityPicker, carousel] = await Promise.all([
+    Bun.file(join(import.meta.dir, "..", "src/ui/_.ts")).text(),
+    Bun.file(join(import.meta.dir, "..", "src/ui/CityPicker.tsx")).text(),
+    Bun.file(join(import.meta.dir, "..", "src/ui/Carousel.tsx")).text(),
+  ]);
+
+  expect(barrel).toContain('export { Carousel } from "./Carousel"');
+  expect(barrel).toContain('export { CityPicker, initCities } from "./CityPicker"');
+
+  // CityPicker must render the picker shell, not only pass-through children.
+  expect(cityPicker).toContain("styles.CityPicker");
+  expect(cityPicker).toContain("getCities");
+  expect(cityPicker).toContain("banCodes");
+  expect(cityPicker).not.toMatch(/return\s+<>\s*\{props\.children\}\s*<\/>/);
+
+  // Carousel must track an active index and translate (not a static gallery stub).
+  expect(carousel).toContain("createSignal");
+  expect(carousel).toMatch(/translateX|setIndex|getIndex/);
+  expect(carousel).not.toContain("For full functionality");
 });

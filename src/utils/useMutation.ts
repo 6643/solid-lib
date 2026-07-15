@@ -1,9 +1,17 @@
 import { type Accessor, createEffect } from "solid-js";
+import { readEl } from "./readEl";
 
 const mutationObserverMap = new Map<
     string,
     { observer: MutationObserver; callbacks: Map<Element, (mutations: MutationRecord[] | undefined) => void> }
 >();
+
+/** Pure filter: shared MutationObserver records may target descendants under subtree:true. */
+export const selectRelevantMutations = (
+    mutations: MutationRecord[],
+    targetEl: Element,
+): MutationRecord[] =>
+    mutations.filter((mut) => mut.target === targetEl || targetEl.contains(mut.target));
 
 export const useMutation = (
     ref: HTMLElement | Accessor<HTMLElement | undefined>,
@@ -11,7 +19,7 @@ export const useMutation = (
     options?: MutationObserverInit,
 ) => {
     createEffect(
-        () => (typeof ref === "function" ? ref() : ref),
+        () => readEl(ref),
         (el) => {
             if (!el) return;
 
@@ -21,7 +29,7 @@ export const useMutation = (
             if (!entry) {
                 const observer = new MutationObserver((mutations: MutationRecord[]) => {
                     entry?.callbacks.forEach((setFn, targetEl) => {
-                        const relevantMutations = mutations.filter((mut) => mut.target === targetEl);
+                        const relevantMutations = selectRelevantMutations(mutations, targetEl);
                         if (relevantMutations.length > 0) setFn(relevantMutations);
                     });
                 });

@@ -1,4 +1,5 @@
 import { createEffect, type Accessor } from "solid-js";
+import { readEl } from "./readEl";
 
 const intersectionObserverStore = new Map<Element, (entry: IntersectionObserverEntry | undefined) => void>();
 let intersectionObserver: IntersectionObserver | undefined;
@@ -22,7 +23,7 @@ export const useVis = (
     callback: (entry: IntersectionObserverEntry) => void,
 ) => {
     createEffect(
-        () => (typeof ref === "function" ? ref() : ref),
+        () => readEl(ref),
         (el) => {
             if (!el) return;
 

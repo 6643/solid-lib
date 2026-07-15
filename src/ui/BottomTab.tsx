@@ -1,9 +1,11 @@
 import styles from "./BottomTab.module.css";
-import { createSignal, onSettled, For, Show } from "solid-js";
+import type { Element } from "solid-js";
+import { createSignal, For, getOwner, Show } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { SvgIcon } from "./SvgIcon.tsx";
 
 const useBottomTab = (key: string) => {
+    const owner = getOwner();
     const [getActiveIndex, setActiveIndex] = createSignal(getPos(location.pathname, key));
     const [spinDeg, setSpinDeg] = createSignal(0);
 
@@ -12,18 +14,16 @@ const useBottomTab = (key: string) => {
         setPos(location.pathname, key, index);
         const goingLeft = index < getActiveIndex();
         setActiveIndex(index);
-        setSpinDeg(d => d + (goingLeft ? -360 : 360));
+        setSpinDeg((d) => d + (goingLeft ? -360 : 360));
     };
 
-    const mainRef = (index: number) => (el: HTMLElement) => useKeepScroll(el, location.pathname, `${key}.${index}`);
+    const mainRef = (index: number) => (el: HTMLElement) => useKeepScroll(el, location.pathname, `${key}.${index}`, 32, owner);
 
     return { getActiveIndex, spinDeg, toIndex, mainRef };
 };
 
-export const BottomTab = (props: { children: { icon: string; panel: () => any }[] }) => {
+export const BottomTab = (props: { children: { icon: string; panel: () => Element }[] }) => {
     const { getActiveIndex, spinDeg, toIndex, mainRef } = useBottomTab("app.tab");
-
-    onSettled(() => toIndex(getPos(location.pathname, "app.tab")));
 
     return (
         <div class={styles.bottomTab}>
@@ -32,7 +32,10 @@ export const BottomTab = (props: { children: { icon: string; panel: () => any }[
                     <Show when={index() === getActiveIndex()}>
                         <main
                             ref={mainRef(index())}
-                            class={index() < getActiveIndex() ? styles.moveRight : styles.moveLeft}
+                            class={{
+                                [styles.moveRight!]: index() < getActiveIndex(),
+                                [styles.moveLeft!]: index() >= getActiveIndex(),
+                            }}
                         >
                             {panel()}
                         </main>

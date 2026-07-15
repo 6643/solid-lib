@@ -1,5 +1,5 @@
 import styles from "./NavTab.module.css";
-import { createSignal, onSettled, For } from "solid-js";
+import { createSignal, getOwner, onSettled, For } from "solid-js";
 import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
 import { createDebounce } from "../utils/createDebounce";
 
@@ -28,6 +28,7 @@ const GAP = 4;
 const STEP = ITEM_H + GAP;
 
 const useNavTab = (key: string) => {
+    const owner = getOwner();
     const [getActives, setActives] = createSignal<boolean[]>([]);
     const [getTop, setTop] = createSignal(0);
     const [getHeight, setHeight] = createSignal(0);
@@ -80,7 +81,7 @@ const useNavTab = (key: string) => {
     const navRef = (el: HTMLElement) => setNavEl(el);
     const mainRef = (el: HTMLElement) => {
         setMainEl(el);
-        useKeepScroll(el, location.pathname, key);
+        useKeepScroll(el, location.pathname, key, 32, owner);
     };
 
     return { getActives, getTop, getHeight, toIndex, onScroll, navRef, mainRef };
@@ -91,6 +92,7 @@ export const NavTab = (props: { children: { name: string; panel: () => any }[] }
 
     onSettled(() => {
         queueMicrotask(() => toIndex(getPos(location.pathname, "nav.tab")));
+        return () => onScroll.cancel();
     });
 
     return (

@@ -1,4 +1,5 @@
-import { type Accessor, createEffect, createStore, untrack } from "solid-js";
+import { type Accessor, createEffect, createStore, getOwner, runWithOwner, untrack, type Owner } from "solid-js";
+import { readEl } from "./readEl";
 import { useScrollEnd } from "./useScrollEnd.ts";
 
 interface ScrollPositionsStore {
@@ -28,6 +29,7 @@ export const useKeepScroll = (
     page: string,
     key: string,
     debounceMs: number = 32,
+    owner?: Owner | null,
 ) => {
     const restoreScrollTop = (el: HTMLElement) => {
         const storedTop = getPos(page, key);
@@ -40,13 +42,18 @@ export const useKeepScroll = (
         return () => clearTimeout(timer);
     };
 
-    useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs);
+    useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs, owner);
 
-    createEffect(
-        () => (typeof ref === "function" ? ref() : ref),
-        (el) => {
-            if (!el) return;
-            return restoreScrollTop(el);
-        },
-    );
+    const setup = () =>
+        createEffect(
+            () => readEl(ref),
+            (el) => {
+                if (!el) return;
+                return restoreScrollTop(el);
+            },
+        );
+
+    const currentOwner = owner ?? getOwner();
+    if (currentOwner) runWithOwner(currentOwner, setup);
+    else setup();
 };

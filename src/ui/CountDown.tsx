@@ -19,12 +19,25 @@ export const CountDown = (props: {
     };
 
     onSettled(() => {
+        let finished = false;
         const timer = setInterval(() => {
             setVal((current) => {
-                if (current <= 0) return 0;
+                if (current <= 0) {
+                    if (!finished) {
+                        finished = true;
+                        props.done?.();
+                    }
+                    clearInterval(timer);
+                    return 0;
+                }
                 const next = current - 1;
                 if (next === 0) {
-                    queueMicrotask(() => props.done?.());
+                    queueMicrotask(() => {
+                        if (finished) return;
+                        finished = true;
+                        props.done?.();
+                        clearInterval(timer);
+                    });
                 }
                 return next;
             });

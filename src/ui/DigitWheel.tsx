@@ -31,7 +31,7 @@ const useSpringNumber = (
     };
 
     const tick = () => {
-        const current = value();
+        const current = untrack(value);
         const delta = target - current;
         if (Math.abs(delta) < 0.001) {
             setValue(target);

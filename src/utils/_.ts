@@ -21,6 +21,7 @@ export { useLoad } from "./useLoad";
 export { useMediaQuery } from "./useMediaQuery";
 export { useMutation } from "./useMutation";
 export { useRefresh } from "./useRefresh";
+export { readEl } from "./readEl";
 export { useResize } from "./useResize";
 export { useScrollEnd } from "./useScrollEnd";
 export { useVis } from "./useVis";

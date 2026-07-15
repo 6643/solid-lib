@@ -11,7 +11,7 @@ import {
 import { loadConfig } from "../src/builder/config";
 import { startDevServer } from "../src/builder/dev";
 import { buildLibrary } from "../src/builder/lib";
-import { toFileUrlHref } from "../src/builder/path";
+import { resolveContainedOutputPath, toFileUrlHref } from "../src/builder/path";
 
 const noProxyHosts = ["127.0.0.1", "localhost", "::1"];
 const existingNoProxy = process.env.NO_PROXY ?? process.env.no_proxy;
@@ -1730,6 +1730,16 @@ test("createHtmlShell escapes entry and css paths in attributes", () => {
   expect(html).toContain('src="./x.js&quot;&gt;&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;"');
   expect(html).not.toContain("<script>alert(1)</script>");
   expect(html).not.toContain('onload="alert(1)"');
+});
+
+
+test("resolveContainedOutputPath rejects path escape attempts", () => {
+  const base = "/tmp/solid-out";
+  expect(resolveContainedOutputPath(base, "index.html")).toBe(join(base, "index.html"));
+  expect(resolveContainedOutputPath(base, "./assets/a.js")).toBe(join(base, "assets/a.js"));
+  expect(() => resolveContainedOutputPath(base, "../secret.txt")).toThrow(/relative segments|escapes/);
+  expect(() => resolveContainedOutputPath(base, "/etc/passwd")).toThrow(/relative path/);
+  expect(() => resolveContainedOutputPath(base, "")).toThrow(/relative path/);
 });
 
 test("normalizeArtifactPath only renames CSS content-typed assets", () => {

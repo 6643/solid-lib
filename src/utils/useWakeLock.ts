@@ -2,17 +2,20 @@ import { createSignal, onSettled } from "solid-js";
 import { isServer } from "@solidjs/web";
 
 /**
- * A hook to manage the Screen Wake Lock API.
- * It prevents the screen from dimming or locking.
- * @returns An object containing support status, active status signal, and a setter function.
+ * Screen Wake Lock with separate desired vs actual state.
+ * Solid 2.0: setup/teardown via onSettled + returned cleanup.
+ * `desired` is a plain flag so intent is visible before microtask flush.
  */
 export const useWakeLock = () => {
-    const [isSupported] = createSignal(!isServer && "wakeLock" in navigator);
+    const [isSupported] = createSignal(!isServer && typeof navigator !== "undefined" && "wakeLock" in navigator);
+    /** User/app intent — not a signal, so setActive can request before flush. */
+    let desired = false;
     const [isActive, setIsActive] = createSignal(false);
     let wakeLock: WakeLockSentinel | null = null;
 
     const request = async () => {
-        if (!isSupported() || isActive()) return;
+        if (!isSupported() || !desired) return;
+        if (wakeLock && !wakeLock.released) return;
         try {
             wakeLock = await navigator.wakeLock.request("screen");
             setIsActive(true);
@@ -29,26 +32,42 @@ export const useWakeLock = () => {
     };
 
     const release = async () => {
-        if (isActive() && wakeLock) {
-            await wakeLock.release();
+        if (wakeLock) {
+            try {
+                await wakeLock.release();
+            } catch {
+                // ignore double-release
+            }
+            wakeLock = null;
         }
+        setIsActive(false);
     };
 
     if (!isServer) {
         onSettled(() => {
             const handleVisibilityChange = () => {
-                if (isActive() && document.visibilityState === "visible") {
+                if (desired && document.visibilityState === "visible") {
                     void request();
                 }
             };
             document.addEventListener("visibilitychange", handleVisibilityChange);
-            return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+            return () => {
+                document.removeEventListener("visibilitychange", handleVisibilityChange);
+                desired = false;
+                void release();
+            };
         });
     }
 
     const setActive = (active: boolean) => {
-        active ? void request() : void release();
+        desired = active;
+        if (active) void request();
+        else void release();
     };
 
-    return { isSupportedWakeLock: isSupported, isWakeLockActive: isActive, setWakeLockActive: setActive };
+    return {
+        isSupportedWakeLock: isSupported,
+        isWakeLockActive: isActive,
+        setWakeLockActive: setActive,
+    };
 };

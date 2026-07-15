@@ -4,6 +4,8 @@ import type { Element } from "solid-js";
 import { IconButton } from "./Button";
 import { icon_add, icon_remove, icon_content_paste } from "./svgicons";
 
+type InputMode = "none" | "search" | "text" | "decimal" | "email" | "tel" | "url" | "numeric";
+
 // ── 公共类型 ──
 
 type ValidateResult = string | undefined | Promise<string | undefined>;
@@ -89,7 +91,9 @@ export const RangeInput = (props: {
 
     createEffect(
         () => props.value ?? props.min ?? 0,
-        (next) => setValue(next),
+        (next) => {
+            setValue(next);
+        },
     );
 
     const inputed = (e: Event) => {
@@ -122,9 +126,9 @@ export const RangeInput = (props: {
     );
 };
 
-// ── TextInput ──
+// ── Shared string field props ──
 
-export const TextInput = (props: {
+type StringFieldProps = {
     label: string;
     value?: string;
     changed?: (value: string) => void;
@@ -133,24 +137,45 @@ export const TextInput = (props: {
     left?: () => Element;
     right?: () => Element;
     validate?: (value: string) => ValidateResult;
-}) => {
+};
+
+const StringTextInput = (
+    props: StringFieldProps & {
+        type?: string;
+        inputmode?: InputMode;
+        pattern?: string;
+        validateDefault?: (value: string) => ValidateResult;
+    },
+) => {
     const value = createMemo(() => props.value ?? "");
 
     return (
-        <Input label={props.label} value={props.value} validate={props.validate} left={props.left} right={props.right}>
+        <Input
+            label={props.label}
+            value={props.value}
+            validate={props.validate ?? props.validateDefault}
+            left={props.left}
+            right={props.right}
+        >
             <input
-                inputmode="text"
+                type={props.type}
+                inputmode={props.inputmode}
                 value={value()}
                 onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
                 placeholder=" "
                 spellcheck={false}
                 readonly={!props.changed}
+                pattern={props.pattern}
                 minlength={props.minLen}
                 maxlength={props.maxLen}
             />
         </Input>
     );
 };
+
+// ── TextInput ──
+
+export const TextInput = (props: StringFieldProps) => <StringTextInput {...props} inputmode="text" />;
 
 // ── TextArea ──
 
@@ -170,30 +195,10 @@ export const TextArea = (props: {
     let textareaRef: HTMLTextAreaElement | undefined;
     let lineNumRef: HTMLDivElement | undefined;
 
-    const lineCount = () => {
-        const v = value();
-        return v ? v.split("\n").length : 1;
-    };
-
-    const renderLineNumbers = () => {
-        const _el = lineNumRef;
-        if (!_el) return;
-        const _v = value();
-        const _count = _v ? _v.split("\n").length : 1;
-        let text = "";
-        for (let i = 1; i <= _count; i++) text += i + "\n";
-        _el.innerText = text;
-    };
-
     const syncScroll = () => {
         const ln = lineNumRef;
         const ta = textareaRef;
         if (ln && ta) ln.scrollTop = ta.scrollTop;
-    };
-
-    const onInput = (e: InputEvent) => {
-        props.changed?.((e.target as HTMLTextAreaElement).value);
-        renderLineNumbers();
     };
 
     createEffect(
@@ -230,7 +235,13 @@ export const TextArea = (props: {
                     <div class={styles.lineNumbers} ref={lineNumRef}>
                         1
                     </div>
-                    {textarea({ ref: textareaRef, class: styles.editorTextarea, onScroll: syncScroll, onInput })}
+                    {textarea({
+                        ref: (el: HTMLTextAreaElement) => {
+                            textareaRef = el;
+                        },
+                        class: styles.editorTextarea,
+                        onScroll: syncScroll,
+                    })}
                 </div>
             </Show>
         </Input>
@@ -239,32 +250,7 @@ export const TextArea = (props: {
 
 // ── PasswordInput ──
 
-export const PasswordInput = (props: {
-    label: string;
-    value?: string;
-    changed?: (value: string) => void;
-    minLen?: number;
-    maxLen?: number;
-    left?: () => Element;
-    right?: () => Element;
-    validate?: (value: string) => ValidateResult;
-}) => {
-    const value = createMemo(() => props.value ?? "");
-    return (
-        <Input label={props.label} value={props.value} validate={props.validate} left={props.left} right={props.right}>
-            <input
-                type="password"
-                value={value()}
-                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
-                placeholder=" "
-                spellcheck={false}
-                readonly={!props.changed}
-                minlength={props.minLen}
-                maxlength={props.maxLen}
-            />
-        </Input>
-    );
-};
+export const PasswordInput = (props: StringFieldProps) => <StringTextInput {...props} type="password" />;
 
 // ── NumberInput ──
 
@@ -284,7 +270,9 @@ export const NumberInput = (props: {
 
     createEffect(
         () => props.value ?? 0,
-        (next) => setValue(next),
+        (next) => {
+            setValue(next);
+        },
     );
 
     const step = () => props.step ?? 1;
@@ -350,69 +338,19 @@ export const NumberInput = (props: {
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const EmailInput = (props: {
-    label: string;
-    value?: string;
-    changed?: (value: string) => void;
-    minLen?: number;
-    maxLen?: number;
-    left?: () => Element;
-    right?: () => Element;
-    validate?: (value: string) => ValidateResult;
-}) => {
-    const value = createMemo(() => props.value ?? "");
-    return (
-        <Input
-            label={props.label}
-            value={props.value}
-            validate={props.validate ?? ((v: string) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined))}
-            left={props.left}
-            right={props.right}
-        >
-            <input
-                type="email"
-                value={value()}
-                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
-                placeholder=" "
-                spellcheck={false}
-                readonly={!props.changed}
-                minlength={props.minLen}
-                maxlength={props.maxLen}
-            />
-        </Input>
-    );
-};
+export const EmailInput = (props: StringFieldProps) => (
+    <StringTextInput
+        {...props}
+        type="email"
+        validateDefault={(v) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined)}
+    />
+);
 
 // ── TelInput ──
 
-export const TelInput = (props: {
-    label: string;
-    value?: string;
-    changed?: (value: string) => void;
-    minLen?: number;
-    maxLen?: number;
-    left?: () => Element;
-    right?: () => Element;
-    validate?: (value: string) => ValidateResult;
-    pattern?: string;
-}) => {
-    const value = createMemo(() => props.value ?? "");
-    return (
-        <Input label={props.label} value={props.value} validate={props.validate} left={props.left} right={props.right}>
-            <input
-                type="tel"
-                value={value()}
-                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
-                placeholder=" "
-                spellcheck={false}
-                readonly={!props.changed}
-                pattern={props.pattern}
-                minlength={props.minLen}
-                maxlength={props.maxLen}
-            />
-        </Input>
-    );
-};
+export const TelInput = (props: StringFieldProps & { pattern?: string }) => (
+    <StringTextInput {...props} type="tel" pattern={props.pattern} />
+);
 
 // ── CheckButton ──
 
@@ -472,7 +410,6 @@ export const CaptchaInput = (props: {
 }) => {
     const len = () => props.length ?? 6;
     const pattern = () => props.pattern ?? /^\w$/;
-    let inputEl: HTMLInputElement | undefined;
 
     const handleInput = (e: InputEvent) => {
         const current = props.value ?? "";
@@ -523,9 +460,6 @@ export const CaptchaInput = (props: {
     return (
         <Input label={props.label} right={() => right}>
             <input
-                ref={(el: HTMLInputElement) => {
-                    inputEl = el;
-                }}
                 class={styles.captchaInput}
                 type="text"
                 inputmode="numeric"

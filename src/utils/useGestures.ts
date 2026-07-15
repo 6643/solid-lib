@@ -1,4 +1,5 @@
 import { createEffect, createMemo, type Accessor } from "solid-js";
+import { readEl } from "./readEl";
 
 interface GestureOptions {
     threshold?: number;
@@ -22,7 +23,7 @@ const usePointerEvents = <T extends HTMLElement>(
 ) => {
     createEffect(
         () => ({
-            el: typeof ref === "function" ? ref() : ref,
+            el: readEl(ref),
             handlers: handlersAccessor(),
             capturePointer: capturePointerAccessor(),
         }),
@@ -152,6 +153,14 @@ export const useLongPress = <T extends HTMLElement>(
             pressTimer = null;
         }
     };
+
+    // Solid 2.0: dispose cleanup for timers not owned by pointer-up.
+    createEffect(
+        () => readEl(element),
+        () => {
+            return () => clearTimer();
+        },
+    );
 
     const handlers = createMemo(() => {
         const [onLongPress, options] = valueAccessor();
