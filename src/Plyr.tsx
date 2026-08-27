@@ -1,6 +1,6 @@
 import { createEffect } from "solid-js";
-import { loadScript } from "../utils/loadScript";
-import { loadStyle } from "../utils/loadStyle";
+import { loadScript } from "./loadScript";
+import { loadStyle } from "./loadStyle";
 
 export const Plyr = (props: { src: string }) => {
     const jsState = loadScript("https://cdn.plyr.io/3.8.3/plyr.js");
@@ -11,7 +11,9 @@ export const Plyr = (props: { src: string }) => {
             () => jsState(),
             (state) => {
                 if (state !== "loaded") return;
-                const PlyrCtor = (window as unknown as { Plyr: new (el: HTMLVideoElement, opts: object) => { destroy: () => void } }).Plyr;
+                const PlyrCtor = (
+                    window as unknown as { Plyr: new (el: HTMLVideoElement, opts: object) => { destroy: () => void } }
+                ).Plyr;
                 const player = new PlyrCtor(videoEl, { controls: ["play", "progress", "volume"] });
                 return () => player.destroy();
             },

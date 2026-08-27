@@ -1,7 +1,7 @@
 import styles from "./NavTab.module.css";
 import { createSignal, getOwner, onSettled, For } from "solid-js";
-import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
-import { createDebounce } from "../utils/createDebounce";
+import { getPos, setPos, useKeepScroll } from "./useKeepScroll";
+import { createDebounce } from "./createDebounce";
 
 const getChildsVis = (boxEl: HTMLElement): { ratio: number; offset: number }[] => {
     const containerRect = boxEl.getBoundingClientRect();

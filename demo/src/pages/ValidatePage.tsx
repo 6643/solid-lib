@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { Card, FlexBox, TextInput, EmailInput, PasswordInput, TelInput } from "solid-lib/ui";
+import { Card, FlexBox, TextInput, EmailInput, PasswordInput, TelInput } from "solid-lib";
 
 import styles from "./Pages.module.css";
 

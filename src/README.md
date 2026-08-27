@@ -1,10 +1,14 @@
-# ui
+# solid-lib 组件、hooks 与工具
 
-`solid-lib/ui` 提供最小 UI 主题能力:
+`solid-lib` 提供最小 UI 主题能力与复用工具:
 
 - 通过 `html[data-theme-mode]` 属性切换亮暗模式
 - 通过 `solid-lib/ui.css` 提供全局主题变量
 - 组件只消费变量, 不直接判断亮暗模式
+
+## 发布边界
+
+源码保持扁平结构，组件、hooks 与工具均从根入口 `solid-lib` 导出；全局样式从 `solid-lib/ui.css` 导出。自研 builder 和 route 不属于库的发布 API，应用构建交给 Vite，路由交给应用自己的 `@solidjs/router`。
 
 ## 色彩体系
 
@@ -25,7 +29,7 @@
 ## 导入
 
 ```ts
-import { Card, FilledButton, TextInput, ThemeToggle } from "solid-lib/ui";
+import { Card, FilledButton, TextInput, ThemeToggle, createStorage } from "solid-lib";
 import "solid-lib/ui.css";
 ```
 

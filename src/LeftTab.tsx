@@ -1,7 +1,7 @@
 import styles from "./LeftTab.module.css";
 import type { Element } from "solid-js";
 import { createSignal, For, getOwner, Show } from "solid-js";
-import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
+import { getPos, setPos, useKeepScroll } from "./useKeepScroll";
 
 const ITEM_HEIGHT = 68;
 

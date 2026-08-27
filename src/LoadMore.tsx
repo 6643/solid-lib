@@ -1,4 +1,4 @@
-import { useLoad } from "../utils/useLoad"
+import { useLoad } from "./useLoad"
 
 
 export const LoadMore = <T,>(

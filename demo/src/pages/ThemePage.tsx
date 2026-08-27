@@ -8,7 +8,7 @@ import {
     Counter,
     ThemeSwitch,
     AccentSelector,
-} from "solid-lib/ui";
+} from "solid-lib";
 import styles from "./Pages.module.css";
 
 const ThemePage = () => {

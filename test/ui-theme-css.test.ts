@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { join } from "node:path";
 
 test("ui theme css exports the expected variable contract", async () => {
-  const css = await Bun.file(join(import.meta.dir, "..", "src/ui/_.css")).text();
+  const css = await Bun.file(join(import.meta.dir, "..", "src/_.css")).text();
 
   expect(css).toContain("--base-bg");
   expect(css).toContain("--page-bg");

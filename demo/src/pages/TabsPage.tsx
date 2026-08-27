@@ -1,4 +1,4 @@
-import { Card, FlexBox, TopTab, MenuTab, LeftTab, NavTab, Counter } from "solid-lib/ui";
+import { Card, FlexBox, TopTab, MenuTab, LeftTab, NavTab, Counter } from "solid-lib";
 
 import styles from "./Pages.module.css";
 

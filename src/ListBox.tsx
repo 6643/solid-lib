@@ -1,6 +1,6 @@
 import styles from "./ListBox.module.css";
-import { createMemo, createSignal, createEffect, For, untrack, type Element } from "solid-js";
-import { useScrollEnd } from "../utils/useScrollEnd";
+import { createMemo, createSignal, createEffect, For, flush, untrack, type Element } from "solid-js";
+import { useScrollEnd } from "./useScrollEnd";
 
 type ListBoxRow<T> = {
     item: T;
@@ -225,19 +225,17 @@ export const ListBox = <T,>(props: {
         if (nextStart === currentStart) return;
 
         const rows = untrack(getRows);
-        setShiftedRows(currentStart, nextStart, rows, items, renderCount);
+        flush(() => setShiftedRows(currentStart, nextStart, rows, items, renderCount));
 
-        queueMicrotask(() => {
-            const index = Number(anchorRow.dataset.index);
-            if (!Number.isFinite(index)) return;
+        const index = Number(anchorRow.dataset.index);
+        if (!Number.isFinite(index)) return;
 
-            applyScrollTopOffset(el, getRowEdgeOffset(el, index, "top"));
+        applyScrollTopOffset(el, getRowEdgeOffset(el, index, "top"));
 
-            if (nextStart === 0 || nextStart + renderCount >= items.length) {
-                settleEdge(el, nextStart, renderCount, items, getVisibleBounds(el));
-            }
-            notifyVisibleIndex(el);
-        });
+        if (nextStart === 0 || nextStart + renderCount >= items.length) {
+            settleEdge(el, nextStart, renderCount, items, getVisibleBounds(el));
+        }
+        notifyVisibleIndex(el);
     };
 
     const notifyChanged = (index: number) => {

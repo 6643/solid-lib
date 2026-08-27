@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { join } from "node:path";
 
-const readListBoxSource = () => Bun.file(join(import.meta.dir, "..", "src", "ui", "ListBox.tsx")).text();
+const readListBoxSource = () => Bun.file(join(import.meta.dir, "..", "src", "ListBox.tsx")).text();
 
 test("ListBox keeps virtualization independent from spacer height and transform offset", async () => {
   const source = await readListBoxSource();
@@ -52,6 +52,17 @@ test("ListBox shifts the window incrementally instead of replacing every row", a
   expect(source).toContain(": prependRows(rows, items, nextStart, amount, renderCount)");
 });
 
+test("ListBox flushes row updates before imperative anchor reads", async () => {
+  const source = await readListBoxSource();
+  const shiftWindowSource = source.slice(source.indexOf("const shiftWindow ="), source.indexOf("const notifyChanged ="));
+
+  expect(source).toContain("createMemo, createSignal, createEffect, For, flush, untrack, type Element");
+  expect(shiftWindowSource).toContain(
+    "flush(() => setShiftedRows(currentStart, nextStart, rows, items, renderCount));",
+  );
+  expect(shiftWindowSource).not.toContain("queueMicrotask(() => {");
+});
+
 test("ListBox uses the visible row bounds as the scroll anchor", async () => {
   const source = await readListBoxSource();
 
@@ -83,7 +94,7 @@ test("ListBox keeps the top anchor row visually stable after shifting the window
 test("ListBox ignores scroll events caused by its own scrollTop correction", async () => {
   const source = await readListBoxSource();
 
-  expect(source).toContain('import { useScrollEnd } from "../utils/useScrollEnd";');
+  expect(source).toContain('import { useScrollEnd } from "./useScrollEnd";');
   expect(source).toContain("let ignoredScrollTop: number | undefined;");
   expect(source).toContain("useScrollEnd(\n        () => getEl(),\n        () => {");
   expect(source).toContain("const setScrollTopWithoutSettling =");

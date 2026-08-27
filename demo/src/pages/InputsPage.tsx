@@ -13,10 +13,10 @@ import {
     RadioButton,
     IconButton,
     SvgIcon,
-} from "solid-lib/ui";
+} from "solid-lib";
 
 import styles from "./Pages.module.css";
-import { icon_add, icon_remove, icon_search, icon_close } from "solid-lib/ui";
+import { icon_add, icon_remove, icon_search, icon_close } from "solid-lib";
 
 const InputsPage = () => {
     const [name, setName] = createSignal("张三");

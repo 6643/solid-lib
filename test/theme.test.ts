@@ -8,7 +8,7 @@ import {
   setLightTheme,
   setSystemTheme,
   setThemeMode,
-} from "../src/ui/themeMode.ts";
+} from "../src/themeMode.ts";
 
 type AttributeValue = string | null;
 

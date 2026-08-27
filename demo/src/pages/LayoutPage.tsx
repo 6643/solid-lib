@@ -1,4 +1,4 @@
-import { Card, FlexBox, GridBox, StackBox, CenterBox, Block } from "solid-lib/ui";
+import { Card, FlexBox, GridBox, StackBox, CenterBox, Block } from "solid-lib";
 
 import styles from "./Pages.module.css";
 

@@ -13,8 +13,8 @@ import {
     TextInput,
     NumberInput,
     CaptchaInput,
-} from "../../../src/ui/_";
-import { icon_drag_handle, icon_add, icon_remove } from "solid-lib/ui";
+} from "solid-lib";
+import { icon_drag_handle, icon_add, icon_remove } from "solid-lib";
 
 import styles from "./Pages.module.css";
 

@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 
-import { createDebounce } from "../src/utils/createDebounce";
-import { selectRelevantMutations } from "../src/utils/useMutation";
+import { createDebounce } from "../src/createDebounce";
+import { selectRelevantMutations } from "../src/useMutation";
 
 const readSource = (path: string) => Bun.file(join(import.meta.dir, "..", path)).text();
 
@@ -65,7 +65,7 @@ describe("useMutation", () => {
   });
 
   test("useMutation source uses selectRelevantMutations (not strict target equality only)", async () => {
-    const source = await readSource("src/utils/useMutation.ts");
+    const source = await readSource("src/useMutation.ts");
     expect(source).toContain("selectRelevantMutations");
     expect(source).toContain("targetEl.contains");
     expect(source).toContain("createEffect(");
@@ -75,31 +75,31 @@ describe("useMutation", () => {
 
 describe("useScrollEnd + useWakeLock + useLongPress lifecycle contracts (Solid 2.0)", () => {
   test("Input effects return cleanup functions instead of signal setter values", async () => {
-    const source = await readSource("src/ui/Input.tsx");
+    const source = await readSource("src/Input.tsx");
     expect(source).not.toMatch(/\(next\)\s*=>\s*setValue\(next\)/);
     expect(source).toMatch(/\(next\)\s*=>\s*\{\s*setValue\(next\);\s*\}/);
   });
 
   test("CountDown clears its interval when it reaches zero", async () => {
-    const source = await readSource("src/ui/CountDown.tsx");
+    const source = await readSource("src/CountDown.tsx");
     expect(source).toMatch(/current\s*<=\s*0[\s\S]*clearInterval\(timer\)/);
   });
 
   test("useRefresh creates reactive primitives at hook scope", async () => {
-    const source = await readSource("src/utils/useRefresh.ts");
+    const source = await readSource("src/useRefresh.ts");
     const effectBody = source.slice(source.indexOf("createEffect("));
     expect(effectBody).not.toContain("createSignal(");
     expect(effectBody).not.toContain("createMemo(");
   });
 
   test("DigitWheel does not read its spring signal in an effect apply callback", async () => {
-    const source = await readSource("src/ui/DigitWheel.tsx");
+    const source = await readSource("src/DigitWheel.tsx");
     expect(source).toContain("const current = untrack(value);");
     expect(source).not.toContain("const current = value();");
   });
 
   test("useScrollEnd cancels pending debounce on cleanup", async () => {
-    const source = await readSource("src/utils/useScrollEnd.ts");
+    const source = await readSource("src/useScrollEnd.ts");
     expect(source).toContain("createDebounce");
     expect(source).toContain(".cancel");
     expect(source).toContain("createEffect(");
@@ -108,7 +108,7 @@ describe("useScrollEnd + useWakeLock + useLongPress lifecycle contracts (Solid 2
   });
 
   test("useWakeLock uses desired state, releases on dispose, re-requests when visible", async () => {
-    const source = await readSource("src/utils/useWakeLock.ts");
+    const source = await readSource("src/useWakeLock.ts");
     expect(source).toContain("onSettled");
     expect(source).not.toMatch(/\bonCleanup\b/);
     expect(source).not.toMatch(/\bonMount\b/);
@@ -121,7 +121,7 @@ describe("useScrollEnd + useWakeLock + useLongPress lifecycle contracts (Solid 2
   });
 
   test("useLongPress clears timer on effect dispose", async () => {
-    const source = await readSource("src/utils/useGestures.ts");
+    const source = await readSource("src/useGestures.ts");
     expect(source).toContain("createEffect(");
     expect(source).not.toMatch(/\bonCleanup\b/);
     expect(source).not.toMatch(/\bonMount\b/);
@@ -136,24 +136,5 @@ describe("createDebounce return type shape", () => {
     debounced(1);
     debounced.cancel();
     expect(typeof debounced).toBe("function");
-  });
-});
-
-
-describe("route parseParams types + builder dev signature (source contracts)", () => {
-  test("parseParams return type uses ParsedParams not parser functions", async () => {
-    const source = await readSource("src/route/params.ts");
-    expect(source).toContain("Accessor<ParsedParams<T>[K]>");
-    expect(source).not.toMatch(/parseParams[\s\S]*Accessor<T\[K\]>/);
-  });
-
-  test("dev poll updates previousSignature only after successful rebuild", async () => {
-    const source = await readSource("src/builder/dev.ts");
-    // success path still assigns signature
-    expect(source).toContain("previousSignature = createWatchSignature(currentConfig)");
-    // poll path must not assign before rebuild
-    const pollBlock = source.slice(source.indexOf("const pollTimer = setInterval"));
-    expect(pollBlock).toContain("if (nextSignature !== previousSignature)");
-    expect(pollBlock).not.toMatch(/previousSignature\s*=\s*nextSignature/);
   });
 });

@@ -1,15 +1,10 @@
 # solid-lib
 
-`solid-lib` 当前包含四个核心子项目:
+组件、hooks 与工具统一从 `solid-lib` 根入口导入。
 
-- [builder](./src/builder/README.md)
-  面向 Bun + Solid 的最小构建与开发工具链
-- [route](./src/route/README.md)
-  面向静态路径的最小 SPA route 能力
-- [ui](./src/ui/README.md)
-  面向亮暗模式与主题变量的最小 UI 主题能力
-- [utils](./src/utils/_.ts)
-  面向组件和业务复用的最小 hooks 与工具能力
+- UI 组件与主题能力
+- 可复用 hooks 与工具
+- `solid-lib/ui.css` 全局样式入口
 
 ## 色彩体系
 
@@ -29,38 +24,33 @@
 
 ## 导入约束
 
-- 不支持 `import ... from "solid-lib"`
-- builder 只能从 `solid-lib/builder` 导入
-- route 只能从 `solid-lib/route` 导入
-- ui 只能从 `solid-lib/ui` 导入
-- utils 只能从 `solid-lib/utils` 导入
+- 组件、hooks 与工具统一从 `solid-lib` 导入
 - 样式只能从 `solid-lib/ui.css` 导入
-
-## 构建入口
-
-demo 和消费者项目使用统一 CLI:
-
-```bash
-solid-lib dev
-solid-lib build
-```
-
-配置文件固定为项目根目录下的 `config.ts`:
+- 发布包只提供 `.` 与 `./ui.css` 两个入口，不提供旧的 UI/utils 子入口、构建器或路由子入口
 
 ```ts
-import { defineConfig } from "solid-lib/builder";
-
-export default defineConfig({
-  rootComponentFile: "src/_.tsx",
-  appTitle: "solid-lib demo",
-  assetsDirs: ["assets"],
-  outDir: "dist",
-  watchDirs: ["../src"],
-});
+import { Card, FilledButton, createStorage, useVis } from "solid-lib";
+import "solid-lib/ui.css";
 ```
 
+## 应用构建
 
+demo 和消费者应用使用 Bun 驱动的 Vite；路由使用应用自己的 `@solidjs/router` 依赖。当前 Solid 2 RC3 对应的兼容 Router 版本固定为 `2.0.0-next.18`。
+
+demo 使用官方 Solid 2 Start mode：
+
+```ts
+solid({ start: true, compiler: "native", ssr: false });
+```
+
+demo 的 `vite.config.ts` 和 `tsconfig.json` 将 `solid-lib` 映射到仓库根级扁平源码入口。这是 Bun `1.4.0` 下避免同仓 `file:..` 自引用递归复制的本地开发边界；local/packed consumer smoke 会分别覆盖源码链接和发布 tarball。
+
+```bash
+bun --cwd demo run dev
+bun --cwd demo run build
+bun --cwd demo run preview
+```
 
 ## 基于 SolidJS 2.0
 
-本项目锁定 SolidJS 2.0 beta 运行时与类型约束。
+本项目锁定 SolidJS `2.0.0-rc.3` 运行时与类型约束，JSX 使用官方 native compiler。`@solidjs/start@2.0.4` 暂不加入依赖图，因为它的依赖仍指向 Solid 1；Solid 2 RC 使用 `@solidjs/vite-plugin` 的 Start mode。

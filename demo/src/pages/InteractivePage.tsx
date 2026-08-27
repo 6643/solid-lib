@@ -9,7 +9,7 @@ import {
     TopModal,
     LeftModal,
     RightModal,
-} from "solid-lib/ui";
+} from "solid-lib";
 
 import styles from "./Pages.module.css";
 

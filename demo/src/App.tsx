@@ -1,4 +1,4 @@
-import { MenuTab, NavTab, TopTab, BottomTab, initTheme, initAccent } from "solid-lib/ui";
+import { MenuTab, NavTab, TopTab, BottomTab, initTheme, initAccent } from "solid-lib";
 import {
     icon_dashboard,
     icon_edit,
@@ -8,7 +8,7 @@ import {
     icon_check,
     icon_palette,
     icon_ripples,
-} from "../../src/ui/svgicons";
+} from "solid-lib";
 
 import ButtonsPage from "./pages/ButtonsPage";
 import InputsPage from "./pages/InputsPage";

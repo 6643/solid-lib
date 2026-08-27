@@ -1,25 +1,16 @@
 # 示例应用
 
-`demo/` 是 `solid-lib` 的最小本地消费者示例，包含以下特性：
+`demo/` 是 `solid-lib` 的最小本地消费者示例，使用官方 Vite 插件和 Solid 2 native compiler，包含以下特性：
 
-- `config.ts`
-- `assetsDirs: ["assets"]`
+- Vite client mode
+- `@solidjs/vite-plugin` 的 `start: true`
+- Solid 2 `compiler: "native"`
+- `ssr: false` 的 client Start mode
+- `public/assets/` 静态资源
 - CSS Modules
 - lazy loading
-- SPA route demo:
-  - `Route`
-  - native `<a>` navigation
-  - `pushRoute()` / `replaceRoute()`
-  - `getRouteBackPath()`
-  - `parseParam()`
 
-## 先注册链接包
-
-在仓库根目录执行:
-
-```bash
-bun link
-```
+demo 的 `vite.config.ts` 与 `tsconfig.json` 将 `solid-lib` 和 `solid-lib/ui.css` 指向仓库根级扁平入口。Bun `1.4.0` 对同仓 `file:..` 自引用会复制父项目并形成递归 node_modules，因此 demo 不声明自引用依赖；仓库的 local/packed consumer smoke 分别验证源码链接和发布 tarball。
 
 ## 安装依赖
 
@@ -39,14 +30,13 @@ bun run typecheck
 bun run dev
 ```
 
-`solid-lib dev` 会以内存方式提供应用内容，不会写入 `dist/`。
+Vite 默认监听 `127.0.0.1`，支持模块热更新。开发 watcher 使用 polling，不依赖宿主机可用的 inotify watch 配额；非文件路径会回退到应用的 HTML shell。
 
-启动后可访问这些示例路径：
+启动后可访问：
 
 - `/`
-- `/search?page=1`
-- `/history?step=start`
-- `/lazy`
+- `/assets/demo.txt`
+- `/assets/a.avif`
 
 ## 生产构建
 
@@ -54,4 +44,10 @@ bun run dev
 bun run build
 ```
 
-实际执行的是 `solid-lib build`。
+构建产物位于 `dist/client/`，静态资源仍保留在 `dist/client/assets/`。
+
+## 预览生产构建
+
+```bash
+bun run preview
+```

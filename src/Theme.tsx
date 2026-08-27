@@ -1,35 +1,16 @@
 import { createSignal, For } from "solid-js";
-import { createStorage } from "../utils/createStorage";
 import { IconButton } from "./Button";
 import { icon_palette, icon_light_mode, icon_dark_mode } from "./svgicons";
 import styles from "./Theme.module.css";
+import { initAccent, useAccent } from "./themeAccent";
 import { getResolvedThemeMode, initializeThemeMode, setThemeMode, type ThemeMode } from "./themeMode";
 
 const [themeMode, setThemeModeSignal] = createSignal<ThemeMode>("system");
-let accentState: ReturnType<typeof createStorage<string>> | undefined;
-
-const applyAccent = (color: string) => {
-    try {
-        globalThis.document?.documentElement?.style?.setProperty("--accent-color", color);
-    } catch {}
-};
-
-const getAccentState = () => {
-    accentState ??= createStorage("accent", "#e95420");
-    return accentState;
-};
 
 export const initTheme = () => {
     const mode = initializeThemeMode();
     setThemeModeSignal(mode);
     return mode;
-};
-
-export const initAccent = () => {
-    const [accent] = getAccentState();
-    const currentAccent = accent();
-    applyAccent(currentAccent);
-    return currentAccent;
 };
 
 export const useTheme = () => [
@@ -42,19 +23,7 @@ export const useTheme = () => [
     },
 ] as const;
 
-export const useAccent = () => [
-    () => {
-        const [accent] = getAccentState();
-        return accent();
-    },
-    (value: string | ((prev: string) => string)) => {
-        const [accent, setAccent] = getAccentState();
-        const nextAccent = typeof value === "function" ? value(accent()) : value;
-        setAccent(nextAccent);
-        applyAccent(nextAccent);
-        return nextAccent;
-    },
-] as const;
+export { initAccent, useAccent };
 
 const accents = [
     { name: "teal", value: "teal" },

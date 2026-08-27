@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from "bun:test";
 import { createRoot } from "solid-js";
 
-import { createStorage } from "../src/utils/createStorage";
-import { initAccent } from "../src/ui/Theme";
+import { createStorage } from "../src/createStorage";
+import { initAccent } from "../src/themeAccent";
 
 class FakeStorage {
     private readonly values = new Map<string, string>();

@@ -4,7 +4,7 @@ import { children, createMemo, onSettled, omit } from "solid-js"
 import type { Element } from "solid-js"
 import { Dynamic } from "@solidjs/web"
 import { For } from "solid-js"
-import { loadScript } from "../utils/loadScript"
+import { loadScript } from "./loadScript"
 
 export const Swiper = <T,>(props: {
     children: Element

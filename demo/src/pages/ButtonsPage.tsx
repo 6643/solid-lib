@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { Card, FilledButton, IconButton, OutlinedButton, TextButton, Block, FlexBox, SvgIcon } from "solid-lib/ui";
+import { Card, FilledButton, IconButton, OutlinedButton, TextButton, Block, FlexBox, SvgIcon } from "solid-lib";
 import {
     icon_add,
     icon_remove,
@@ -22,7 +22,7 @@ import {
     icon_devices,
     icon_monitor,
     icon_laptop_chromebook,
-} from "../../../src/ui/svgicons";
+} from "solid-lib";
 
 import styles from "./Pages.module.css";
 

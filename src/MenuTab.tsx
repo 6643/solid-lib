@@ -1,7 +1,7 @@
 import styles from "./MenuTab.module.css";
 import type { Element } from "solid-js";
 import { createSignal, getOwner, onSettled, For } from "solid-js";
-import { getPos, setPos, useKeepScroll } from "../utils/useKeepScroll";
+import { getPos, setPos, useKeepScroll } from "./useKeepScroll";
 import { IconButton } from "./Button";
 import { icon_menu } from "./svgicons";
 

@@ -2,27 +2,12 @@
     "name": "solid-lib",
     "version": "0.0.0",
     "type": "module",
-    "bin": {
-        "solid-lib": "./src/builder/cli.ts"
-    },
     "exports": {
-        "./builder": {
-            "types": "./src/builder/_.ts",
-            "import": "./src/builder/_.ts"
+        ".": {
+            "types": "./src/_.ts",
+            "import": "./src/_.ts"
         },
-        "./route": {
-            "types": "./src/route/_.ts",
-            "import": "./src/route/_.ts"
-        },
-        "./ui": {
-            "types": "./src/ui/_.ts",
-            "import": "./src/ui/_.ts"
-        },
-        "./utils": {
-            "types": "./src/utils/_.ts",
-            "import": "./src/utils/_.ts"
-        },
-        "./ui.css": "./src/ui/_.css"
+        "./ui.css": "./src/_.css"
     },
     "files": [
         "docs",
@@ -35,21 +20,17 @@
         "test:local-consumer": "bun ./test/demo-local-consumer.ts",
         "test:packed-consumer": "bun ./test/demo-local-consumer.ts pack",
         "test:smoke": "bun run test:local-consumer && bun run test:packed-consumer",
-        "test:unit": "bun test",
-        "postinstall": "bun scripts/patch-solid-jsx-runtime.mjs"
+        "test:unit": "bun test"
     },
     "dependencies": {
-        "@babel/core": "7.29.0",
-        "@solidjs/web": "2.0.0-beta.15",
-        "babel-preset-solid": "2.0.0-beta.15",
-        "typescript": "6.0.3"
+        "@solidjs/web": "2.0.0-rc.3"
     },
     "devDependencies": {
-        "@types/babel__core": "7.20.5",
-        "@types/bun": "1.3.14",
-        "solid-js": "2.0.0-beta.15"
+        "@types/bun": "1.4.0",
+        "solid-js": "2.0.0-rc.3",
+        "typescript": "7.0.2"
     },
     "peerDependencies": {
-        "solid-js": "2.0.0-beta.15"
+        "solid-js": "2.0.0-rc.3"
     }
 }

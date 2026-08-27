@@ -4,7 +4,7 @@ import { join } from "node:path";
 const readSource = (path: string) => Bun.file(join(import.meta.dir, "..", path)).text();
 
 test("useScrollEnd binds refs through createEffect with cleanup", async () => {
-  const source = await readSource("src/utils/useScrollEnd.ts");
+  const source = await readSource("src/useScrollEnd.ts");
 
   expect(source).toContain("createEffect(");
   expect(source).toContain("readEl(ref)");
@@ -15,7 +15,7 @@ test("useScrollEnd binds refs through createEffect with cleanup", async () => {
 });
 
 test("useKeepScroll restores scroll through createEffect with cleanup", async () => {
-  const source = await readSource("src/utils/useKeepScroll.ts");
+  const source = await readSource("src/useKeepScroll.ts");
 
   expect(source).toContain("useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs, owner);");
   expect(source).toContain("createEffect(");
