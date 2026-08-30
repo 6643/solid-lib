@@ -63,7 +63,7 @@ test("RangeInput thumb is a 10px solid handle and the slider row is 40px tall", 
   expect(webkit).toBeDefined();
   expect(webkit).toContain("width: 10px;");
   expect(webkit).toContain("height: 10px;");
-  expect(webkit).toContain("background: var(--raised-bg);");
+  expect(webkit).toContain("background: var(--accent-color);");
   expect(webkit).toContain("margin-top: -3px;");
   expect(webkit).not.toContain("radial-gradient");
   expect(webkit).toContain("border: none;");
@@ -72,7 +72,7 @@ test("RangeInput thumb is a 10px solid handle and the slider row is 40px tall", 
   expect(moz).toBeDefined();
   expect(moz).toContain("width: 10px;");
   expect(moz).toContain("height: 10px;");
-  expect(moz).toContain("background: var(--raised-bg);");
+  expect(moz).toContain("background: var(--accent-color);");
   expect(moz).not.toContain("radial-gradient");
   expect(moz).toContain("border: none;");
 });

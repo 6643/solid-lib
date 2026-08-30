@@ -185,7 +185,7 @@
     height: 10px;
     border: none;
     border-radius: 50%;
-    background: var(--raised-bg);
+    background: var(--accent-color);
     margin-top: -3px;
 }
 
@@ -195,7 +195,7 @@
     height: 10px;
     border: none;
     border-radius: 50%;
-    background: var(--raised-bg);
+    background: var(--accent-color);
 }
 
 /* ── CheckButton & RadioButton ── */
