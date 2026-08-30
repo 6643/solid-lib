@@ -14,7 +14,7 @@
     display: flex;
     align-items: center;
     position: relative;
-    background-color: var(--sunken-bg);
+    background-color: var(--inset-bg);
     box-shadow: 0 2px 4px var(--raised-bg);
 }
 

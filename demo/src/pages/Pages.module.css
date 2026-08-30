@@ -9,12 +9,12 @@
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: var(--primary-fg);
+  color: var(--base-fg);
 }
 
 .desc {
   font-size: 14px;
-  color: var(--secondary-fg);
+  color: var(--inset-fg);
   margin-bottom: 24px;
 }
 
@@ -28,7 +28,7 @@
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: var(--primary-fg);
+  color: var(--base-fg);
 }
 
 .subTitle {
@@ -36,12 +36,12 @@
   font-weight: 500;
   margin-top: 16px;
   margin-bottom: 8px;
-  color: var(--secondary-fg);
+  color: var(--inset-fg);
 }
 
 .note {
   font-size: 12px;
-  color: var(--secondary-fg);
+  color: var(--inset-fg);
   margin-top: 8px;
 }
 
@@ -77,7 +77,7 @@
 
 .modalContent p {
   margin-bottom: 16px;
-  color: var(--secondary-fg);
+  color: var(--inset-fg);
 }
 
 .tabPanel {
@@ -91,7 +91,7 @@
 }
 
 .tabPanel p {
-  color: var(--secondary-fg);
+  color: var(--inset-fg);
   margin-bottom: 12px;
 }
 
@@ -110,7 +110,7 @@
 
 .listItem span {
   font-size: 12px;
-  color: var(--secondary-fg);
+  color: var(--inset-fg);
 }
 
 .sortItem {
@@ -122,7 +122,7 @@
 
 .sortItemId {
   font-size: 12px;
-  color: var(--secondary-fg);
+  color: var(--inset-fg);
   font-weight: 500;
 }
 
@@ -136,7 +136,7 @@
 .codeBlock pre {
   font-family: monospace;
   font-size: 12px;
-  color: var(--primary-fg);
+  color: var(--base-fg);
   white-space: pre-wrap;
   word-break: break-all;
 }

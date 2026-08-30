@@ -30,7 +30,7 @@
     position: relative;
     display: grid;
     grid-template-columns: repeat(var(--len), 1fr);
-    box-shadow: 0 -4px 4px -4px var(--sunken-bg);
+    box-shadow: 0 -4px 4px -4px var(--inset-bg);
 }
 
 /* 六边形背景指示器 */

@@ -129,7 +129,7 @@ const DisplayPage = () => {
                     <span
                         style={{
                             "font-size": "12px",
-                            color: "var(--secondary-fg)",
+                            color: "var(--inset-fg)",
                             "align-self": "flex-end",
                             "padding-bottom": "8px",
                         }}

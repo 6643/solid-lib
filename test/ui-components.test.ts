@@ -276,7 +276,9 @@ test("ui component css modules map to the public theme tokens", async () => {
   expect(cardCss).toContain("var(--raised-fg)");
 
   expect(inputCss).toContain("var(--base-bg)");
-  expect(inputCss).toContain("var(--sunken-fg)");
+  expect(inputCss).toContain(
+    ".field input:disabled,\n.field textarea:disabled {\n    color: var(--disabled-color);\n    cursor: not-allowed;\n}",
+  );
   expect(inputCss).toContain("var(--disabled-color)");
 });
 

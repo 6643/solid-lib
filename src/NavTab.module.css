@@ -14,7 +14,7 @@
     display: grid;
     grid-auto-rows: 48px;
     gap: 4px;
-    background-color: var(--sunken-bg);
+    background-color: var(--inset-bg);
     box-shadow: 4px 0 4px -4px var(--disabled-color);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -67,7 +67,7 @@
 
 .navTab > nav > div.active {
     color: var(--accent-color);
-    background-color: var(--sunken-bg);
+    background-color: var(--inset-bg);
 }
 
 /* 内容区 */

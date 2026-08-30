@@ -19,18 +19,26 @@
     height: 40px;
     background: var(--base-bg);
 
-    border: 2px solid transparent;
+    border: 0;
+    border-left: 2px solid transparent;
     border-radius: 3px;
+    position: relative;
     transition: border-color 160ms ease;
 }
 
+.field .inputWrap:has(textarea) {
+    height: auto;
+    min-height: 40px;
+    align-items: stretch;
+}
+
 .field .inputWrap:has(input:focus, textarea:focus) {
-    border: 2px solid var(--accent-color);
+    border-left-color: var(--accent-color);
     box-shadow: none;
 }
 
 .field.error .inputWrap {
-    border: 2px solid var(--error-color);
+    border-left-color: var(--error-color);
     box-shadow: none;
 }
 
@@ -74,14 +82,14 @@
 
 .field input:-webkit-autofill,
 .field textarea:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px var(--sunken-bg) inset;
-    -webkit-text-fill-color: var(--sunken-fg);
+    -webkit-box-shadow: 0 0 0 1000px var(--inset-bg) inset;
+    -webkit-text-fill-color: var(--inset-fg);
 }
 
 .field input:-webkit-autofill:focus,
 .field textarea:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px var(--sunken-bg) inset;
-    -webkit-text-fill-color: var(--sunken-fg);
+    -webkit-box-shadow: 0 0 0 1000px var(--inset-bg) inset;
+    -webkit-text-fill-color: var(--inset-fg);
 }
 
 .field input::placeholder,
@@ -91,7 +99,7 @@
 
 .field input:disabled,
 .field textarea:disabled {
-    color: var(--sunken-fg);
+    color: var(--disabled-color);
     cursor: not-allowed;
 }
 
@@ -113,18 +121,20 @@
     text-align: right;
     padding: 11px 8px;
     min-width: 2.4em;
-    color: var(--sunken-fg);
+    color: var(--inset-fg);
     font-size: inherit;
     line-height: 1.5;
     white-space: pre;
-    border-right: 1px solid color-mix(in srgb, var(--sunken-fg) 20%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--inset-fg) 20%, transparent);
     opacity: 0.6;
     box-sizing: border-box;
 }
 
-.editorTextarea {
+.editorTextarea,
+.plainTextarea {
     flex: 1;
     min-width: 0;
+    display: block;
     font-size: inherit;
     font-family: inherit;
     line-height: 1.5;
@@ -149,35 +159,43 @@
 
 .rangeInput input[type="range"] {
     width: 100%;
+    height: 40px;
     appearance: none;
     background: transparent;
     cursor: pointer;
 }
 
-.rangeInput input[type="range"]::-webkit-slider-runnable-track,
-.rangeInput input[type="range"]::-moz-range-track {
+.rangeInput input[type="range"]::-webkit-slider-runnable-track {
     height: 4px;
     border-radius: 2px;
-    background: var(--sunken-bg);
+    background: var(--inset-bg);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-.rangeInput input[type="range"]::-webkit-slider-thumb,
-.rangeInput input[type="range"]::-moz-range-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+.rangeInput input[type="range"]::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--inset-bg);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 .rangeInput input[type="range"]::-webkit-slider-thumb {
-    margin-top: -8px;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 50%;
+    background: var(--raised-bg);
+    margin-top: -3px;
 }
 
 .rangeInput input[type="range"]::-moz-range-thumb {
+    appearance: none;
+    width: 10px;
+    height: 10px;
     border: none;
+    border-radius: 50%;
+    background: var(--raised-bg);
 }
 
 /* ── CheckButton & RadioButton ── */
@@ -191,7 +209,7 @@
     cursor: pointer;
     user-select: none;
     padding: 6px 12px;
-    border: 2px solid var(--sunken-fg);
+    border: 2px solid var(--inset-fg);
     border-radius: 3px;
     transition: border-color 160ms ease;
     overflow: hidden;
@@ -231,7 +249,7 @@
 
 .checkBtn span,
 .radioBtn span {
-    color: var(--sunken-fg);
+    color: var(--inset-fg);
     font-size: 14px;
 }
 

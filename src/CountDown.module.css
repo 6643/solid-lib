@@ -7,5 +7,5 @@
 }
 
 .countdown > span {
-    color: var(--sunken-fg);
+    color: var(--inset-fg);
 }

@@ -230,7 +230,7 @@ export const TextArea = (props: {
 
     return (
         <Input label={props.label} value={props.value} validate={props.validate}>
-            <Show when={lineNumbers()} fallback={textarea({})}>
+            <Show when={lineNumbers()} fallback={textarea({ class: styles.plainTextarea })}>
                 <div class={styles.editorWrap}>
                     <div class={styles.lineNumbers} ref={lineNumRef}>
                         1

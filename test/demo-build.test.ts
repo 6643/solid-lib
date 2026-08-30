@@ -48,8 +48,8 @@ test("demo uses the Solid 2 native Vite plugin entry", async () => {
   expect(source).not.toContain("solid-lib/builder");
 });
 
-test("theme demo keeps the disabled swatch readable against the disabled background", async () => {
+test("theme demo uses inset background and disabled color for the disabled swatch", async () => {
   const source = await Bun.file(join(import.meta.dir, "..", "demo", "src", "pages", "ThemePage.tsx")).text();
 
-  expect(source).toContain('background: "var(--disabled-color)", color: "var(--primary-fg)"');
+  expect(source).toContain('background: "var(--inset-bg)", color: "var(--disabled-color)"');
 });

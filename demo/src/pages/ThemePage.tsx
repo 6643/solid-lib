@@ -48,19 +48,16 @@ const ThemePage = () => {
             <Card class={styles.card}>
                 <h2 class={styles.cardTitle}>色彩层级</h2>
                 <FlexBox gap={8} dir="column">
-                    <div class={styles.colorSwatch} style={{ background: "var(--page-bg)", color: "var(--primary-fg)" }}>
-                        page — 页面背景
-                    </div>
-                    <div class={styles.colorSwatch} style={{ background: "var(--base-bg)", color: "var(--primary-fg)" }}>
+                    <div class={styles.colorSwatch} style={{ background: "var(--base-bg)", color: "var(--base-fg)" }}>
                         base — 卡片、容器
                     </div>
-                    <div class={styles.colorSwatch} style={{ background: "var(--raised-bg)", color: "var(--primary-fg)" }}>
+                    <div class={styles.colorSwatch} style={{ background: "var(--raised-bg)", color: "var(--base-fg)" }}>
                         raised — 按钮、凸起
                     </div>
-                    <div class={styles.colorSwatch} style={{ background: "var(--inset-bg)", color: "var(--secondary-fg)" }}>
+                    <div class={styles.colorSwatch} style={{ background: "var(--inset-bg)", color: "var(--inset-fg)" }}>
                         inset — 输入框、凹陷
                     </div>
-                    <div class={styles.colorSwatch} style={{ background: "var(--disabled-color)", color: "var(--primary-fg)" }}>
+                    <div class={styles.colorSwatch} style={{ background: "var(--inset-bg)", color: "var(--disabled-color)" }}>
                         disabled — 禁用状态
                     </div>
                 </FlexBox>

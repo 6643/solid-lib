@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 4px;
     user-select: none;
-    color: var(--sunken-fg);
+    color: var(--inset-fg);
     padding: 8px 0;
 }
 

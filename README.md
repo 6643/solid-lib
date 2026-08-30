@@ -10,17 +10,16 @@
 
 | 层级 | 用途 | 亮色 | 暗色 |
 |------|------|------|------|
-| page | 页面背景/文字 | 偏白/偏黑 | 偏黑/偏白 |
 | base | 卡片、容器 | 浅色/深色 | 深色/浅色 |
 | raised | 按钮、凸起 | 更浅/更深 | 更深/更浅 |
 | inset | 输入框、凹陷 | 更深/更浅 | 更浅/更深 |
-| disabled | 禁用状态 | 灰色 | 灰色 |
+| disabled | 禁用文字/边框 | 灰色 | 灰色 |
 | accent | 强调色 | teal | teal |
 | error | 错误色 | firebrick | firebrick |
 
-**全局色**（不区分亮暗）：`--accent-color`、`--error-color`
+**全局色**（不区分亮暗）：`--accent-color`、`--error-color`、`--disabled-color`
 
-**层级色**（亮暗各一套）：`--page-bg/fg`、`--base-bg/fg`、`--raised-bg/fg`、`--inset-bg/fg`、`--disabled-bg/fg`
+**层级色**（亮暗各一套）：`--base-bg/fg`、`--raised-bg/fg`、`--inset-bg/fg`
 
 ## 导入约束
 

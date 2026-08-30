@@ -85,7 +85,7 @@
     padding: 0 16px;
 }
 .filled:disabled {
-    background-color: var(--sunken-bg);
+    background-color: var(--inset-bg);
 }
 .outlined {
     color: var(--color, var(--accent-color, var(--raised-fg)));
