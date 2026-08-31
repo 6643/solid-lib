@@ -82,14 +82,14 @@
 
 .field input:-webkit-autofill,
 .field textarea:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px var(--inset-bg) inset;
-    -webkit-text-fill-color: var(--inset-fg);
+    -webkit-box-shadow: 0 0 0 1000px var(--base-bg) inset;
+    -webkit-text-fill-color: var(--base-fg);
 }
 
 .field input:-webkit-autofill:focus,
 .field textarea:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px var(--inset-bg) inset;
-    -webkit-text-fill-color: var(--inset-fg);
+    -webkit-box-shadow: 0 0 0 1000px var(--base-bg) inset;
+    -webkit-text-fill-color: var(--base-fg);
 }
 
 .field input::placeholder,
@@ -107,30 +107,8 @@
     color: var(--error-color);
 }
 
-/* ── 编辑器行号 ── */
+/* ── TextArea ── */
 
-.editorWrap {
-    display: flex;
-    align-items: stretch;
-    width: 100%;
-}
-
-.lineNumbers {
-    overflow: hidden;
-    user-select: none;
-    text-align: right;
-    padding: 11px 8px;
-    min-width: 2.4em;
-    color: var(--inset-fg);
-    font-size: inherit;
-    line-height: 1.5;
-    white-space: pre;
-    border-right: 1px solid color-mix(in srgb, var(--inset-fg) 20%, transparent);
-    opacity: 0.6;
-    box-sizing: border-box;
-}
-
-.editorTextarea,
 .plainTextarea {
     flex: 1;
     min-width: 0;

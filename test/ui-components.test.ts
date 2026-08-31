@@ -297,8 +297,6 @@ test("button and input css keep neutral defaults and state colors separated", as
 
   expect(buttonCss).toContain("border: 2px solid var(--color, var(--accent-color))");
 
-  expect(buttonCss).toContain("background-image: radial-gradient(");
-  expect(inputCss).toContain("color-mix(");
   expect(cardCss).not.toContain("color-mix(");
   expect(topTabCss).not.toContain("color-mix(");
   expect(navTabCss).not.toContain("color-mix(");
@@ -313,13 +311,24 @@ test("button and input css keep neutral defaults and state colors separated", as
   expect(timelineCss).not.toContain("antiquewhite");
 });
 
-test("button ripple css uses the existing radial overlay implementation", async () => {
+test("button ripple css uses a single transform-scaled circle", async () => {
   const buttonCss = await Bun.file(join(import.meta.dir, "..", "src/Button.module.css")).text();
 
-  expect(buttonCss).toContain("background-image: radial-gradient(");
-  expect(buttonCss).toContain("background-size: 1000% 1000%");
-  expect(buttonCss).toContain("background-size: 0 0");
-  expect(buttonCss).not.toContain("scale(0)");
+  const overlay = buttonCss.match(/\.button::before \{([^}]*)\}/)?.[1];
+  expect(overlay).toBeDefined();
+  expect(overlay).toContain("width: 200%;");
+  expect(overlay).toContain("aspect-ratio: 1;");
+  expect(overlay).toContain("border-radius: 50%;");
+  expect(overlay).toContain("background: currentColor;");
+  expect(overlay).toContain("transform: translate(-50%, -50%) scale(1);");
+  expect(overlay).toContain("transition: transform 512ms ease, opacity 512ms ease;");
+  expect(overlay).not.toContain("background-size");
+
+  const activeOverlay = buttonCss.match(/\.button:active::before \{([^}]*)\}/)?.[1];
+  expect(activeOverlay).toBeDefined();
+  expect(activeOverlay).toContain("transform: translate(-50%, -50%) scale(0);");
+  expect(activeOverlay).toContain("opacity: 0.28;");
+  expect(activeOverlay).toContain("transition: none;");
 });
 
 test("ui public surface keeps CityPicker and Carousel as real components", async () => {

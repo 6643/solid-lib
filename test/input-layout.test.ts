@@ -20,25 +20,32 @@ test("Input controls use only the left border for default, focus, and error stat
   expect(css).not.toContain("border: 2px solid var(--error-color);");
 });
 
-test("TextArea can hide line numbers and render a plain multiline editor", async () => {
+test("TextArea always renders a plain multiline editor without line numbers", async () => {
   const [source, css] = await Promise.all([
     Bun.file(join(import.meta.dir, "..", "src", "Input.tsx")).text(),
     readInputStyles(),
   ]);
 
-  expect(source).toContain("class: styles.plainTextarea");
+  expect(source).toContain("class={styles.plainTextarea}");
+  expect(source).not.toContain("lineNumbers");
+  expect(source).not.toContain("lineNumRef");
+  expect(source).not.toContain("editorWrap");
+  expect(source).not.toContain("editorTextarea");
+  expect(css).not.toContain(".editorWrap");
+  expect(css).not.toContain(".lineNumbers");
+  expect(css).not.toContain(".editorTextarea");
   expect(css).toContain(".plainTextarea {");
-  expect(css).not.toContain(".field .inputWrap:has(.plainTextarea)");
 });
 
-test("Plain multiline TextArea uses the standard left border like other inputs", async () => {
+test("autofilled inputs keep the normal field theme colors", async () => {
   const css = await readInputStyles();
 
-  expect(css).not.toContain("--plain-textarea-line-color");
-  expect(css).not.toContain("repeating-linear-gradient(");
-  expect(css).toContain(".field .inputWrap:has(input:focus, textarea:focus) {");
-  expect(css).toContain(".field.error .inputWrap {");
-  expect(css).not.toContain(":not(:has(.plainTextarea))");
+  expect(css).toMatch(
+    /\.field input:-webkit-autofill,\n\.field textarea:-webkit-autofill \{[\s\S]*?-webkit-box-shadow: 0 0 0 1000px var\(--base-bg\) inset;[\s\S]*?-webkit-text-fill-color: var\(--base-fg\);[\s\S]*?\}/,
+  );
+  expect(css).toMatch(
+    /\.field input:-webkit-autofill:focus,\n\.field textarea:-webkit-autofill:focus \{[\s\S]*?-webkit-box-shadow: 0 0 0 1000px var\(--base-bg\) inset;[\s\S]*?-webkit-text-fill-color: var\(--base-fg\);[\s\S]*?\}/,
+  );
 });
 
 test("RangeInput keeps browser-specific track rules and uses inset track color", async () => {
@@ -77,8 +84,9 @@ test("RangeInput thumb is a 10px solid handle and the slider row is 40px tall", 
   expect(moz).toContain("border: none;");
 });
 
-test("InputsPage hides line numbers for the multiline TextArea demo", async () => {
+test("InputsPage uses the simplified TextArea API", async () => {
   const source = await Bun.file(join(import.meta.dir, "..", "demo", "src", "pages", "InputsPage.tsx")).text();
 
-  expect(source).toContain('<TextArea label="简介" row={4} lineNumbers={false}');
+  expect(source).toContain('<TextArea label="简介" row={4} value={bio()} changed={setBio}');
+  expect(source).not.toContain("lineNumbers");
 });

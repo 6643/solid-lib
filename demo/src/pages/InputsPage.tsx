@@ -60,7 +60,7 @@ const InputsPage = () => {
                 <Card class={styles.card}>
                     <h2 class={styles.cardTitle}>TextInput 多行</h2>
                     <FlexBox gap={16} dir="column">
-                        <TextArea label="简介" row={4} lineNumbers={false} value={bio()} changed={setBio} minLen={10} maxLen={200} />
+                        <TextArea label="简介" row={4} value={bio()} changed={setBio} minLen={10} maxLen={200} />
                         <TextInput
                             label="备注"
                             changed={(v) => console.log("备注:", v)}

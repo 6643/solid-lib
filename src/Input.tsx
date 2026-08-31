@@ -1,5 +1,5 @@
 import styles from "./Input.module.css";
-import { createSignal, createEffect, createMemo, Show, untrack } from "solid-js";
+import { createSignal, createEffect, createMemo, untrack } from "solid-js";
 import type { Element } from "solid-js";
 import { IconButton } from "./Button";
 import { icon_add, icon_remove, icon_content_paste } from "./svgicons";
@@ -187,63 +187,24 @@ export const TextArea = (props: {
     maxLen?: number;
     validate?: (value: string) => ValidateResult;
     row?: number;
-    lineNumbers?: boolean;
 }) => {
     const row = () => props.row ?? 5;
-    const lineNumbers = () => props.lineNumbers ?? true;
     const value = createMemo(() => props.value ?? "");
-    let textareaRef: HTMLTextAreaElement | undefined;
-    let lineNumRef: HTMLDivElement | undefined;
-
-    const syncScroll = () => {
-        const ln = lineNumRef;
-        const ta = textareaRef;
-        if (ln && ta) ln.scrollTop = ta.scrollTop;
-    };
-
-    createEffect(
-        () => value(),
-        (v) => {
-            const el = lineNumRef;
-            if (!el) return;
-            const c = v ? v.split("\n").length : 1;
-            let text = "";
-            for (let i = 1; i <= c; i++) text += i + "\n";
-            el.innerText = text;
-        },
-    );
-
-    const textarea = (extra: Record<string, unknown>) => (
-        <textarea
-            inputmode="text"
-            value={value()}
-            onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
-            placeholder=" "
-            spellcheck={false}
-            readonly={!props.changed}
-            minlength={props.minLen}
-            maxlength={props.maxLen}
-            rows={row()}
-            {...extra}
-        />
-    );
 
     return (
         <Input label={props.label} value={props.value} validate={props.validate}>
-            <Show when={lineNumbers()} fallback={textarea({ class: styles.plainTextarea })}>
-                <div class={styles.editorWrap}>
-                    <div class={styles.lineNumbers} ref={lineNumRef}>
-                        1
-                    </div>
-                    {textarea({
-                        ref: (el: HTMLTextAreaElement) => {
-                            textareaRef = el;
-                        },
-                        class: styles.editorTextarea,
-                        onScroll: syncScroll,
-                    })}
-                </div>
-            </Show>
+            <textarea
+                class={styles.plainTextarea}
+                inputmode="text"
+                value={value()}
+                onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
+                placeholder=" "
+                spellcheck={false}
+                readonly={!props.changed}
+                minlength={props.minLen}
+                maxlength={props.maxLen}
+                rows={row()}
+            />
         </Input>
     );
 };
