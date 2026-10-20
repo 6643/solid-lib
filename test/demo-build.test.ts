@@ -1,7 +1,7 @@
 import { expect, test } from "./harness/test.ts";
 import { readText } from "./harness/io.ts";
 import { mustRun, which } from "./harness/proc.ts";
-import { readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const VP_COMMAND = which("vp") ?? "vp";
@@ -18,6 +18,12 @@ const listFiles = (root: string): string[] => {
 
 test("demo Vite build emits a client bundle without the TypeScript compiler runtime", async () => {
   const demoRoot = join(import.meta.dirname, "..", "demo");
+
+  // demo 是独立项目(自带 lockfile),干净检出不带 node_modules;
+  // 缺依赖时按锁文件装一次,保证测试在任何克隆上都能跑。
+  if (!existsSync(join(demoRoot, "node_modules"))) {
+    await mustRun(VP_COMMAND, ["install", "--frozen-lockfile"], { cwd: demoRoot });
+  }
 
   await mustRun(VP_COMMAND, ["run", "build"], { cwd: demoRoot });
 
