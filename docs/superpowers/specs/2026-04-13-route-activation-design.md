@@ -66,10 +66,10 @@
 
 ```ts
 type RegisteredRoute = {
-  id: symbol;
-  path: string;
-  fallback: boolean;
-  isEnabled: () => boolean;
+	id: symbol;
+	path: string;
+	fallback: boolean;
+	isEnabled: () => boolean;
 };
 ```
 

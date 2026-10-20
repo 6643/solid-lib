@@ -3,25 +3,25 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import solid from "@solidjs/vite-plugin";
 
 export default defineConfig({
-  fmt: {},
-  lint: {
-    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
-    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
-    options: { typeAware: true, typeCheck: true },
-  },
-  plugins: lazyPlugins(() => [solid({ start: true, compiler: "native", ssr: false })]),
-  resolve: {
-    alias: {
-      "solid-lib/ui.css": fileURLToPath(new URL("../src/_.css", import.meta.url)),
-      "solid-lib": fileURLToPath(new URL("../src/_.ts", import.meta.url)),
-    },
-  },
-  server: {
-    host: "127.0.0.1",
-    watch: { usePolling: true },
-  },
-  build: {
-    target: "esnext",
-    assetsInlineLimit: 0,
-  },
+	fmt: { useTabs: true, tabWidth: 4, printWidth: 100 },
+	lint: {
+		jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
+		rules: { "vite-plus/prefer-vite-plus-imports": "error" },
+		options: { typeAware: true, typeCheck: true },
+	},
+	plugins: lazyPlugins(() => [solid({ start: true, compiler: "native", ssr: false })]),
+	resolve: {
+		alias: {
+			"solid-lib/ui.css": fileURLToPath(new URL("../src/_.css", import.meta.url)),
+			"solid-lib": fileURLToPath(new URL("../src/_.ts", import.meta.url)),
+		},
+	},
+	server: {
+		host: "127.0.0.1",
+		watch: { usePolling: true },
+	},
+	build: {
+		target: "esnext",
+		assetsInlineLimit: 0,
+	},
 });

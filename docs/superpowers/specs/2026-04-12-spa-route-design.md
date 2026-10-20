@@ -67,9 +67,9 @@ parseParam<T>(name: string, parser: ParamParser<T>): Accessor<T>
 - 在组件内部调用
 - 输入是参数名和 parser，例如 `parseParam("page", (raw) => Number(raw ?? "1"))`
 - 第二参数也可以直接给 primitive 默认值:
-  - `parseParam("page", 0)` -> `number`
-  - `parseParam("enabled", false)` -> `boolean`
-  - `parseParam("q", "")` -> `string`
+    - `parseParam("page", 0)` -> `number`
+    - `parseParam("enabled", false)` -> `boolean`
+    - `parseParam("q", "")` -> `string`
 - 返回 Solid accessor，例如 `page()`
 - accessor 直接连接全局 route state，确保 query 改变后在 reactive scope 中读取到新值
 - number 在缺失、空字符串或 `Number(...)` 为 `NaN` 时回退到默认值

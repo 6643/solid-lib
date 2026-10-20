@@ -1,10 +1,10 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  fmt: {},
-  lint: {
-    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
-    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
-    options: { typeAware: true, typeCheck: true },
-  },
+	fmt: { useTabs: true, tabWidth: 4, printWidth: 100 },
+	lint: {
+		jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
+		rules: { "vite-plus/prefer-vite-plus-imports": "error" },
+		options: { typeAware: true, typeCheck: true },
+	},
 });

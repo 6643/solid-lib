@@ -1,22 +1,22 @@
 {
-  "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ESNext",
-    "module": "Preserve",
-    "jsx": "preserve",
-    "jsxImportSource": "@solidjs/web",
-    "ignoreDeprecations": "6.0",
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "types": ["node"],
-    "noEmit": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "src/_.css"],
-  "exclude": ["src/**/*.test.ts"]
+	"compilerOptions": {
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"target": "ESNext",
+		"module": "Preserve",
+		"jsx": "preserve",
+		"jsxImportSource": "@solidjs/web",
+		"ignoreDeprecations": "6.0",
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"types": ["node"],
+		"noEmit": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "src/_.css"],
+	"exclude": ["src/**/*.test.ts"]
 }

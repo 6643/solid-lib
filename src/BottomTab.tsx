@@ -5,63 +5,63 @@ import { getPos, setPos, useKeepScroll } from "./useKeepScroll";
 import { SvgIcon } from "./SvgIcon.tsx";
 
 const useBottomTab = (key: string) => {
-  const owner = getOwner();
-  const [getActiveIndex, setActiveIndex] = createSignal(getPos(location.pathname, key));
-  const [spinDeg, setSpinDeg] = createSignal(0);
+	const owner = getOwner();
+	const [getActiveIndex, setActiveIndex] = createSignal(getPos(location.pathname, key));
+	const [spinDeg, setSpinDeg] = createSignal(0);
 
-  const toIndex = (index: number) => {
-    if (index === getActiveIndex()) return;
-    setPos(location.pathname, key, index);
-    const goingLeft = index < getActiveIndex();
-    setActiveIndex(index);
-    setSpinDeg((d) => d + (goingLeft ? -360 : 360));
-  };
+	const toIndex = (index: number) => {
+		if (index === getActiveIndex()) return;
+		setPos(location.pathname, key, index);
+		const goingLeft = index < getActiveIndex();
+		setActiveIndex(index);
+		setSpinDeg((d) => d + (goingLeft ? -360 : 360));
+	};
 
-  const mainRef = (index: number) => (el: HTMLElement) =>
-    useKeepScroll(el, location.pathname, `${key}.${index}`, 32, owner);
+	const mainRef = (index: number) => (el: HTMLElement) =>
+		useKeepScroll(el, location.pathname, `${key}.${index}`, 32, owner);
 
-  return { getActiveIndex, spinDeg, toIndex, mainRef };
+	return { getActiveIndex, spinDeg, toIndex, mainRef };
 };
 
 export const BottomTab = (props: { children: { icon: string; panel: () => Element }[] }) => {
-  const { getActiveIndex, spinDeg, toIndex, mainRef } = useBottomTab("app.tab");
+	const { getActiveIndex, spinDeg, toIndex, mainRef } = useBottomTab("app.tab");
 
-  return (
-    <div class={styles.bottomTab}>
-      <For each={props.children}>
-        {({ panel }, index) => (
-          <Show when={index() === getActiveIndex()}>
-            <main
-              ref={mainRef(index())}
-              class={{
-                [styles.moveRight!]: index() < getActiveIndex(),
-                [styles.moveLeft!]: index() >= getActiveIndex(),
-              }}
-            >
-              {panel()}
-            </main>
-          </Show>
-        )}
-      </For>
+	return (
+		<div class={styles.bottomTab}>
+			<For each={props.children}>
+				{({ panel }, index) => (
+					<Show when={index() === getActiveIndex()}>
+						<main
+							ref={mainRef(index())}
+							class={{
+								[styles.moveRight!]: index() < getActiveIndex(),
+								[styles.moveLeft!]: index() >= getActiveIndex(),
+							}}
+						>
+							{panel()}
+						</main>
+					</Show>
+				)}
+			</For>
 
-      <nav
-        style={{
-          "--len": props.children.length,
-          "--index": getActiveIndex(),
-          "--spin": spinDeg(),
-        }}
-      >
-        <For each={props.children}>
-          {({ icon }, index) => (
-            <div
-              class={{ [styles.active!]: index() === getActiveIndex() }}
-              onClick={() => toIndex(index())}
-            >
-              <SvgIcon size={24} name={icon} />
-            </div>
-          )}
-        </For>
-      </nav>
-    </div>
-  );
+			<nav
+				style={{
+					"--len": props.children.length,
+					"--index": getActiveIndex(),
+					"--spin": spinDeg(),
+				}}
+			>
+				<For each={props.children}>
+					{({ icon }, index) => (
+						<div
+							class={{ [styles.active!]: index() === getActiveIndex() }}
+							onClick={() => toIndex(index())}
+						>
+							<SvgIcon size={24} name={icon} />
+						</div>
+					)}
+				</For>
+			</nav>
+		</div>
+	);
 };

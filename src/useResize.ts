@@ -5,41 +5,41 @@ const resizeObserverStore = new Map<Element, (entry: ResizeObserverEntry | undef
 let resizeObserver: ResizeObserver | undefined;
 
 const getResizeObserver = () => {
-  if (resizeObserver) return resizeObserver;
-  if (!("ResizeObserver" in globalThis)) return;
+	if (resizeObserver) return resizeObserver;
+	if (!("ResizeObserver" in globalThis)) return;
 
-  resizeObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      const setEntry = resizeObserverStore.get(entry.target);
-      if (setEntry) setEntry(entry);
-    }
-  });
+	resizeObserver = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			const setEntry = resizeObserverStore.get(entry.target);
+			if (setEntry) setEntry(entry);
+		}
+	});
 
-  return resizeObserver;
+	return resizeObserver;
 };
 
 export const useResize = (
-  ref: HTMLElement | Accessor<HTMLElement | undefined>,
-  callback: (entry: ResizeObserverEntry) => void,
+	ref: HTMLElement | Accessor<HTMLElement | undefined>,
+	callback: (entry: ResizeObserverEntry) => void,
 ) => {
-  createEffect(
-    () => readEl(ref),
-    (el) => {
-      if (!el) return;
+	createEffect(
+		() => readEl(ref),
+		(el) => {
+			if (!el) return;
 
-      const observer = getResizeObserver();
-      if (!observer) return;
+			const observer = getResizeObserver();
+			if (!observer) return;
 
-      const setEntry = (currentEntry: ResizeObserverEntry | undefined) => {
-        if (currentEntry) callback(currentEntry);
-      };
+			const setEntry = (currentEntry: ResizeObserverEntry | undefined) => {
+				if (currentEntry) callback(currentEntry);
+			};
 
-      resizeObserverStore.set(el, setEntry);
-      observer.observe(el);
-      return () => {
-        observer.unobserve(el);
-        resizeObserverStore.delete(el);
-      };
-    },
-  );
+			resizeObserverStore.set(el, setEntry);
+			observer.observe(el);
+			return () => {
+				observer.unobserve(el);
+				resizeObserverStore.delete(el);
+			};
+		},
+	);
 };

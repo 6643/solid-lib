@@ -105,12 +105,12 @@ Expected: FAIL because `./ui` and `./ui.css` are not in `package.json`.
 ```ts
 export type { ThemeMode } from "./theme";
 export {
-  getThemeMode,
-  initializeThemeMode,
-  setThemeMode,
-  setSystemTheme,
-  setLightTheme,
-  setDarkTheme,
+	getThemeMode,
+	initializeThemeMode,
+	setThemeMode,
+	setSystemTheme,
+	setLightTheme,
+	setDarkTheme,
 } from "./theme";
 ```
 
@@ -150,20 +150,20 @@ Add tests like:
 
 ```ts
 test("setThemeMode writes data-theme-mode to the root element", () => {
-  const documentElement = installDocumentElement();
+	const documentElement = installDocumentElement();
 
-  setThemeMode("dark");
+	setThemeMode("dark");
 
-  expect(documentElement.getAttribute("data-theme-mode")).toBe("dark");
+	expect(documentElement.getAttribute("data-theme-mode")).toBe("dark");
 });
 
 test("initializeThemeMode falls back to system when storage is empty", () => {
-  const documentElement = installDocumentElement();
+	const documentElement = installDocumentElement();
 
-  const mode = initializeThemeMode();
+	const mode = initializeThemeMode();
 
-  expect(mode).toBe("system");
-  expect(documentElement.getAttribute("data-theme-mode")).toBe("system");
+	expect(mode).toBe("system");
+	expect(documentElement.getAttribute("data-theme-mode")).toBe("system");
 });
 ```
 
@@ -185,26 +185,26 @@ const THEME_MODE_STORAGE_KEY = "solid-lib:theme-mode";
 export const getThemeMode = (): ThemeMode => readThemeModeFromRoot() ?? "system";
 
 export const setThemeMode = (mode: ThemeMode) => {
-  writeThemeModeToRoot(mode);
-  writeThemeModeToStorage(mode);
+	writeThemeModeToRoot(mode);
+	writeThemeModeToStorage(mode);
 };
 
 export const initializeThemeMode = (): ThemeMode => {
-  const mode = readThemeModeFromStorage() ?? "system";
-  writeThemeModeToRoot(mode);
-  return mode;
+	const mode = readThemeModeFromStorage() ?? "system";
+	writeThemeModeToRoot(mode);
+	return mode;
 };
 
 export const setSystemTheme = () => {
-  setThemeMode("system");
+	setThemeMode("system");
 };
 
 export const setLightTheme = () => {
-  setThemeMode("light");
+	setThemeMode("light");
 };
 
 export const setDarkTheme = () => {
-  setThemeMode("dark");
+	setThemeMode("dark");
 };
 ```
 
@@ -262,46 +262,46 @@ Seed `src/ui/_.css` with this structure:
 
 ```css
 html {
-  color: var(--base-fg);
-  background: var(--base-bg);
+	color: var(--base-fg);
+	background: var(--base-bg);
 }
 
 html[data-theme-mode="light"] {
-  --base-bg: #f2ebdf;
-  --base-fg: #2a241d;
-  --raised-bg: #fbf6ee;
-  --raised-fg: #2a241d;
-  --inset-bg: #e5dbcb;
-  --inset-fg: #241e18;
-  --disabled-bg: #e1d8cc;
-  --disabled-fg: #948675;
-  --theme-color: #0f8077;
-  --error-color: #b33330;
+	--base-bg: #f2ebdf;
+	--base-fg: #2a241d;
+	--raised-bg: #fbf6ee;
+	--raised-fg: #2a241d;
+	--inset-bg: #e5dbcb;
+	--inset-fg: #241e18;
+	--disabled-bg: #e1d8cc;
+	--disabled-fg: #948675;
+	--theme-color: #0f8077;
+	--error-color: #b33330;
 }
 
 html[data-theme-mode="dark"] {
-  --base-bg: #171412;
-  --base-fg: #ebe3d8;
-  --raised-bg: #211d19;
-  --raised-fg: #efe7dd;
-  --inset-bg: #100e0d;
-  --inset-fg: #d8cfc4;
-  --disabled-bg: #292521;
-  --disabled-fg: #847970;
-  --theme-color: #1fa89b;
-  --error-color: #ff8d85;
+	--base-bg: #171412;
+	--base-fg: #ebe3d8;
+	--raised-bg: #211d19;
+	--raised-fg: #efe7dd;
+	--inset-bg: #100e0d;
+	--inset-fg: #d8cfc4;
+	--disabled-bg: #292521;
+	--disabled-fg: #847970;
+	--theme-color: #1fa89b;
+	--error-color: #ff8d85;
 }
 
 @media (prefers-color-scheme: dark) {
-  html[data-theme-mode="system"] {
-    /* same values as the dark block */
-  }
+	html[data-theme-mode="system"] {
+		/* same values as the dark block */
+	}
 }
 
 @media (prefers-color-scheme: light) {
-  html[data-theme-mode="system"] {
-    /* same values as the light block */
-  }
+	html[data-theme-mode="system"] {
+		/* same values as the light block */
+	}
 }
 ```
 
@@ -346,9 +346,9 @@ Keep the generated app simple:
 
 ```tsx
 const App = () => {
-  initializeThemeMode();
-  setThemeMode("dark");
-  return <button type="button">Themed consumer</button>;
+	initializeThemeMode();
+	setThemeMode("dark");
+	return <button type="button">Themed consumer</button>;
 };
 ```
 
@@ -393,8 +393,8 @@ import { initializeThemeMode, setThemeMode } from "solid-lib/ui";
 
 ```ts
 declare module "*.css" {
-  const css: string;
-  export default css;
+	const css: string;
+	export default css;
 }
 ```
 
@@ -423,45 +423,45 @@ import { initializeThemeMode, setThemeMode, type ThemeMode } from "solid-lib/ui"
 import styles from "./ThemePlayground.module.css";
 
 const ThemePlayground = () => {
-  const [mode, setMode] = createSignal<ThemeMode>("system");
+	const [mode, setMode] = createSignal<ThemeMode>("system");
 
-  onMount(() => {
-    setMode(initializeThemeMode());
-  });
+	onMount(() => {
+		setMode(initializeThemeMode());
+	});
 
-  const applyMode = (nextMode: ThemeMode) => {
-    setThemeMode(nextMode);
-    setMode(nextMode);
-  };
+	const applyMode = (nextMode: ThemeMode) => {
+		setThemeMode(nextMode);
+		setMode(nextMode);
+	};
 
-  return (
-    <main class={styles.shell}>
-      <div class={styles.controls}>
-        <button type="button" onClick={() => applyMode("system")}>
-          System
-        </button>
-        <button type="button" onClick={() => applyMode("light")}>
-          Light
-        </button>
-        <button type="button" onClick={() => applyMode("dark")}>
-          Dark
-        </button>
-      </div>
-      <section class={styles.card}>
-        <input class={styles.input} value="Inset field" />
-        <div class={styles.actions}>
-          <button type="button">Base</button>
-          <button type="button" class={styles.theme}>
-            Theme
-          </button>
-          <button type="button" class={styles.disabled}>
-            Disabled
-          </button>
-        </div>
-        <p class={styles.error}>Enter a valid email address.</p>
-      </section>
-    </main>
-  );
+	return (
+		<main class={styles.shell}>
+			<div class={styles.controls}>
+				<button type="button" onClick={() => applyMode("system")}>
+					System
+				</button>
+				<button type="button" onClick={() => applyMode("light")}>
+					Light
+				</button>
+				<button type="button" onClick={() => applyMode("dark")}>
+					Dark
+				</button>
+			</div>
+			<section class={styles.card}>
+				<input class={styles.input} value="Inset field" />
+				<div class={styles.actions}>
+					<button type="button">Base</button>
+					<button type="button" class={styles.theme}>
+						Theme
+					</button>
+					<button type="button" class={styles.disabled}>
+						Disabled
+					</button>
+				</div>
+				<p class={styles.error}>Enter a valid email address.</p>
+			</section>
+		</main>
+	);
 };
 ```
 
@@ -469,26 +469,26 @@ const ThemePlayground = () => {
 
 ```css
 .shell {
-  background: var(--base-bg);
-  color: var(--base-fg);
+	background: var(--base-bg);
+	color: var(--base-fg);
 }
 
 .card {
-  background: var(--raised-bg);
-  color: var(--raised-fg);
+	background: var(--raised-bg);
+	color: var(--raised-fg);
 }
 
 .input {
-  background: var(--inset-bg);
-  color: var(--inset-fg);
+	background: var(--inset-bg);
+	color: var(--inset-fg);
 }
 
 .theme {
-  background: var(--theme-color);
+	background: var(--theme-color);
 }
 
 .error {
-  color: var(--error-color);
+	color: var(--error-color);
 }
 ```
 

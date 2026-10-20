@@ -44,61 +44,61 @@
 
 - [x] **Step 1: Add the latest-compatible dependency assertions.**
 
-  Extend `test/package-metadata.test.ts` with these checks before changing package files:
+    Extend `test/package-metadata.test.ts` with these checks before changing package files:
 
-  ```ts
-  expect(packageJson.devDependencies["@types/bun"]).toBe("1.4.0");
-  expect(packageJson.devDependencies.typescript).toBe("7.0.2");
-  expect(packageJson.dependencies["@solidjs/web"]).toBe("2.0.0-rc.3");
-  expect(packageJson.peerDependencies["solid-js"]).toBe("2.0.0-rc.3");
-  expect(packageJson.dependencies["@solidjs/start"]).toBeUndefined();
-  ```
+    ```ts
+    expect(packageJson.devDependencies["@types/bun"]).toBe("1.4.0");
+    expect(packageJson.devDependencies.typescript).toBe("7.0.2");
+    expect(packageJson.dependencies["@solidjs/web"]).toBe("2.0.0-rc.3");
+    expect(packageJson.peerDependencies["solid-js"]).toBe("2.0.0-rc.3");
+    expect(packageJson.dependencies["@solidjs/start"]).toBeUndefined();
+    ```
 
-  Add a demo assertion for `devDependencies.typescript === "7.0.2"` and retain the exact Vite, compiler, runtime, router and local `solid-lib` assertions.
+    Add a demo assertion for `devDependencies.typescript === "7.0.2"` and retain the exact Vite, compiler, runtime, router and local `solid-lib` assertions.
 
 - [x] **Step 2: Run the focused test and record the expected red result.**
 
-  Run: `bun test test/package-metadata.test.ts`
+    Run: `bun test test/package-metadata.test.ts`
 
-  Expected: FAIL on the old TypeScript and Bun type versions, while the existing Start mode assertions remain readable.
+    Expected: FAIL on the old TypeScript and Bun type versions, while the existing Start mode assertions remain readable.
 
 - [x] **Step 3: Update package metadata to the compatible graph.**
 
-  Change only the following values:
+    Change only the following values:
 
-  ```json
-  {
-    "devDependencies": {
-      "@types/bun": "1.4.0",
-      "solid-js": "2.0.0-rc.3",
-      "typescript": "7.0.2"
-    },
-    "dependencies": {
-      "@solidjs/web": "2.0.0-rc.3"
-    },
-    "peerDependencies": {
-      "solid-js": "2.0.0-rc.3"
+    ```json
+    {
+    	"devDependencies": {
+    		"@types/bun": "1.4.0",
+    		"solid-js": "2.0.0-rc.3",
+    		"typescript": "7.0.2"
+    	},
+    	"dependencies": {
+    		"@solidjs/web": "2.0.0-rc.3"
+    	},
+    	"peerDependencies": {
+    		"solid-js": "2.0.0-rc.3"
+    	}
     }
-  }
-  ```
+    ```
 
-  Add `typescript: "7.0.2"` to `demo/devDependencies`. Do not add `@solidjs/start`; do not replace RC3 runtime packages with the Solid 1 registry latest tags.
+    Add `typescript: "7.0.2"` to `demo/devDependencies`. Do not add `@solidjs/start`; do not replace RC3 runtime packages with the Solid 1 registry latest tags.
 
 - [x] **Step 4: Regenerate both lockfiles with Bun.**
 
-  Run: `bun install`
+    Run: `bun install`
 
-  Run: `bun install` from `demo/`.
+    Run: `bun install` from `demo/`.
 
-  Expected: the root lockfile no longer keeps packages reachable only from removed package metadata, and both lockfiles resolve the declared versions.
+    Expected: the root lockfile no longer keeps packages reachable only from removed package metadata, and both lockfiles resolve the declared versions.
 
 - [x] **Step 5: Run the metadata test and inspect whitespace.**
 
-  Run: `bun test test/package-metadata.test.ts`
+    Run: `bun test test/package-metadata.test.ts`
 
-  Run: `git diff --check`
+    Run: `git diff --check`
 
-  Expected: the focused test passes and no whitespace errors are reported.
+    Expected: the focused test passes and no whitespace errors are reported.
 
 ### Task 2: Make the demo an official Solid 2 Start mode app
 
@@ -118,48 +118,48 @@
 
 - [x] **Step 1: Add the explicit Start mode contract before changing config.**
 
-  In `test/demo-build.test.ts`, assert that `demo/vite.config.ts` contains the exact plugin call:
+    In `test/demo-build.test.ts`, assert that `demo/vite.config.ts` contains the exact plugin call:
 
-  ```ts
-  expect(source).toContain('solid({ start: true, compiler: "native", ssr: false })');
-  expect(source).toContain('from "@solidjs/vite-plugin"');
-  expect(source).not.toContain("@solidjs/start");
-  ```
+    ```ts
+    expect(source).toContain('solid({ start: true, compiler: "native", ssr: false })');
+    expect(source).toContain('from "@solidjs/vite-plugin"');
+    expect(source).not.toContain("@solidjs/start");
+    ```
 
-  Add an output assertion that `demo/dist/client/assets/demo.txt` exists after the build and contains the tracked asset text.
+    Add an output assertion that `demo/dist/client/assets/demo.txt` exists after the build and contains the tracked asset text.
 
 - [x] **Step 2: Run the focused build contract to establish its current result.**
 
-  Run: `bun test test/demo-build.test.ts`
+    Run: `bun test test/demo-build.test.ts`
 
-  Expected: the test either fails on the missing explicit `ssr: false` contract or passes only the already-existing build checks; preserve the output before editing the config.
+    Expected: the test either fails on the missing explicit `ssr: false` contract or passes only the already-existing build checks; preserve the output before editing the config.
 
 - [x] **Step 3: Set the official Start mode configuration.**
 
-  Ensure `demo/vite.config.ts` is exactly equivalent to:
+    Ensure `demo/vite.config.ts` is exactly equivalent to:
 
-  ```ts
-  import { defineConfig } from "vite";
-  import solid from "@solidjs/vite-plugin";
+    ```ts
+    import { defineConfig } from "vite";
+    import solid from "@solidjs/vite-plugin";
 
-  export default defineConfig({
-    plugins: [solid({ start: true, compiler: "native", ssr: false })],
-    server: { host: "127.0.0.1", watch: { usePolling: true } },
-    build: { target: "esnext", assetsInlineLimit: 0 },
-  });
-  ```
+    export default defineConfig({
+    	plugins: [solid({ start: true, compiler: "native", ssr: false })],
+    	server: { host: "127.0.0.1", watch: { usePolling: true } },
+    	build: { target: "esnext", assetsInlineLimit: 0 },
+    });
+    ```
 
 - [x] **Step 4: Keep the Solid 2 app and document conventions.**
 
-  Ensure `demo/src/App.tsx` is the application root, `demo/src/Document.tsx` owns the HTML shell, all demo imports use the flat `solid-lib` root, and Vite/TypeScript aliases resolve that root to `../src/_.ts` and `../src/_.css`.
+    Ensure `demo/src/App.tsx` is the application root, `demo/src/Document.tsx` owns the HTML shell, all demo imports use the flat `solid-lib` root, and Vite/TypeScript aliases resolve that root to `../src/_.ts` and `../src/_.css`.
 
 - [x] **Step 5: Run typecheck and build.**
 
-  Run: `bun run --cwd demo typecheck`
+    Run: `bun run --cwd demo typecheck`
 
-  Run: `bun run --cwd demo build`
+    Run: `bun run --cwd demo build`
 
-  Expected: both commands exit zero; the build emits `dist/client/index.html`, JavaScript, CSS, and `dist/client/assets/demo.txt` without TypeScript compiler runtime text.
+    Expected: both commands exit zero; the build emits `dist/client/index.html`, JavaScript, CSS, and `dist/client/assets/demo.txt` without TypeScript compiler runtime text.
 
 ### Task 3: Migrate consumer routing and prove the package boundary
 
@@ -179,78 +179,78 @@
 
 - [x] **Step 1: Confirm the generated consumer uses the official router and flat library import.**
 
-  The generated source in `test/demo-local-consumer.ts` must contain:
+    The generated source in `test/demo-local-consumer.ts` must contain:
 
-  ```tsx
-  import { createRouter, useNavigate, useSearchParams } from "@solidjs/router";
-  import {
-    Card,
-    FilledButton,
-    IconButton,
-    OutlinedButton,
-    TextButton,
-    TextInput,
-    initializeThemeMode,
-    setThemeMode,
-  } from "solid-lib";
-  import "solid-lib/ui.css";
-  ```
+    ```tsx
+    import { createRouter, useNavigate, useSearchParams } from "@solidjs/router";
+    import {
+    	Card,
+    	FilledButton,
+    	IconButton,
+    	OutlinedButton,
+    	TextButton,
+    	TextInput,
+    	initializeThemeMode,
+    	setThemeMode,
+    } from "solid-lib";
+    import "solid-lib/ui.css";
+    ```
 
-  Its generated Vite config must use `solid({ start: true, compiler: "native", ssr: false })`.
+    Its generated Vite config must use `solid({ start: true, compiler: "native", ssr: false })`.
 
 - [x] **Step 2: Run both consumer builds before deleting legacy source.**
 
-  Run: `bun run test:local-consumer`
+    Run: `bun run test:local-consumer`
 
-  Run: `bun run test:packed-consumer`
+    Run: `bun run test:packed-consumer`
 
-  Expected: both local and packed consumers build with one top-level Solid runtime, official router imports, root library imports, CSS output, and no TypeScript compiler runtime. The local fixture uses a symlink to the source root; the packed fixture installs the generated tarball.
+    Expected: both local and packed consumers build with one top-level Solid runtime, official router imports, root library imports, CSS output, and no TypeScript compiler runtime. The local fixture uses a symlink to the source root; the packed fixture installs the generated tarball.
 
 - [x] **Step 3: Add negative package/source assertions.**
 
-  In `test/package-metadata.test.ts`, assert `bin` is absent and the export keys are exactly `[".", "./ui.css"]`. In `test/flat-source-entry.test.ts`, assert `src/builder` and `src/route` are absent after cleanup while `src/_.ts`, `src/_.css`, and the flat component/utility files remain.
+    In `test/package-metadata.test.ts`, assert `bin` is absent and the export keys are exactly `[".", "./ui.css"]`. In `test/flat-source-entry.test.ts`, assert `src/builder` and `src/route` are absent after cleanup while `src/_.ts`, `src/_.css`, and the flat component/utility files remain.
 
 - [x] **Step 4: Run the boundary tests and keep any failure as the deletion gate.**
 
-  Run: `bun test test/package-metadata.test.ts test/flat-source-entry.test.ts`
+    Run: `bun test test/package-metadata.test.ts test/flat-source-entry.test.ts`
 
-  Expected: the pre-deletion negative assertions fail only while legacy directories or tests are still present; consumer checks remain green.
+    Expected: the pre-deletion negative assertions fail only while legacy directories or tests are still present; consumer checks remain green.
 
 - [x] **Step 5: Delete the custom route and builder implementation.**
 
-  Delete exactly these source files:
+    Delete exactly these source files:
 
-  ```text
-  src/route/README.md
-  src/route/Route.tsx
-  src/route/_.ts
-  src/route/browser.ts
-  src/route/match.ts
-  src/route/navigation.ts
-  src/route/params.ts
-  src/route/state.ts
-  src/route/testing.ts
-  src/builder/README.md
-  src/builder/_.ts
-  src/builder/build.ts
-  src/builder/bundle.ts
-  src/builder/cli.ts
-  src/builder/config-file.ts
-  src/builder/config.ts
-  src/builder/dev.ts
-  src/builder/lib.ts
-  src/builder/path.ts
-  ```
+    ```text
+    src/route/README.md
+    src/route/Route.tsx
+    src/route/_.ts
+    src/route/browser.ts
+    src/route/match.ts
+    src/route/navigation.ts
+    src/route/params.ts
+    src/route/state.ts
+    src/route/testing.ts
+    src/builder/README.md
+    src/builder/_.ts
+    src/builder/build.ts
+    src/builder/bundle.ts
+    src/builder/cli.ts
+    src/builder/config-file.ts
+    src/builder/config.ts
+    src/builder/dev.ts
+    src/builder/lib.ts
+    src/builder/path.ts
+    ```
 
-  Delete the four legacy test files listed above. Keep `src/global.d.ts`, `src/_.ts`, `src/_.css`, and every flat UI/hook/utility source file.
+    Delete the four legacy test files listed above. Keep `src/global.d.ts`, `src/_.ts`, `src/_.css`, and every flat UI/hook/utility source file.
 
 - [x] **Step 6: Remove dependencies that were reachable only from the custom builder.**
 
-  Run `rg` over active source/tests/docs first. Remove any package metadata for Babel or the old CLI only after no active import remains; keep TypeScript 7 and Bun types for typechecking.
+    Run `rg` over active source/tests/docs first. Remove any package metadata for Babel or the old CLI only after no active import remains; keep TypeScript 7 and Bun types for typechecking.
 
-  Run: `bun install`
+    Run: `bun install`
 
-  Expected: package metadata still contains only the root and CSS exports, and no active file references `solid-lib/builder` or `solid-lib/route`.
+    Expected: package metadata still contains only the root and CSS exports, and no active file references `solid-lib/builder` or `solid-lib/route`.
 
 ### Task 4: Remove obsolete JSX compatibility code and align documentation
 
@@ -268,27 +268,27 @@
 
 - [x] **Step 1: Add a clean-runtime assertion before deleting shims.**
 
-  Add checks that `package.json` has no `postinstall`, the two shim files are absent, and no active source declares `solid-js/jsx-runtime` or `solid-js/jsx-dev-runtime`.
+    Add checks that `package.json` has no `postinstall`, the two shim files are absent, and no active source declares `solid-js/jsx-runtime` or `solid-js/jsx-dev-runtime`.
 
 - [x] **Step 2: Run the clean-runtime assertion to establish the deletion result.**
 
-  Run: `bun test test/package-metadata.test.ts test/flat-source-entry.test.ts`
+    Run: `bun test test/package-metadata.test.ts test/flat-source-entry.test.ts`
 
-  Expected: it fails only on still-present compatibility files or stale assertions.
+    Expected: it fails only on still-present compatibility files or stale assertions.
 
 - [x] **Step 3: Remove the shims and rewrite active documentation.**
 
-  Document the official Solid 2 Start mode, Bun commands, latest-compatible version policy, flat root exports, and application-owned router. Do not document `@solidjs/start@2.0.4` as a valid Solid 2 dependency.
+    Document the official Solid 2 Start mode, Bun commands, latest-compatible version policy, flat root exports, and application-owned router. Do not document `@solidjs/start@2.0.4` as a valid Solid 2 dependency.
 
 - [x] **Step 4: Reinstall and rerun the clean runtime checks.**
 
-  Run: `bun install`
+    Run: `bun install`
 
-  Run: `bun install` from `demo/`.
+    Run: `bun install` from `demo/`.
 
-  Run: `bun test test/package-metadata.test.ts test/flat-source-entry.test.ts`
+    Run: `bun test test/package-metadata.test.ts test/flat-source-entry.test.ts`
 
-  Expected: all clean-runtime and package-boundary assertions pass, with no postinstall patch output.
+    Expected: all clean-runtime and package-boundary assertions pass, with no postinstall patch output.
 
 ### Task 5: Full Bun and browser acceptance
 
@@ -303,40 +303,40 @@
 
 - [x] **Step 1: Run repository and demo typechecks.**
 
-  Run: `bun x tsc -p tsconfig.json --noEmit --pretty false`
+    Run: `bun x tsc -p tsconfig.json --noEmit --pretty false`
 
-  Run: `bun run --cwd demo typecheck`
+    Run: `bun run --cwd demo typecheck`
 
-  Expected: zero diagnostics.
+    Expected: zero diagnostics.
 
 - [x] **Step 2: Run the complete unit suite and both consumers.**
 
-  Run: `bun test`
+    Run: `bun test`
 
-  Run: `bun run test:smoke`
+    Run: `bun run test:smoke`
 
-  Expected: zero test failures and both local/packed consumers build successfully.
+    Expected: zero test failures and both local/packed consumers build successfully.
 
 - [x] **Step 3: Verify the production Start mode output.**
 
-  Run: `bun run --cwd demo build`
+    Run: `bun run --cwd demo build`
 
-  Check `demo/dist/client/index.html`, at least one JavaScript file, at least one CSS file, and `demo/dist/client/assets/demo.txt`. Search emitted JavaScript for `SemanticDiagnosticsBuilderProgram`, `jsxDEV`, and raw TypeScript-only syntax.
+    Check `demo/dist/client/index.html`, at least one JavaScript file, at least one CSS file, and `demo/dist/client/assets/demo.txt`. Search emitted JavaScript for `SemanticDiagnosticsBuilderProgram`, `jsxDEV`, and raw TypeScript-only syntax.
 
 - [x] **Step 4: Verify dev serving and browser behavior with Playwright.**
 
-  Start: `bun run --cwd demo dev -- --host 127.0.0.1`
+    Start: `bun run --cwd demo dev -- --host 127.0.0.1`
 
-  Check `/` returns the document shell, `/assets/demo.txt` returns the tracked text, an unmatched HTML path returns the shell, components render with CSS Modules, state interaction works, and the browser console has no errors or Solid runtime warnings. Edit a page source file and verify an HMR update without restarting Vite; restore the file afterward.
+    Check `/` returns the document shell, `/assets/demo.txt` returns the tracked text, an unmatched HTML path returns the shell, components render with CSS Modules, state interaction works, and the browser console has no errors or Solid runtime warnings. Edit a page source file and verify an HMR update without restarting Vite; restore the file afterward.
 
 - [x] **Step 5: Run final stale-reference and diff checks.**
 
-  Run: `rg -n -e 'from ["'"']solid-lib/(builder|route)' -e 'solid-lib (dev|build)' -e '"solid-lib/(builder|route)"[[:space:]]*:' src demo README.md package.json`
+    Run: `rg -n -e 'from ["'"']solid-lib/(builder|route)' -e 'solid-lib (dev|build)' -e '"solid-lib/(builder|route)"[[:space:]]*:' src demo README.md package.json`
 
-  Run: `git diff --check`
+    Run: `git diff --check`
 
-  Expected: no active import, command, or export matches and no whitespace errors. Negative assertions in tests and the explicit release note about the excluded Solid 1 Start package are intentional; historical migration records may mention retired paths outside the checked active files.
+    Expected: no active import, command, or export matches and no whitespace errors. Negative assertions in tests and the explicit release note about the excluded Solid 1 Start package are intentional; historical migration records may mention retired paths outside the checked active files.
 
 - [x] **Step 6: Record residual risk.**
 
-  State that Solid 2 runtime/compiler and the compatible router are prerelease lines, while `@solidjs/start@2.0.4` remains excluded for its Solid 1 dependency graph. The browser checks cover this repository demo and do not establish a general deployment adapter contract.
+    State that Solid 2 runtime/compiler and the compatible router are prerelease lines, while `@solidjs/start@2.0.4` remains excluded for its Solid 1 dependency graph. The browser checks cover this repository demo and do not establish a general deployment adapter contract.

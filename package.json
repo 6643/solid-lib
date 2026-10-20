@@ -1,49 +1,49 @@
 {
-  "name": "solid-lib",
-  "version": "0.0.0",
-  "files": [
-    "docs",
-    "src",
-    "README.md",
-    "tsconfig.json"
-  ],
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./src/_.ts",
-      "import": "./src/_.ts"
-    },
-    "./ui.css": "./src/_.css"
-  },
-  "scripts": {
-    "test": "vp run test:unit",
-    "test:local-consumer": "node ./test/demo-local-consumer.ts",
-    "test:packed-consumer": "node ./test/demo-local-consumer.ts pack",
-    "test:smoke": "vp run test:local-consumer && vp run test:packed-consumer",
-    "test:unit": "node --import ./test/harness/resolve.ts --test ./test/*.test.ts"
-  },
-  "dependencies": {
-    "@solidjs/web": "2.0.0-rc.15",
-    "csstype": "^3.2.3"
-  },
-  "devDependencies": {
-    "@types/node": "^26.6.5",
-    "solid-js": "2.0.0-rc.15",
-    "typescript": "7.0.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.3.0",
-    "vite-plus": "1.3.0"
-  },
-  "peerDependencies": {
-    "solid-js": "2.0.0-rc.15"
-  },
-  "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.3.0"
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "12.14.0",
-      "onFail": "ignore"
-    }
-  }
+	"name": "solid-lib",
+	"version": "0.0.0",
+	"files": [
+		"docs",
+		"src",
+		"README.md",
+		"tsconfig.json"
+	],
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/_.ts",
+			"import": "./src/_.ts"
+		},
+		"./ui.css": "./src/_.css"
+	},
+	"scripts": {
+		"test": "vp run test:unit",
+		"test:local-consumer": "node ./test/demo-local-consumer.ts",
+		"test:packed-consumer": "node ./test/demo-local-consumer.ts pack",
+		"test:smoke": "vp run test:local-consumer && vp run test:packed-consumer",
+		"test:unit": "node --import ./test/harness/resolve.ts --test ./test/*.test.ts"
+	},
+	"dependencies": {
+		"@solidjs/web": "2.0.0-rc.15",
+		"csstype": "^3.2.3"
+	},
+	"devDependencies": {
+		"@types/node": "^26.6.5",
+		"solid-js": "2.0.0-rc.15",
+		"typescript": "7.0.2",
+		"vite": "npm:@voidzero-dev/vite-plus-core@1.3.0",
+		"vite-plus": "1.3.0"
+	},
+	"peerDependencies": {
+		"solid-js": "2.0.0-rc.15"
+	},
+	"overrides": {
+		"vite": "npm:@voidzero-dev/vite-plus-core@1.3.0"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "12.14.0",
+			"onFail": "ignore"
+		}
+	}
 }

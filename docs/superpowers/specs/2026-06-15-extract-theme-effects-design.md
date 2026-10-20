@@ -40,11 +40,11 @@ import { createStorage } from "./createStorage";
 type Theme = "light" | "dark";
 
 export const applyTheme = () => {
-  const [theme] = createStorage<Theme>("theme", "light");
-  createEffect(
-    () => theme(),
-    (current) => document.documentElement.setAttribute("theme", current),
-  );
+	const [theme] = createStorage<Theme>("theme", "light");
+	createEffect(
+		() => theme(),
+		(current) => document.documentElement.setAttribute("theme", current),
+	);
 };
 ```
 
@@ -55,11 +55,11 @@ import { createEffect } from "solid-js";
 import { createStorage } from "./createStorage";
 
 export const applyAccent = () => {
-  const [accent] = createStorage("accent", "teal");
-  createEffect(
-    () => accent(),
-    (color) => document.documentElement.style.setProperty("--accent-color", color),
-  );
+	const [accent] = createStorage("accent", "teal");
+	createEffect(
+		() => accent(),
+		(color) => document.documentElement.style.setProperty("--accent-color", color),
+	);
 };
 ```
 

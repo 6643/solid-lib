@@ -12,14 +12,14 @@ DOM APIs (`render`, `hydrate`, `Portal`, `dynamic`) are in `@solidjs/web`.
 ## Three rules
 
 1. **Props are read, not destructured; pass values, not accessors.**
-   - Wrong: `function C({ name }) {}` and `<C value={count} />`
-   - Right: `function C(props) { return <p>{props.name}</p>; }` and `<C value={count()} />`
+    - Wrong: `function C({ name }) {}` and `<C value={count} />`
+    - Right: `function C(props) { return <p>{props.name}</p>; }` and `<C value={count()} />`
 2. **`createEffect` takes two functions: compute (tracks), then apply (side effects).**
-   - Wrong: `createEffect(() => { el.title = count(); });`
-   - Right: `createEffect(() => count(), v => { el.title = v; });`
+    - Wrong: `createEffect(() => { el.title = count(); });`
+    - Right: `createEffect(() => count(), v => { el.title = v; });`
 3. **Stores are written through the draft.**
-   - Wrong: `setStore("user", "name", "B")` or `setStore(produce(s => ...))`
-   - Right: `setStore(s => { s.user.name = "B"; });`
+    - Wrong: `setStore("user", "name", "B")` or `setStore(produce(s => ...))`
+    - Right: `setStore(s => { s.user.name = "B"; });`
 
 ## 1.x → 2.0 corrections
 

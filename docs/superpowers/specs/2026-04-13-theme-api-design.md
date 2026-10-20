@@ -60,11 +60,11 @@ export const setDarkTheme = (): void => {};
 规则如下:
 
 1. `setLightTheme()`:
-   - `classList.remove("dark")`
-   - `classList.add("light")`
+    - `classList.remove("dark")`
+    - `classList.add("light")`
 2. `setDarkTheme()`:
-   - `classList.remove("light")`
-   - `classList.add("dark")`
+    - `classList.remove("light")`
+    - `classList.add("dark")`
 
 因此无论调用顺序如何, 最终都只会保留当前主题对应的 class。
 

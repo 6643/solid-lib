@@ -1,11 +1,11 @@
 .countdown {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  height: 40px;
-  padding: 4px;
+	display: flex;
+	align-items: center;
+	gap: 0;
+	height: 40px;
+	padding: 4px;
 }
 
 .countdown > span {
-  color: var(--inset-fg);
+	color: var(--inset-fg);
 }
