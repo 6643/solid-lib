@@ -3,7 +3,7 @@ node_modules
 dist
 demo/node_modules
 demo/dist
-demo/bun.lock
+demo/pnpm-lock.yaml
 deno.lock
 .tmp-*
 .tmp-spawn-*

@@ -10,24 +10,24 @@
 - CSS Modules
 - lazy loading
 
-demo 的 `vite.config.ts` 与 `tsconfig.json` 将 `solid-lib` 和 `solid-lib/ui.css` 指向仓库根级扁平入口。Bun `1.4.0` 对同仓 `file:..` 自引用会复制父项目并形成递归 node_modules，因此 demo 不声明自引用依赖；仓库的 local/packed consumer smoke 分别验证源码链接和发布 tarball。
+demo 的 `vite.config.ts` 与 `tsconfig.json` 将 `solid-lib` 和 `solid-lib/ui.css` 指向仓库根级扁平入口。demo 不声明同仓 `file:..` 自引用依赖，以避免包管理器复制父项目并形成递归 node_modules；仓库的 local/packed consumer smoke 分别验证源码链接和发布 tarball。
 
 ## 安装依赖
 
 ```bash
-bun install
+vp install
 ```
 
 ## 类型检查
 
 ```bash
-bun run typecheck
+vp run typecheck
 ```
 
 ## 启动开发模式
 
 ```bash
-bun run dev
+vp run dev
 ```
 
 Vite 默认监听 `127.0.0.1`，支持模块热更新。开发 watcher 使用 polling，不依赖宿主机可用的 inotify watch 配额；非文件路径会回退到应用的 HTML shell。
@@ -41,7 +41,7 @@ Vite 默认监听 `127.0.0.1`，支持模块热更新。开发 watcher 使用 po
 ## 生产构建
 
 ```bash
-bun run build
+vp run build
 ```
 
 构建产物位于 `dist/client/`，静态资源仍保留在 `dist/client/assets/`。
@@ -49,5 +49,5 @@ bun run build
 ## 预览生产构建
 
 ```bash
-bun run preview
+vp run preview
 ```

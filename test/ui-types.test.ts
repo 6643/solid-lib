@@ -1,20 +1,14 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "./harness/test.ts";
+import { run, which } from "./harness/proc.ts";
+import { join } from "node:path";
 
-const BUN_COMMAND = Bun.which("bun") ?? "bun";
+const VP_COMMAND = which("vp") ?? "vp";
 
 test("ui source typechecks with tsc", async () => {
-  const subprocess = Bun.spawn({
-    cmd: [BUN_COMMAND, "x", "tsc", "--noEmit", "--pretty", "false"],
-    cwd: `${import.meta.dir}/..`,
-    stderr: "pipe",
-    stdout: "pipe",
-  });
+	const result = await run(VP_COMMAND, ["exec", "tsc", "--noEmit", "--pretty", "false"], {
+		cwd: join(import.meta.dirname, ".."),
+	});
+	const output = [result.stdout, result.stderr].filter(Boolean).join("\n");
 
-  const [stdout, stderr, exitCode] = await Promise.all([
-    new Response(subprocess.stdout).text(),
-    new Response(subprocess.stderr).text(),
-    subprocess.exited,
-  ]);
-
-  expect(exitCode, [stdout, stderr].filter(Boolean).join("\n")).toBe(0);
+	expect(result.exitCode, output).toBe(0);
 });
