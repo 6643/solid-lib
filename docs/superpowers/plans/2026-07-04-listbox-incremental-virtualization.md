@@ -32,13 +32,13 @@
 
 ```ts
 test("ListBox renders a fixed window from hideItems and visibleItems", async () => {
-	const source = await readListBoxSource();
+  const source = await readListBoxSource();
 
-	expect(source).toContain("hideItems?: number;");
-	expect(source).toContain("visibleItems?: number;");
-	expect(source).toContain("props.visibleItems ?? 20");
-	expect(source).toContain("props.hideItems ?? 20");
-	expect(source).toContain("visibleItems + hideItems * 3");
+  expect(source).toContain("hideItems?: number;");
+  expect(source).toContain("visibleItems?: number;");
+  expect(source).toContain("props.visibleItems ?? 20");
+  expect(source).toContain("props.hideItems ?? 20");
+  expect(source).toContain("visibleItems + hideItems * 3");
 });
 ```
 
@@ -51,15 +51,15 @@ Expected: FAIL because `ListBox.tsx` still exposes `windowSize` and the old wind
 
 ```ts
 test("ListBox settles against visible bounds and shifts incrementally", async () => {
-	const source = await readListBoxSource();
+  const source = await readListBoxSource();
 
-	expect(source).toContain("const getVisibleBounds =");
-	expect(source).toContain("const firstVisibleRow =");
-	expect(source).toContain("const lastVisibleRow =");
-	expect(source).toContain("appendRows(");
-	expect(source).toContain("prependRows(");
-	expect(source).not.toContain("getTotalHeight");
-	expect(source).not.toContain("translateY");
+  expect(source).toContain("const getVisibleBounds =");
+  expect(source).toContain("const firstVisibleRow =");
+  expect(source).toContain("const lastVisibleRow =");
+  expect(source).toContain("appendRows(");
+  expect(source).toContain("prependRows(");
+  expect(source).not.toContain("getTotalHeight");
+  expect(source).not.toContain("translateY");
 });
 ```
 
@@ -99,34 +99,34 @@ const getRenderCount = () => getVisibleItems() + getHideItems() * 3;
 
 ```ts
 const clampStart = (start: number, itemCount: number) => {
-	const maxStart = Math.max(0, itemCount - getRenderCount());
-	return Math.max(0, Math.min(start, maxStart));
+  const maxStart = Math.max(0, itemCount - getRenderCount());
+  return Math.max(0, Math.min(start, maxStart));
 };
 
 const createRows = (items: T[], start: number, count = getRenderCount()) =>
-	items.slice(start, start + count).map((item, offset) => ({
-		item,
-		index: start + offset,
-	}));
+  items.slice(start, start + count).map((item, offset) => ({
+    item,
+    index: start + offset,
+  }));
 ```
 
 - [ ] **Step 4: Implement visible-bound detection and incremental settle**
 
 ```ts
 const getVisibleBounds = (el: HTMLElement) => {
-	const containerRect = el.getBoundingClientRect();
-	const rows = Array.from(el.querySelectorAll<HTMLElement>("[data-index]"));
-	const visibleRows = rows.filter((row) => {
-		const rect = row.getBoundingClientRect();
-		return rect.bottom > containerRect.top && rect.top < containerRect.bottom;
-	});
+  const containerRect = el.getBoundingClientRect();
+  const rows = Array.from(el.querySelectorAll<HTMLElement>("[data-index]"));
+  const visibleRows = rows.filter((row) => {
+    const rect = row.getBoundingClientRect();
+    return rect.bottom > containerRect.top && rect.top < containerRect.bottom;
+  });
 
-	if (visibleRows.length === 0) return undefined;
+  if (visibleRows.length === 0) return undefined;
 
-	return {
-		firstVisibleRow: visibleRows[0],
-		lastVisibleRow: visibleRows[visibleRows.length - 1],
-	};
+  return {
+    firstVisibleRow: visibleRows[0],
+    lastVisibleRow: visibleRows[visibleRows.length - 1],
+  };
 };
 ```
 
@@ -158,17 +158,17 @@ Expected: PASS.
 
 ```tsx
 <ListBox
-	items={listItems}
-	hideItems={20}
-	visibleItems={20}
-	index={listIndex()}
-	filter={listFilter() ? (item) => item.name.includes(listFilter()) : undefined}
-	children={(item) => (
-		<div class={styles.listItem}>
-			<strong>{item.name}</strong>
-			<span>{item.desc}</span>
-		</div>
-	)}
+  items={listItems}
+  hideItems={20}
+  visibleItems={20}
+  index={listIndex()}
+  filter={listFilter() ? (item) => item.name.includes(listFilter()) : undefined}
+  children={(item) => (
+    <div class={styles.listItem}>
+      <strong>{item.name}</strong>
+      <span>{item.desc}</span>
+    </div>
+  )}
 />
 ```
 

@@ -8,34 +8,34 @@ import { isServer } from "@solidjs/web";
  * @param options - Options to control the listener, such as `enabled` and `capture`.
  */
 export function useKeyPress(
-	key: string | string[] | Accessor<string | string[]>,
-	callback: (e: KeyboardEvent) => void,
-	options: { enabled?: boolean | Accessor<boolean>; capture?: boolean } = { enabled: true },
+  key: string | string[] | Accessor<string | string[]>,
+  callback: (e: KeyboardEvent) => void,
+  options: { enabled?: boolean | Accessor<boolean>; capture?: boolean } = { enabled: true },
 ) {
-	if (isServer) return;
+  if (isServer) return;
 
-	const readKeys = () => {
-		const value = typeof key === "function" ? key() : key;
-		return Array.isArray(value) ? value : [value];
-	};
+  const readKeys = () => {
+    const value = typeof key === "function" ? key() : key;
+    return Array.isArray(value) ? value : [value];
+  };
 
-	const readEnabled = () => {
-		const enabled = options.enabled;
-		if (typeof enabled === "function") return enabled();
-		return enabled !== false;
-	};
+  const readEnabled = () => {
+    const enabled = options.enabled;
+    if (typeof enabled === "function") return enabled();
+    return enabled !== false;
+  };
 
-	createEffect(
-		() => ({ keys: readKeys(), enabled: readEnabled(), capture: options.capture }),
-		({ keys, enabled, capture }) => {
-			if (!enabled) return;
+  createEffect(
+    () => ({ keys: readKeys(), enabled: readEnabled(), capture: options.capture }),
+    ({ keys, enabled, capture }) => {
+      if (!enabled) return;
 
-			const handleKeyDown = (e: KeyboardEvent) => {
-				if (keys.includes(e.key)) callback(e);
-			};
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (keys.includes(e.key)) callback(e);
+      };
 
-			window.addEventListener("keydown", handleKeyDown, { capture });
-			return () => window.removeEventListener("keydown", handleKeyDown, { capture });
-		},
-	);
+      window.addEventListener("keydown", handleKeyDown, { capture });
+      return () => window.removeEventListener("keydown", handleKeyDown, { capture });
+    },
+  );
 }

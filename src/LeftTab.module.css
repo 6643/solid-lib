@@ -1,91 +1,91 @@
 .leftTab {
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	display: grid;
-	grid-template-columns: auto 1fr;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto 1fr;
 }
 
 .leftTab > nav {
-	user-select: none;
-	width: auto;
-	height: 100%;
-	display: grid;
-	grid-auto-rows: 64px;
-	gap: 4px;
-	background-color: var(--inset-bg);
-	box-shadow: 4px 0 4px -4px var(--disabled-color);
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
-	position: relative;
+  user-select: none;
+  width: auto;
+  height: 100%;
+  display: grid;
+  grid-auto-rows: 64px;
+  gap: 4px;
+  background-color: var(--inset-bg);
+  box-shadow: 4px 0 4px -4px var(--disabled-color);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
 }
 
 .leftTab > nav::-webkit-scrollbar {
-	display: none;
+  display: none;
 }
 
 /* 滑动指示器 */
 .leftTab > nav::before {
-	content: "";
-	position: absolute;
-	right: 0;
-	top: calc(68px * var(--top, 0) / 68);
-	width: 2px;
-	height: 64px;
-	background-color: var(--accent-color);
-	transition: top 512ms ease;
+  content: "";
+  position: absolute;
+  right: 0;
+  top: calc(68px * var(--top, 0) / 68);
+  width: 2px;
+  height: 64px;
+  background-color: var(--accent-color);
+  transition: top 512ms ease;
 }
 
 .leftTab > nav > div {
-	padding: 8px;
-	background-color: var(--inset-bg);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition-duration: 512ms;
-	color: var(--raised-fg);
-	cursor: pointer;
+  padding: 8px;
+  background-color: var(--inset-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-duration: 512ms;
+  color: var(--raised-fg);
+  cursor: pointer;
 }
 
 .leftTab > nav > div.active {
-	color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 /* 内容区 */
 .leftTab > main {
-	width: 100%;
-	height: 100%;
-	overflow-x: hidden;
-	overflow-y: auto;
-	animation-duration: 512ms;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  animation-duration: 512ms;
 }
 
 .leftTab > main.moveUp {
-	animation-name: moveUp;
+  animation-name: moveUp;
 }
 
 .leftTab > main.moveDown {
-	animation-name: moveDown;
+  animation-name: moveDown;
 }
 
 @keyframes moveUp {
-	from {
-		opacity: 0;
-		transform: translateY(100%);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes moveDown {
-	from {
-		opacity: 0;
-		transform: translateY(-100%);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

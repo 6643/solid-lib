@@ -13,294 +13,292 @@ type ValidateResult = string | undefined | Promise<string | undefined>;
 // ── 公共字段逻辑 ──
 
 const useField = (value: () => string, validate?: (value: string) => ValidateResult) => {
-	const [error, setError] = createSignal<string | undefined>();
-	const [checking, setChecking] = createSignal(false);
-	let seq = 0;
+  const [error, setError] = createSignal<string | undefined>();
+  const [checking, setChecking] = createSignal(false);
+  let seq = 0;
 
-	createEffect(
-		() => value(),
-		(v) => {
-			if (!validate) {
-				setError(undefined);
-				return;
-			}
+  createEffect(
+    () => value(),
+    (v) => {
+      if (!validate) {
+        setError(undefined);
+        return;
+      }
 
-			const id = ++seq;
-			const result = validate(v);
+      const id = ++seq;
+      const result = validate(v);
 
-			if (result instanceof Promise) {
-				setChecking(true);
-				result
-					.then((msg) => {
-						if (id === seq) setError(msg);
-					})
-					.finally(() => {
-						if (id === seq) setChecking(false);
-					});
-				return;
-			}
+      if (result instanceof Promise) {
+        setChecking(true);
+        result
+          .then((msg) => {
+            if (id === seq) setError(msg);
+          })
+          .finally(() => {
+            if (id === seq) setChecking(false);
+          });
+        return;
+      }
 
-			setError(result);
-		},
-	);
+      setError(result);
+    },
+  );
 
-	return { error, checking };
+  return { error, checking };
 };
 
 // ── 公共字段包装 ──
 
 const Input = (props: {
-	label: string;
-	value?: string;
-	validate?: (value: string) => ValidateResult;
-	left?: () => Element;
-	right?: () => Element;
-	children: Element;
+  label: string;
+  value?: string;
+  validate?: (value: string) => ValidateResult;
+  left?: () => Element;
+  right?: () => Element;
+  children: Element;
 }) => {
-	const { error, checking } = useField(() => props.value ?? "", props.validate);
+  const { error, checking } = useField(() => props.value ?? "", props.validate);
 
-	return (
-		<label class={[styles.field, { [styles.error!]: !!error() }]}>
-			<div>
-				<span>{props.label}</span>
-				<span class={styles.fieldError}>{checking() ? "校验中..." : (error() ?? "")}</span>
-			</div>
-			<div class={styles.inputWrap}>
-				{props.left?.()}
-				<div class={styles.inputGrow}>{props.children}</div>
-				{props.right?.()}
-			</div>
-		</label>
-	);
+  return (
+    <label class={[styles.field, { [styles.error!]: !!error() }]}>
+      <div>
+        <span>{props.label}</span>
+        <span class={styles.fieldError}>{checking() ? "校验中..." : (error() ?? "")}</span>
+      </div>
+      <div class={styles.inputWrap}>
+        {props.left?.()}
+        <div class={styles.inputGrow}>{props.children}</div>
+        {props.right?.()}
+      </div>
+    </label>
+  );
 };
 
 // ── RangeInput ──
 
 export const RangeInput = (props: {
-	label: string;
-	value?: number;
-	changed?: (value: number) => void;
-	min?: number;
-	max?: number;
-	step?: number;
-	unit?: string;
-	left?: () => Element;
-	right?: () => Element;
+  label: string;
+  value?: number;
+  changed?: (value: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
+  left?: () => Element;
+  right?: () => Element;
 }) => {
-	const [value, setValue] = createSignal(
-		untrack(() => props.value) ?? untrack(() => props.min) ?? 0,
-	);
+  const [value, setValue] = createSignal(
+    untrack(() => props.value) ?? untrack(() => props.min) ?? 0,
+  );
 
-	createEffect(
-		() => props.value ?? props.min ?? 0,
-		(next) => {
-			setValue(next);
-		},
-	);
+  createEffect(
+    () => props.value ?? props.min ?? 0,
+    (next) => {
+      setValue(next);
+    },
+  );
 
-	const inputed = (e: Event) => {
-		const v = (e.target as HTMLInputElement).valueAsNumber;
-		setValue(v);
-		props.changed?.(v);
-	};
+  const inputed = (e: Event) => {
+    const v = (e.target as HTMLInputElement).valueAsNumber;
+    setValue(v);
+    props.changed?.(v);
+  };
 
-	return (
-		<label class={styles.rangeInput}>
-			<div>
-				<span>{props.label}</span>
-				<span data-unit={props.unit}>{value()}</span>
-			</div>
-			<div>
-				{props.left?.()}
-				<input
-					type="range"
-					min={props.min ?? 0}
-					max={props.max ?? 100}
-					value={value()}
-					step={props.step ?? 1}
-					onInput={inputed}
-					spellcheck={false}
-					readonly={!props.changed}
-				/>
-				{props.right?.()}
-			</div>
-		</label>
-	);
+  return (
+    <label class={styles.rangeInput}>
+      <div>
+        <span>{props.label}</span>
+        <span data-unit={props.unit}>{value()}</span>
+      </div>
+      <div>
+        {props.left?.()}
+        <input
+          type="range"
+          min={props.min ?? 0}
+          max={props.max ?? 100}
+          value={value()}
+          step={props.step ?? 1}
+          onInput={inputed}
+          spellcheck={false}
+          readonly={!props.changed}
+        />
+        {props.right?.()}
+      </div>
+    </label>
+  );
 };
 
 // ── Shared string field props ──
 
 type StringFieldProps = {
-	label: string;
-	value?: string;
-	changed?: (value: string) => void;
-	minLen?: number;
-	maxLen?: number;
-	left?: () => Element;
-	right?: () => Element;
-	validate?: (value: string) => ValidateResult;
+  label: string;
+  value?: string;
+  changed?: (value: string) => void;
+  minLen?: number;
+  maxLen?: number;
+  left?: () => Element;
+  right?: () => Element;
+  validate?: (value: string) => ValidateResult;
 };
 
 const StringTextInput = (
-	props: StringFieldProps & {
-		type?: string;
-		inputmode?: InputMode;
-		pattern?: string;
-		validateDefault?: (value: string) => ValidateResult;
-	},
+  props: StringFieldProps & {
+    type?: string;
+    inputmode?: InputMode;
+    pattern?: string;
+    validateDefault?: (value: string) => ValidateResult;
+  },
 ) => {
-	const value = createMemo(() => props.value ?? "");
+  const value = createMemo(() => props.value ?? "");
 
-	return (
-		<Input
-			label={props.label}
-			value={props.value}
-			validate={props.validate ?? props.validateDefault}
-			left={props.left}
-			right={props.right}
-		>
-			<input
-				type={props.type}
-				inputmode={props.inputmode}
-				value={value()}
-				onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
-				placeholder=" "
-				spellcheck={false}
-				readonly={!props.changed}
-				pattern={props.pattern}
-				minlength={props.minLen}
-				maxlength={props.maxLen}
-			/>
-		</Input>
-	);
+  return (
+    <Input
+      label={props.label}
+      value={props.value}
+      validate={props.validate ?? props.validateDefault}
+      left={props.left}
+      right={props.right}
+    >
+      <input
+        type={props.type}
+        inputmode={props.inputmode}
+        value={value()}
+        onInput={(e: InputEvent) => props.changed?.((e.target as HTMLInputElement).value)}
+        placeholder=" "
+        spellcheck={false}
+        readonly={!props.changed}
+        pattern={props.pattern}
+        minlength={props.minLen}
+        maxlength={props.maxLen}
+      />
+    </Input>
+  );
 };
 
 // ── TextInput ──
 
 export const TextInput = (props: StringFieldProps) => (
-	<StringTextInput {...props} inputmode="text" />
+  <StringTextInput {...props} inputmode="text" />
 );
 
 // ── TextArea ──
 
 export const TextArea = (props: {
-	label: string;
-	value?: string;
-	changed?: (value: string) => void;
-	minLen?: number;
-	maxLen?: number;
-	validate?: (value: string) => ValidateResult;
-	row?: number;
+  label: string;
+  value?: string;
+  changed?: (value: string) => void;
+  minLen?: number;
+  maxLen?: number;
+  validate?: (value: string) => ValidateResult;
+  row?: number;
 }) => {
-	const row = () => props.row ?? 5;
-	const value = createMemo(() => props.value ?? "");
+  const row = () => props.row ?? 5;
+  const value = createMemo(() => props.value ?? "");
 
-	return (
-		<Input label={props.label} value={props.value} validate={props.validate}>
-			<textarea
-				class={styles.plainTextarea}
-				inputmode="text"
-				value={value()}
-				onInput={(e: InputEvent) =>
-					props.changed?.((e.target as HTMLTextAreaElement).value)
-				}
-				placeholder=" "
-				spellcheck={false}
-				readonly={!props.changed}
-				minlength={props.minLen}
-				maxlength={props.maxLen}
-				rows={row()}
-			/>
-		</Input>
-	);
+  return (
+    <Input label={props.label} value={props.value} validate={props.validate}>
+      <textarea
+        class={styles.plainTextarea}
+        inputmode="text"
+        value={value()}
+        onInput={(e: InputEvent) => props.changed?.((e.target as HTMLTextAreaElement).value)}
+        placeholder=" "
+        spellcheck={false}
+        readonly={!props.changed}
+        minlength={props.minLen}
+        maxlength={props.maxLen}
+        rows={row()}
+      />
+    </Input>
+  );
 };
 
 // ── PasswordInput ──
 
 export const PasswordInput = (props: StringFieldProps) => (
-	<StringTextInput {...props} type="password" />
+  <StringTextInput {...props} type="password" />
 );
 
 // ── NumberInput ──
 
 export const NumberInput = (props: {
-	label: string;
-	value?: number;
-	changed?: (value: number) => void;
-	min?: number;
-	max?: number;
-	step?: number;
-	unit?: string;
-	left?: () => Element;
-	right?: () => Element;
-	validate?: (value: string) => ValidateResult;
+  label: string;
+  value?: number;
+  changed?: (value: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
+  left?: () => Element;
+  right?: () => Element;
+  validate?: (value: string) => ValidateResult;
 }) => {
-	const [value, setValue] = createSignal(untrack(() => props.value) ?? 0);
+  const [value, setValue] = createSignal(untrack(() => props.value) ?? 0);
 
-	createEffect(
-		() => props.value ?? 0,
-		(next) => {
-			setValue(next);
-		},
-	);
+  createEffect(
+    () => props.value ?? 0,
+    (next) => {
+      setValue(next);
+    },
+  );
 
-	const step = () => props.step ?? 1;
+  const step = () => props.step ?? 1;
 
-	const clamp = (v: number) => {
-		if (props.min != null && v < props.min) return props.min;
-		if (props.max != null && v > props.max) return props.max;
-		return v;
-	};
+  const clamp = (v: number) => {
+    if (props.min != null && v < props.min) return props.min;
+    if (props.max != null && v > props.max) return props.max;
+    return v;
+  };
 
-	const increment = () => {
-		if (!props.changed) return;
-		const v = clamp(value() + step());
-		setValue(v);
-		props.changed(v);
-	};
+  const increment = () => {
+    if (!props.changed) return;
+    const v = clamp(value() + step());
+    setValue(v);
+    props.changed(v);
+  };
 
-	const decrement = () => {
-		if (!props.changed) return;
-		const v = clamp(value() - step());
-		setValue(v);
-		props.changed(v);
-	};
+  const decrement = () => {
+    if (!props.changed) return;
+    const v = clamp(value() - step());
+    setValue(v);
+    props.changed(v);
+  };
 
-	const onInput = (e: Event) => {
-		const v = (e.target as HTMLInputElement).valueAsNumber;
-		setValue(v);
-		props.changed?.(v);
-	};
+  const onInput = (e: Event) => {
+    const v = (e.target as HTMLInputElement).valueAsNumber;
+    setValue(v);
+    props.changed?.(v);
+  };
 
-	const right = (
-		<>
-			<IconButton icon={icon_remove} tap={decrement} />
-			<IconButton icon={icon_add} tap={increment} />
-			{props.right?.()}
-		</>
-	);
+  const right = (
+    <>
+      <IconButton icon={icon_remove} tap={decrement} />
+      <IconButton icon={icon_add} tap={increment} />
+      {props.right?.()}
+    </>
+  );
 
-	return (
-		<Input
-			label={props.label}
-			value={String(props.value ?? 0)}
-			validate={props.validate}
-			left={props.left}
-			right={() => right}
-		>
-			<input
-				type="number"
-				value={value()}
-				onInput={onInput}
-				placeholder=" "
-				spellcheck={false}
-				readonly={!props.changed}
-				min={props.min}
-				max={props.max}
-				step={props.step}
-			/>
-		</Input>
-	);
+  return (
+    <Input
+      label={props.label}
+      value={String(props.value ?? 0)}
+      validate={props.validate}
+      left={props.left}
+      right={() => right}
+    >
+      <input
+        type="number"
+        value={value()}
+        onInput={onInput}
+        placeholder=" "
+        spellcheck={false}
+        readonly={!props.changed}
+        min={props.min}
+        max={props.max}
+        step={props.step}
+      />
+    </Input>
+  );
 };
 
 // ── EmailInput ──
@@ -308,140 +306,140 @@ export const NumberInput = (props: {
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const EmailInput = (props: StringFieldProps) => (
-	<StringTextInput
-		{...props}
-		type="email"
-		validateDefault={(v) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined)}
-	/>
+  <StringTextInput
+    {...props}
+    type="email"
+    validateDefault={(v) => (v && !emailPattern.test(v) ? "邮箱格式不正确" : undefined)}
+  />
 );
 
 // ── TelInput ──
 
 export const TelInput = (props: StringFieldProps & { pattern?: string }) => (
-	<StringTextInput {...props} type="tel" pattern={props.pattern} />
+  <StringTextInput {...props} type="tel" pattern={props.pattern} />
 );
 
 // ── CheckButton ──
 
 export const CheckButton = (props: {
-	label: string;
-	checked?: boolean;
-	changed?: (checked: boolean) => void;
-	disabled?: boolean;
+  label: string;
+  checked?: boolean;
+  changed?: (checked: boolean) => void;
+  disabled?: boolean;
 }) => {
-	return (
-		<label class={styles.checkBtn}>
-			<input
-				type="checkbox"
-				checked={props.checked ?? false}
-				onChange={(e: Event) => props.changed?.((e.target as HTMLInputElement).checked)}
-				disabled={props.disabled}
-			/>
-			<span>{props.label}</span>
-		</label>
-	);
+  return (
+    <label class={styles.checkBtn}>
+      <input
+        type="checkbox"
+        checked={props.checked ?? false}
+        onChange={(e: Event) => props.changed?.((e.target as HTMLInputElement).checked)}
+        disabled={props.disabled}
+      />
+      <span>{props.label}</span>
+    </label>
+  );
 };
 
 // ── RadioButton ──
 
 export const RadioButton = (props: {
-	label: string;
-	value: string;
-	checked?: boolean;
-	changed?: (value: string) => void;
-	disabled?: boolean;
-	name?: string;
+  label: string;
+  value: string;
+  checked?: boolean;
+  changed?: (value: string) => void;
+  disabled?: boolean;
+  name?: string;
 }) => {
-	return (
-		<label class={styles.radioBtn}>
-			<input
-				type="radio"
-				value={props.value}
-				checked={props.checked ?? false}
-				onChange={() => props.changed?.(props.value)}
-				disabled={props.disabled}
-				name={props.name}
-			/>
-			<span>{props.label}</span>
-		</label>
-	);
+  return (
+    <label class={styles.radioBtn}>
+      <input
+        type="radio"
+        value={props.value}
+        checked={props.checked ?? false}
+        onChange={() => props.changed?.(props.value)}
+        disabled={props.disabled}
+        name={props.name}
+      />
+      <span>{props.label}</span>
+    </label>
+  );
 };
 
 // ── CaptchaInput ──
 
 export const CaptchaInput = (props: {
-	label: string;
-	length?: number;
-	value?: string;
-	changed?: (value: string) => void;
-	disabled?: boolean;
-	pattern?: RegExp;
+  label: string;
+  length?: number;
+  value?: string;
+  changed?: (value: string) => void;
+  disabled?: boolean;
+  pattern?: RegExp;
 }) => {
-	const len = () => props.length ?? 6;
-	const pattern = () => props.pattern ?? /^\w$/;
+  const len = () => props.length ?? 6;
+  const pattern = () => props.pattern ?? /^\w$/;
 
-	const handleInput = (e: InputEvent) => {
-		const current = props.value ?? "";
-		const input = e.currentTarget as HTMLInputElement;
+  const handleInput = (e: InputEvent) => {
+    const current = props.value ?? "";
+    const input = e.currentTarget as HTMLInputElement;
 
-		if (e.inputType === "deleteContentBackward") {
-			props.changed?.(current.slice(0, -1));
-			return;
-		}
+    if (e.inputType === "deleteContentBackward") {
+      props.changed?.(current.slice(0, -1));
+      return;
+    }
 
-		if (e.inputType === "insertText" && e.data) {
-			if (current.length >= len()) {
-				input.value = current;
-				return;
-			}
-			const ch = [...e.data].find((c) => pattern().test(c));
-			if (!ch) {
-				input.value = current;
-				return;
-			}
-			props.changed?.(current + ch);
-			input.value = current + ch;
-			input.setSelectionRange((current + ch).length, (current + ch).length);
-			return;
-		}
+    if (e.inputType === "insertText" && e.data) {
+      if (current.length >= len()) {
+        input.value = current;
+        return;
+      }
+      const ch = [...e.data].find((c) => pattern().test(c));
+      if (!ch) {
+        input.value = current;
+        return;
+      }
+      props.changed?.(current + ch);
+      input.value = current + ch;
+      input.setSelectionRange((current + ch).length, (current + ch).length);
+      return;
+    }
 
-		if (e.inputType === "insertFromPaste") {
-			const text = input.value;
-			const matched = [...text].filter((c) => pattern().test(c)).slice(0, len());
-			const result = matched.join("");
-			input.value = result;
-			props.changed?.(result);
-			input.setSelectionRange(result.length, result.length);
-			return;
-		}
+    if (e.inputType === "insertFromPaste") {
+      const text = input.value;
+      const matched = [...text].filter((c) => pattern().test(c)).slice(0, len());
+      const result = matched.join("");
+      input.value = result;
+      props.changed?.(result);
+      input.setSelectionRange(result.length, result.length);
+      return;
+    }
 
-		input.value = current;
-	};
+    input.value = current;
+  };
 
-	const handlePaste = async () => {
-		const text = await navigator.clipboard.readText();
-		const matched = [...text].filter((c) => pattern().test(c)).slice(0, len());
-		props.changed?.(matched.join(""));
-	};
+  const handlePaste = async () => {
+    const text = await navigator.clipboard.readText();
+    const matched = [...text].filter((c) => pattern().test(c)).slice(0, len());
+    props.changed?.(matched.join(""));
+  };
 
-	const right = (
-		<IconButton icon={icon_content_paste} tap={handlePaste} disabled={props.disabled} />
-	);
+  const right = (
+    <IconButton icon={icon_content_paste} tap={handlePaste} disabled={props.disabled} />
+  );
 
-	return (
-		<Input label={props.label} right={() => right}>
-			<input
-				class={styles.captchaInput}
-				type="text"
-				inputmode="numeric"
-				maxlength={len()}
-				value={props.value ?? ""}
-				onInput={handleInput}
-				disabled={props.disabled}
-				autocomplete="one-time-code"
-				spellcheck={false}
-				style={{ "--len": len() } as any}
-			/>
-		</Input>
-	);
+  return (
+    <Input label={props.label} right={() => right}>
+      <input
+        class={styles.captchaInput}
+        type="text"
+        inputmode="numeric"
+        maxlength={len()}
+        value={props.value ?? ""}
+        onInput={handleInput}
+        disabled={props.disabled}
+        autocomplete="one-time-code"
+        spellcheck={false}
+        style={{ "--len": len() } as any}
+      />
+    </Input>
+  );
 };

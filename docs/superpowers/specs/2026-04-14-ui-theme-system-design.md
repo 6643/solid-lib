@@ -105,26 +105,26 @@ flowchart TD
 
 ```css
 html[data-theme-mode="light"] {
-	--base-bg: ...;
-	--base-fg: ...;
-	--raised-bg: ...;
-	--raised-fg: ...;
-	--inset-bg: ...;
-	--inset-fg: ...;
-	--disabled-bg: ...;
-	--disabled-fg: ...;
-	--theme-color: ...;
-	--error-color: ...;
+  --base-bg: ...;
+  --base-fg: ...;
+  --raised-bg: ...;
+  --raised-fg: ...;
+  --inset-bg: ...;
+  --inset-fg: ...;
+  --disabled-bg: ...;
+  --disabled-fg: ...;
+  --theme-color: ...;
+  --error-color: ...;
 }
 
 html[data-theme-mode="dark"] {
-	/* 同名变量, 另一套值 */
+  /* 同名变量, 另一套值 */
 }
 
 @media (prefers-color-scheme: dark) {
-	html[data-theme-mode="system"] {
-		/* system 模式下的暗色值 */
-	}
+  html[data-theme-mode="system"] {
+    /* system 模式下的暗色值 */
+  }
 }
 ```
 
@@ -132,32 +132,32 @@ html[data-theme-mode="dark"] {
 
 ```css
 .card {
-	background: var(--raised-bg);
-	color: var(--raised-fg);
+  background: var(--raised-bg);
+  color: var(--raised-fg);
 }
 
 .input {
-	background: var(--inset-bg);
-	color: var(--inset-fg);
+  background: var(--inset-bg);
+  color: var(--inset-fg);
 }
 
 .button {
-	background: var(--base-bg);
-	color: var(--base-fg);
+  background: var(--base-bg);
+  color: var(--base-fg);
 }
 
 .button.theme {
-	background: var(--theme-color);
+  background: var(--theme-color);
 }
 
 .button.disabled,
 .button:disabled {
-	background: var(--disabled-bg);
-	color: var(--disabled-fg);
+  background: var(--disabled-bg);
+  color: var(--disabled-fg);
 }
 
 .field-error {
-	color: var(--error-color);
+  color: var(--error-color);
 }
 ```
 

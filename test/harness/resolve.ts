@@ -13,20 +13,16 @@ const EXTENSIONS = [".ts", ".tsx"];
 const HAS_EXTENSION = /\.[cm]?[jt]sx?$/;
 
 registerHooks({
-	resolve(specifier, context, nextResolve) {
-		const parentUrl = context.parentURL;
-		if (
-			parentUrl === undefined ||
-			!specifier.startsWith(".") ||
-			HAS_EXTENSION.test(specifier)
-		) {
-			return nextResolve(specifier, context);
-		}
+  resolve(specifier, context, nextResolve) {
+    const parentUrl = context.parentURL;
+    if (parentUrl === undefined || !specifier.startsWith(".") || HAS_EXTENSION.test(specifier)) {
+      return nextResolve(specifier, context);
+    }
 
-		const resolved = EXTENSIONS.map((extension) => specifier + extension).find((candidate) =>
-			existsSync(fileURLToPath(new URL(candidate, parentUrl))),
-		);
+    const resolved = EXTENSIONS.map((extension) => specifier + extension).find((candidate) =>
+      existsSync(fileURLToPath(new URL(candidate, parentUrl))),
+    );
 
-		return nextResolve(resolved ?? specifier, context);
-	},
+    return nextResolve(resolved ?? specifier, context);
+  },
 });

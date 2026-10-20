@@ -59,12 +59,12 @@ import { expect, test } from "bun:test";
 import { Card, FilledButton, IconButton, Input, OutlinedButton, TextButton } from "../src/ui/_";
 
 test("ui exports the public component primitives", () => {
-	expect(typeof Card).toBe("function");
-	expect(typeof Input).toBe("function");
-	expect(typeof TextButton).toBe("function");
-	expect(typeof FilledButton).toBe("function");
-	expect(typeof OutlinedButton).toBe("function");
-	expect(typeof IconButton).toBe("function");
+  expect(typeof Card).toBe("function");
+  expect(typeof Input).toBe("function");
+  expect(typeof TextButton).toBe("function");
+  expect(typeof FilledButton).toBe("function");
+  expect(typeof OutlinedButton).toBe("function");
+  expect(typeof IconButton).toBe("function");
 });
 ```
 
@@ -78,12 +78,12 @@ Expected: FAIL because `Card`, `Input`, and button exports are missing from `src
 ```ts
 export { Card, type CardProps } from "./Card";
 export {
-	FilledButton,
-	IconButton,
-	OutlinedButton,
-	TextButton,
-	type ButtonTapHandler,
-	type SharedButtonProps,
+  FilledButton,
+  IconButton,
+  OutlinedButton,
+  TextButton,
+  type ButtonTapHandler,
+  type SharedButtonProps,
 } from "./Button";
 export { Input, type InputProps } from "./Input";
 ```
@@ -107,35 +107,35 @@ Expected: PASS for the export assertions.
 import { createButtonStyle, invokeButtonTap } from "../src/ui/Button";
 
 test("createButtonStyle converts numeric dimensions into px strings", () => {
-	expect(
-		createButtonStyle({
-			borderRadius: 12,
-			color: "#123456",
-			height: 40,
-			width: "100%",
-		}),
-	).toEqual({
-		"--button-border-radius": "12px",
-		"--button-color": "#123456",
-		"--button-height": "40px",
-		"--button-width": "100%",
-	});
+  expect(
+    createButtonStyle({
+      borderRadius: 12,
+      color: "#123456",
+      height: 40,
+      width: "100%",
+    }),
+  ).toEqual({
+    "--button-border-radius": "12px",
+    "--button-color": "#123456",
+    "--button-height": "40px",
+    "--button-width": "100%",
+  });
 });
 
 test("invokeButtonTap runs sync and async taps without legacy helpers", async () => {
-	let syncCount = 0;
-	let asyncCount = 0;
+  let syncCount = 0;
+  let asyncCount = 0;
 
-	await invokeButtonTap(() => {
-		syncCount += 1;
-	});
+  await invokeButtonTap(() => {
+    syncCount += 1;
+  });
 
-	await invokeButtonTap(async () => {
-		asyncCount += 1;
-	});
+  await invokeButtonTap(async () => {
+    asyncCount += 1;
+  });
 
-	expect(syncCount).toBe(1);
-	expect(asyncCount).toBe(1);
+  expect(syncCount).toBe(1);
+  expect(asyncCount).toBe(1);
 });
 ```
 
@@ -249,14 +249,14 @@ Replace the test app with imports like:
 
 ```ts
 import {
-	Card,
-	FilledButton,
-	IconButton,
-	Input,
-	OutlinedButton,
-	TextButton,
-	initializeThemeMode,
-	setThemeMode,
+  Card,
+  FilledButton,
+  IconButton,
+  Input,
+  OutlinedButton,
+  TextButton,
+  initializeThemeMode,
+  setThemeMode,
 } from "solid-lib/ui";
 ```
 

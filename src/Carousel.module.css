@@ -1,43 +1,43 @@
 .carousel {
-	overflow: hidden;
-	position: relative;
-	width: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
 }
 
 .inner {
-	display: flex;
-	transition: transform 240ms ease;
-	will-change: transform;
+  display: flex;
+  transition: transform 240ms ease;
+  will-change: transform;
 }
 
 .item {
-	flex: 0 0 100%;
-	min-width: 100%;
+  flex: 0 0 100%;
+  min-width: 100%;
 }
 
 .item img {
-	width: 100%;
-	display: block;
+  width: 100%;
+  display: block;
 }
 
 .prev,
 .next {
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-	border: 0;
-	background: color-mix(in srgb, var(--base-bg) 80%, transparent);
-	color: var(--base-fg);
-	width: 2rem;
-	height: 2rem;
-	border-radius: 999px;
-	cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: color-mix(in srgb, var(--base-bg) 80%, transparent);
+  color: var(--base-fg);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 .prev {
-	left: 0.5rem;
+  left: 0.5rem;
 }
 
 .next {
-	right: 0.5rem;
+  right: 0.5rem;
 }

@@ -1,4 +1,4 @@
 .svg_icon {
-	fill: var(--color, currentColor);
-	vertical-align: middle;
+  fill: var(--color, currentColor);
+  vertical-align: middle;
 }

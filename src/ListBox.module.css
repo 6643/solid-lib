@@ -1,8 +1,8 @@
 .listBox {
-	display: grid;
-	width: inherit;
-	height: inherit;
-	overflow-y: auto;
-	grid-auto-rows: auto;
-	gap: 4px;
+  display: grid;
+  width: inherit;
+  height: inherit;
+  overflow-y: auto;
+  grid-auto-rows: auto;
+  gap: 4px;
 }

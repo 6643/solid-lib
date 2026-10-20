@@ -1,276 +1,276 @@
 /* ── 公共样式 ── */
 
 .field {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .field > div:first-child {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .field .inputWrap {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	width: 100%;
-	height: 40px;
-	background: var(--base-bg);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 40px;
+  background: var(--base-bg);
 
-	border: 0;
-	border-left: 2px solid transparent;
-	border-radius: 3px;
-	position: relative;
-	transition: border-color 160ms ease;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 3px;
+  position: relative;
+  transition: border-color 160ms ease;
 }
 
 .field .inputWrap:has(textarea) {
-	height: auto;
-	min-height: 40px;
-	align-items: stretch;
+  height: auto;
+  min-height: 40px;
+  align-items: stretch;
 }
 
 .field .inputWrap:has(input:focus, textarea:focus) {
-	border-left-color: var(--accent-color);
-	box-shadow: none;
+  border-left-color: var(--accent-color);
+  box-shadow: none;
 }
 
 .field.error .inputWrap {
-	border-left-color: var(--error-color);
-	box-shadow: none;
+  border-left-color: var(--error-color);
+  box-shadow: none;
 }
 
 .field .inputGrow {
-	flex: 1;
-	min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 .field input,
 .field textarea {
-	appearance: none;
-	background: transparent;
-	border: none;
-	color: inherit;
-	box-shadow: none;
-	outline: 0;
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  box-shadow: none;
+  outline: 0;
 }
 
 .field .inputGrow input,
 .field .inputGrow textarea {
-	width: 100%;
-	resize: vertical;
+  width: 100%;
+  resize: vertical;
 }
 
 .field .inputGrow > input {
-	display: block;
-	box-sizing: border-box;
-	height: 100%;
-	padding: 0 8px;
-	line-height: 36px;
+  display: block;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0 8px;
+  line-height: 36px;
 }
 
 .field input[type="number"]::-webkit-inner-spin-button,
 .field input[type="number"]::-webkit-outer-spin-button {
-	-webkit-appearance: none;
-	margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .field input[type="number"] {
-	appearance: textfield;
+  appearance: textfield;
 }
 
 .field input:-webkit-autofill,
 .field textarea:-webkit-autofill {
-	-webkit-box-shadow: 0 0 0 1000px var(--base-bg) inset;
-	-webkit-text-fill-color: var(--base-fg);
+  -webkit-box-shadow: 0 0 0 1000px var(--base-bg) inset;
+  -webkit-text-fill-color: var(--base-fg);
 }
 
 .field input:-webkit-autofill:focus,
 .field textarea:-webkit-autofill:focus {
-	-webkit-box-shadow: 0 0 0 1000px var(--base-bg) inset;
-	-webkit-text-fill-color: var(--base-fg);
+  -webkit-box-shadow: 0 0 0 1000px var(--base-bg) inset;
+  -webkit-text-fill-color: var(--base-fg);
 }
 
 .field input::placeholder,
 .field textarea::placeholder {
-	color: var(--disabled-color);
+  color: var(--disabled-color);
 }
 
 .field input:disabled,
 .field textarea:disabled {
-	color: var(--disabled-color);
-	cursor: not-allowed;
+  color: var(--disabled-color);
+  cursor: not-allowed;
 }
 
 .fieldError {
-	color: var(--error-color);
+  color: var(--error-color);
 }
 
 /* ── TextArea ── */
 
 .plainTextarea {
-	flex: 1;
-	min-width: 0;
-	display: block;
-	font-size: inherit;
-	font-family: inherit;
-	line-height: 1.5;
-	padding: 11px 8px;
-	resize: vertical;
-	box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  display: block;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: 1.5;
+  padding: 11px 8px;
+  resize: vertical;
+  box-sizing: border-box;
 }
 
 /* ── RangeInput ── */
 
 .rangeInput {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .rangeInput > div {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .rangeInput input[type="range"] {
-	width: 100%;
-	height: 40px;
-	appearance: none;
-	background: transparent;
-	cursor: pointer;
+  width: 100%;
+  height: 40px;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .rangeInput input[type="range"]::-webkit-slider-runnable-track {
-	height: 4px;
-	border-radius: 2px;
-	background: var(--inset-bg);
-	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+  height: 4px;
+  border-radius: 2px;
+  background: var(--inset-bg);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 .rangeInput input[type="range"]::-moz-range-track {
-	height: 4px;
-	border-radius: 2px;
-	background: var(--inset-bg);
-	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+  height: 4px;
+  border-radius: 2px;
+  background: var(--inset-bg);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 .rangeInput input[type="range"]::-webkit-slider-thumb {
-	appearance: none;
-	width: 10px;
-	height: 10px;
-	border: none;
-	border-radius: 50%;
-	background: var(--accent-color);
-	margin-top: -3px;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-color);
+  margin-top: -3px;
 }
 
 .rangeInput input[type="range"]::-moz-range-thumb {
-	appearance: none;
-	width: 10px;
-	height: 10px;
-	border: none;
-	border-radius: 50%;
-	background: var(--accent-color);
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-color);
 }
 
 /* ── CheckButton & RadioButton ── */
 
 .checkBtn,
 .radioBtn {
-	display: inline-flex;
-	align-items: center;
-	align-self: flex-start;
-	gap: 8px;
-	cursor: pointer;
-	user-select: none;
-	padding: 6px 12px;
-	border: 2px solid var(--inset-fg);
-	border-radius: 3px;
-	transition: border-color 160ms ease;
-	overflow: hidden;
-	position: relative;
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  padding: 6px 12px;
+  border: 2px solid var(--inset-fg);
+  border-radius: 3px;
+  transition: border-color 160ms ease;
+  overflow: hidden;
+  position: relative;
 }
 
 .checkBtn::before,
 .radioBtn::before {
-	content: "";
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-	background-image: radial-gradient(circle, currentColor 10%, transparent 10%);
-	background-size: 1000% 1000%;
-	background-position: 50%;
-	pointer-events: none;
-	transition: 512ms;
-	opacity: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: radial-gradient(circle, currentColor 10%, transparent 10%);
+  background-size: 1000% 1000%;
+  background-position: 50%;
+  pointer-events: none;
+  transition: 512ms;
+  opacity: 0;
 }
 
 .checkBtn:active::before,
 .radioBtn:active::before {
-	background-size: 0 0;
-	opacity: 0.28;
-	transition: none;
+  background-size: 0 0;
+  opacity: 0.28;
+  transition: none;
 }
 
 .checkBtn input,
 .radioBtn input {
-	position: absolute;
-	opacity: 0;
-	width: 0;
-	height: 0;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .checkBtn span,
 .radioBtn span {
-	color: var(--inset-fg);
-	font-size: 14px;
+  color: var(--inset-fg);
+  font-size: 14px;
 }
 
 .checkBtn:has(input:checked),
 .radioBtn:has(input:checked) {
-	border-color: var(--accent-color);
-	opacity: 1;
+  border-color: var(--accent-color);
+  opacity: 1;
 }
 
 .checkBtn:has(input:checked) span,
 .radioBtn:has(input:checked) span {
-	color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .checkBtn:has(input:disabled),
 .radioBtn:has(input:disabled) {
-	border-color: var(--disabled-color);
-	cursor: not-allowed;
+  border-color: var(--disabled-color);
+  cursor: not-allowed;
 }
 
 .checkBtn:has(input:disabled) span,
 .radioBtn:has(input:disabled) span {
-	color: var(--disabled-color);
+  color: var(--disabled-color);
 }
 
 /* ── CaptchaInput ── */
 
 input.captchaInput {
-	letter-spacing: 4px;
-	appearance: none;
-	outline: none;
-	font-family: monospace;
-	font-style: italic;
-	color: var(--raised-fg);
-	transition: border-color 160ms ease;
+  letter-spacing: 4px;
+  appearance: none;
+  outline: none;
+  font-family: monospace;
+  font-style: italic;
+  color: var(--raised-fg);
+  transition: border-color 160ms ease;
 }
 
 input.captchaInput:focus {
-	border-color: var(--accent-color);
+  border-color: var(--accent-color);
 }
 
 input.captchaInput:disabled {
-	color: var(--disabled-color);
-	border-color: var(--disabled-color);
-	cursor: not-allowed;
+  color: var(--disabled-color);
+  border-color: var(--disabled-color);
+  cursor: not-allowed;
 }

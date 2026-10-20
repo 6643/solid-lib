@@ -1,8 +1,8 @@
 export type ThemeMode = "light" | "dark" | "system";
 
 type MediaQueryListWithLegacy = MediaQueryList & {
-	addListener?: (listener: (event: MediaQueryListEvent) => void) => void;
-	removeListener?: (listener: (event: MediaQueryListEvent) => void) => void;
+  addListener?: (listener: (event: MediaQueryListEvent) => void) => void;
+  removeListener?: (listener: (event: MediaQueryListEvent) => void) => void;
 };
 
 const STORAGE_KEY = "solid-lib:theme-mode";
@@ -14,108 +14,108 @@ let currentResolvedThemeMode: "light" | "dark" = "light";
 let stopSystemThemeSync: (() => void) | undefined;
 
 const readStorage = (): ThemeMode | undefined => {
-	try {
-		const value = globalThis.localStorage?.getItem(STORAGE_KEY);
-		if (value === "light" || value === "dark" || value === "system") return value;
-	} catch {}
+  try {
+    const value = globalThis.localStorage?.getItem(STORAGE_KEY);
+    if (value === "light" || value === "dark" || value === "system") return value;
+  } catch {}
 
-	return undefined;
+  return undefined;
 };
 
 const writeStorage = (mode: ThemeMode) => {
-	try {
-		globalThis.localStorage?.setItem(STORAGE_KEY, mode);
-	} catch {}
+  try {
+    globalThis.localStorage?.setItem(STORAGE_KEY, mode);
+  } catch {}
 };
 
 const setResolvedTheme = (resolvedTheme: "light" | "dark") => {
-	currentResolvedThemeMode = resolvedTheme;
+  currentResolvedThemeMode = resolvedTheme;
 
-	try {
-		globalThis.document?.documentElement?.setAttribute(ATTRIBUTE_NAME, resolvedTheme);
-	} catch {}
+  try {
+    globalThis.document?.documentElement?.setAttribute(ATTRIBUTE_NAME, resolvedTheme);
+  } catch {}
 };
 
 const resolveSystemTheme = (): "light" | "dark" => {
-	try {
-		return globalThis.matchMedia?.(MEDIA_QUERY).matches ? "dark" : "light";
-	} catch {
-		return "light";
-	}
+  try {
+    return globalThis.matchMedia?.(MEDIA_QUERY).matches ? "dark" : "light";
+  } catch {
+    return "light";
+  }
 };
 
 const stopListeningSystemTheme = () => {
-	stopSystemThemeSync?.();
-	stopSystemThemeSync = undefined;
+  stopSystemThemeSync?.();
+  stopSystemThemeSync = undefined;
 };
 
 const startListeningSystemTheme = () => {
-	stopListeningSystemTheme();
+  stopListeningSystemTheme();
 
-	let mediaQueryList: MediaQueryListWithLegacy;
-	try {
-		const candidate = globalThis.matchMedia?.(MEDIA_QUERY);
-		if (!candidate) return;
-		mediaQueryList = candidate as MediaQueryListWithLegacy;
-	} catch {
-		return;
-	}
+  let mediaQueryList: MediaQueryListWithLegacy;
+  try {
+    const candidate = globalThis.matchMedia?.(MEDIA_QUERY);
+    if (!candidate) return;
+    mediaQueryList = candidate as MediaQueryListWithLegacy;
+  } catch {
+    return;
+  }
 
-	const listener = (event: MediaQueryListEvent) => {
-		if (currentThemeMode !== "system") return;
-		setResolvedTheme(event.matches ? "dark" : "light");
-	};
+  const listener = (event: MediaQueryListEvent) => {
+    if (currentThemeMode !== "system") return;
+    setResolvedTheme(event.matches ? "dark" : "light");
+  };
 
-	let removeListener: (() => void) | undefined;
+  let removeListener: (() => void) | undefined;
 
-	try {
-		mediaQueryList.addEventListener("change", listener);
-		removeListener = () => {
-			mediaQueryList.removeEventListener("change", listener);
-		};
-	} catch {}
+  try {
+    mediaQueryList.addEventListener("change", listener);
+    removeListener = () => {
+      mediaQueryList.removeEventListener("change", listener);
+    };
+  } catch {}
 
-	try {
-		mediaQueryList.addListener?.(listener);
-		const removeLegacyListener = () => {
-			mediaQueryList.removeListener?.(listener);
-		};
+  try {
+    mediaQueryList.addListener?.(listener);
+    const removeLegacyListener = () => {
+      mediaQueryList.removeListener?.(listener);
+    };
 
-		if (removeListener) {
-			removeLegacyListener();
-		} else {
-			removeListener = removeLegacyListener;
-		}
-	} catch {
-		if (!removeListener) {
-			removeListener = undefined;
-		}
-	}
+    if (removeListener) {
+      removeLegacyListener();
+    } else {
+      removeListener = removeLegacyListener;
+    }
+  } catch {
+    if (!removeListener) {
+      removeListener = undefined;
+    }
+  }
 
-	stopSystemThemeSync = removeListener;
+  stopSystemThemeSync = removeListener;
 };
 
 const applyThemeMode = (mode: ThemeMode): ThemeMode => {
-	currentThemeMode = mode;
-	writeStorage(mode);
+  currentThemeMode = mode;
+  writeStorage(mode);
 
-	if (mode === "system") {
-		setResolvedTheme(resolveSystemTheme());
-		startListeningSystemTheme();
-		return mode;
-	}
+  if (mode === "system") {
+    setResolvedTheme(resolveSystemTheme());
+    startListeningSystemTheme();
+    return mode;
+  }
 
-	stopListeningSystemTheme();
-	setResolvedTheme(mode);
-	return mode;
+  stopListeningSystemTheme();
+  setResolvedTheme(mode);
+  return mode;
 };
 
 export const getThemeModeCore = (): ThemeMode => currentThemeMode;
 export const getResolvedThemeModeCore = (): "light" | "dark" => currentResolvedThemeMode;
 export const setThemeModeCore = (mode: ThemeMode): ThemeMode => applyThemeMode(mode);
 export const initializeThemeModeCore = (): ThemeMode => {
-	const savedThemeMode = readStorage() ?? "system";
-	return applyThemeMode(savedThemeMode);
+  const savedThemeMode = readStorage() ?? "system";
+  return applyThemeMode(savedThemeMode);
 };
 export const setSystemThemeCore = (): ThemeMode => setThemeModeCore("system");
 export const setLightThemeCore = (): ThemeMode => setThemeModeCore("light");
