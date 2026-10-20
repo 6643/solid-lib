@@ -1,7 +1,8 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "./harness/test.ts";
+import { readText } from "./harness/io.ts";
 import { join } from "node:path";
 
-const readSource = (path: string) => Bun.file(join(import.meta.dir, "..", path)).text();
+const readSource = (path: string) => readText(join(import.meta.dirname, "..", path));
 
 test("useScrollEnd binds refs through createEffect with cleanup", async () => {
   const source = await readSource("src/useScrollEnd.ts");
@@ -17,7 +18,9 @@ test("useScrollEnd binds refs through createEffect with cleanup", async () => {
 test("useKeepScroll restores scroll through createEffect with cleanup", async () => {
   const source = await readSource("src/useKeepScroll.ts");
 
-  expect(source).toContain("useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs, owner);");
+  expect(source).toContain(
+    "useScrollEnd(ref, (top) => setPos(page, key, top), debounceMs, owner);",
+  );
   expect(source).toContain("createEffect(");
   expect(source).toContain("readEl(ref)");
   expect(source).toContain("return restoreScrollTop(el)");

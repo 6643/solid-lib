@@ -20,9 +20,11 @@
 ### Task 1: Lock the new ListBox contract in tests
 
 **Files:**
+
 - Modify: `test/list-box.test.ts`
 
 **Interfaces:**
+
 - Consumes: `src/ui/ListBox.tsx` source text.
 - Produces: source-text contract checks for `hideItems`, `visibleItems`, fixed render-count math, and incremental settle logic.
 
@@ -73,9 +75,11 @@ Remove old `windowSize` assertions once the new contract is in place.
 ### Task 2: Implement fixed-window incremental virtualization in `src/ui/ListBox.tsx`
 
 **Files:**
+
 - Modify: `src/ui/ListBox.tsx`
 
 **Interfaces:**
+
 - Consumes: `hideItems`, `visibleItems`, current `items`, `filter`, `index`, and `itemHeight`.
 - Produces: a row-record array with `visibleItems + hideItems * 3` rendered rows, plus incremental settle logic based on visible row bounds.
 
@@ -142,9 +146,11 @@ Expected: PASS.
 ### Task 3: Update the demo to the new props
 
 **Files:**
+
 - Modify: `demo/src/pages/DisplayPage.tsx`
 
 **Interfaces:**
+
 - Consumes: `ListBox` with `hideItems` and `visibleItems`.
 - Produces: demo page that still renders the virtual list with the new prop names.
 
@@ -174,9 +180,11 @@ Expected: PASS.
 ### Task 4: Verify the workspace against the changed contract
 
 **Files:**
+
 - Verify: `src/ui/ListBox.tsx`, `test/list-box.test.ts`, `demo/src/pages/DisplayPage.tsx`
 
 **Interfaces:**
+
 - Consumes: the updated ListBox API and contract tests.
 - Produces: validated build and test output.
 

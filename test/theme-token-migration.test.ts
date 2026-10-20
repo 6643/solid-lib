@@ -1,4 +1,5 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "./harness/test.ts";
+import { readText } from "./harness/io.ts";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -14,7 +15,7 @@ const readSources = async (root: string): Promise<string[]> => {
       sources.push(...(await readSources(path)));
       continue;
     }
-    if (/\.(css|ts|tsx)$/.test(entry.name)) sources.push(await Bun.file(path).text());
+    if (/\.(css|ts|tsx)$/.test(entry.name)) sources.push(await readText(path));
   }
 
   return sources;
@@ -22,8 +23,8 @@ const readSources = async (root: string): Promise<string[]> => {
 
 test("source styles use the replacement theme tokens without legacy page, sunken, or disabled bg/fg tokens", async () => {
   const sources = await Promise.all([
-    readSources(join(import.meta.dir, "..", "src")),
-    readSources(join(import.meta.dir, "..", "demo", "src")),
+    readSources(join(import.meta.dirname, "..", "src")),
+    readSources(join(import.meta.dirname, "..", "demo", "src")),
   ]);
 
   for (const source of sources.flat()) {

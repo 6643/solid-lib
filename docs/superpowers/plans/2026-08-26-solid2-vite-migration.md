@@ -28,6 +28,7 @@
 ### Task 1: Lock the latest-compatible toolchain
 
 **Files:**
+
 - Modify: `test/package-metadata.test.ts`
 - Modify: `package.json`
 - Modify: `demo/package.json`
@@ -36,6 +37,7 @@
 - Modify: `README.md`, `demo/README.md`, and the active spec
 
 **Interfaces:**
+
 - Root package exports remain `{ ".": { "types": "./src/_.ts", "import": "./src/_.ts" }, "./ui.css": "./src/_.css" }`.
 - Demo scripts remain `dev: "vite"`, `build: "vite build"`, `preview: "vite preview"`, and `typecheck`.
 - Solid 2 RC packages stay on RC3 where a literal registry `latest` tag points to an incompatible or older channel.
@@ -101,6 +103,7 @@
 ### Task 2: Make the demo an official Solid 2 Start mode app
 
 **Files:**
+
 - Modify: `demo/vite.config.ts`
 - Verify: `demo/src/App.tsx`, `demo/src/Document.tsx`
 - Modify: `demo/src/pages/*.tsx` only if typecheck identifies an import left on a deleted path
@@ -108,6 +111,7 @@
 - Modify: `demo/README.md`
 
 **Interfaces:**
+
 - `@solidjs/vite-plugin` discovers `src/App.tsx` and `src/Document.tsx` when `start: true`.
 - `ssr: false` selects client Start mode; there is no custom `index.html`, Bun server, or `solid-lib` CLI.
 - `/assets/demo.txt` and `/assets/a.avif` are served from `demo/public/assets/`.
@@ -160,6 +164,7 @@
 ### Task 3: Migrate consumer routing and prove the package boundary
 
 **Files:**
+
 - Modify: `test/demo-local-consumer.ts`
 - Modify: `test/flat-source-entry.test.ts`
 - Modify: `test/package-metadata.test.ts`
@@ -167,6 +172,7 @@
 - Delete after consumer checks: `test/route.test.tsx`, `test/builder-bootstrap.test.ts`, `test/solid-lib-dev.test.ts`, `test/dev-asset-routes.test.ts`
 
 **Interfaces:**
+
 - Consumer applications own `@solidjs/router@2.0.0-next.18`; `solid-lib` does not export router functions.
 - `createRouter`, `useNavigate`, and `useSearchParams` replace the route APIs used by the consumer fixture.
 - The flat package exposes the root component/utility entry and `solid-lib/ui.css` only.
@@ -177,7 +183,16 @@
 
   ```tsx
   import { createRouter, useNavigate, useSearchParams } from "@solidjs/router";
-  import { Card, FilledButton, IconButton, OutlinedButton, TextButton, TextInput, initializeThemeMode, setThemeMode } from "solid-lib";
+  import {
+    Card,
+    FilledButton,
+    IconButton,
+    OutlinedButton,
+    TextButton,
+    TextInput,
+    initializeThemeMode,
+    setThemeMode,
+  } from "solid-lib";
   import "solid-lib/ui.css";
   ```
 
@@ -240,11 +255,13 @@
 ### Task 4: Remove obsolete JSX compatibility code and align documentation
 
 **Files:**
+
 - Delete: `scripts/patch-solid-jsx-runtime.mjs`, `scripts/solid-jsx-runtime-shim.js`, `src/solid-js-compat.d.ts`, `demo/solid-js-compat.d.ts`
 - Modify: `README.md`, `demo/README.md`, `src/README.md`
 - Modify: `test/ui-components.test.ts` and `test/utils-lifecycle.test.ts` only for assertions about deleted compatibility or builder files
 
 **Interfaces:**
+
 - RC3 `@solidjs/web` owns the JSX runtime; installation must not patch `node_modules`.
 - README examples import components/hooks/utilities from `solid-lib` and CSS from `solid-lib/ui.css`.
 - Historical documents under `docs/superpowers/` remain unchanged except the active spec and plan.
@@ -276,10 +293,12 @@
 ### Task 5: Full Bun and browser acceptance
 
 **Files:**
+
 - Modify only files identified by a failing verification command from Tasks 1-4.
 - Verify: `package.json`, `demo/package.json`, `tsconfig.json`, `demo/tsconfig.json`, `demo/vite.config.ts`, `demo/src/App.tsx`, `demo/src/Document.tsx`, flat `src/`, `README.md`, and `demo/README.md`.
 
 **Interfaces:**
+
 - The final validation covers type contracts, UI behavior, native compiler output, official router consumer builds, Start mode dev serving, assets, history fallback, HMR, and absence of legacy boundaries.
 
 - [x] **Step 1: Run repository and demo typechecks.**

@@ -1,11 +1,11 @@
 {
-    "extends": "../tsconfig.json",
-    "compilerOptions": {
-        "paths": {
-            "solid-lib": ["../src/_.ts"],
-            "solid-lib/*": ["../src/*"],
-        },
-        "types": ["bun", "vite/client"],
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "solid-lib": ["../src/_.ts"],
+      "solid-lib/*": ["../src/*"]
     },
-    "include": ["global.d.ts", "vite.config.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+    "types": ["node", "vite/client"]
+  },
+  "include": ["global.d.ts", "vite.config.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]
 }

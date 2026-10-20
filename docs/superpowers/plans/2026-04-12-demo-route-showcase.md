@@ -13,6 +13,7 @@
 ### Task 1: Add demo shell and route page components
 
 **Files:**
+
 - Create: `demo/src/RouteShowcase.tsx`
 - Create: `demo/src/RouteShowcase.module.css`
 - Create: `demo/src/routes/HomeRoute.tsx`
@@ -29,6 +30,7 @@
 ### Task 2: Demonstrate route APIs
 
 **Files:**
+
 - Modify: `demo/src/RouteShowcase.tsx`
 - Modify: `demo/src/routes/SearchRoute.tsx`
 - Modify: `demo/src/routes/HistoryRoute.tsx`
@@ -42,6 +44,7 @@
 ### Task 3: Update demo documentation and verification
 
 **Files:**
+
 - Modify: `demo/README.md`
 
 - [ ] **Step 1: Document the new route examples**

@@ -1,16 +1,16 @@
 .stack_box {
-    width: inf;
-    height: calc(1px * var(--height, 160));
-    background: var(--bg, var(--accent-color));
-    display: grid;
-    place-items: center;
-    position: relative;
+  width: inf;
+  height: calc(1px * var(--height, 160));
+  background: var(--bg, var(--accent-color));
+  display: grid;
+  place-items: center;
+  position: relative;
 }
 
 .stack_box > span {
-    position: absolute !important;
-    left: calc(1px * var(--left));
-    right: calc(1px * var(--right));
-    top: calc(1px * var(--top));
-    bottom: calc(1px * var(--bottom));
+  position: absolute !important;
+  left: calc(1px * var(--left));
+  right: calc(1px * var(--right));
+  top: calc(1px * var(--top));
+  bottom: calc(1px * var(--bottom));
 }

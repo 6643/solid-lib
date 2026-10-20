@@ -1,110 +1,110 @@
 .navTab {
-    width: 100%;
-    height: 100vh;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 4px;
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px;
 }
 
 .navTab > nav {
-    user-select: none;
-    width: auto;
-    height: 100vh;
-    position: relative;
-    display: grid;
-    grid-auto-rows: 48px;
-    gap: 4px;
-    background-color: var(--inset-bg);
-    box-shadow: 4px 0 4px -4px var(--disabled-color);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    z-index: 100;
+  user-select: none;
+  width: auto;
+  height: 100vh;
+  position: relative;
+  display: grid;
+  grid-auto-rows: 48px;
+  gap: 4px;
+  background-color: var(--inset-bg);
+  box-shadow: 4px 0 4px -4px var(--disabled-color);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 100;
 }
 
 .navTab > nav::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 /* 线条指示器 */
 .navTab > nav::before {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: calc(1px * var(--top, 0));
-    width: 2px;
-    height: calc(1px * var(--height, 48));
-    background-color: var(--accent-color);
-    z-index: 1;
-    transition:
-        top 512ms ease,
-        height 512ms ease;
+  content: "";
+  position: absolute;
+  right: 0;
+  top: calc(1px * var(--top, 0));
+  width: 2px;
+  height: calc(1px * var(--height, 48));
+  background-color: var(--accent-color);
+  z-index: 1;
+  transition:
+    top 512ms ease,
+    height 512ms ease;
 }
 
 /* 滑块指示器 */
 .navTab > nav::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(1px * var(--top, 0));
-    height: calc(1px * var(--height, 48));
-    background-color: var(--accent-color);
-    opacity: 0.12;
-    transition:
-        top 512ms ease,
-        height 512ms ease;
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(1px * var(--top, 0));
+  height: calc(1px * var(--height, 48));
+  background-color: var(--accent-color);
+  opacity: 0.12;
+  transition:
+    top 512ms ease,
+    height 512ms ease;
 }
 
 .navTab > nav > div {
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition-duration: 512ms;
-    color: var(--raised-fg);
-    cursor: pointer;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-duration: 512ms;
+  color: var(--raised-fg);
+  cursor: pointer;
 }
 
 .navTab > nav > div.active {
-    color: var(--accent-color);
-    background-color: var(--inset-bg);
+  color: var(--accent-color);
+  background-color: var(--inset-bg);
 }
 
 /* 内容区 */
 .navTab > main {
-    width: 100%;
-    height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    animation-duration: 512ms;
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  animation-duration: 512ms;
 }
 
 .navTab > main.moveUp {
-    animation-name: moveUp;
+  animation-name: moveUp;
 }
 
 .navTab > main.moveDown {
-    animation-name: moveDown;
+  animation-name: moveDown;
 }
 
 @keyframes moveUp {
-    from {
-        opacity: 0;
-        transform: translateY(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes moveDown {
-    from {
-        opacity: 0;
-        transform: translateY(-100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

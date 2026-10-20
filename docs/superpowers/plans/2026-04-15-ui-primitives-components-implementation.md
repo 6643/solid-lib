@@ -48,6 +48,7 @@
 ## Task 1: Lock the Public Export Contract
 
 **Files:**
+
 - Modify: `src/ui/_.ts`
 - Create: `test/ui-components.test.ts`
 
@@ -95,6 +96,7 @@ Expected: PASS for the export assertions.
 ## Task 2: Refactor the Button Variants onto One Theme Core
 
 **Files:**
+
 - Modify: `src/ui/Button.tsx`
 - Modify: `src/ui/Button.module.css`
 - Modify: `test/ui-components.test.ts`
@@ -173,6 +175,7 @@ Expected: PASS
 ## Task 3: Add `Card` and `Input`
 
 **Files:**
+
 - Create: `src/ui/Card.tsx`
 - Create: `src/ui/Card.module.css`
 - Create: `src/ui/Input.tsx`
@@ -236,6 +239,7 @@ Expected: PASS
 ## Task 4: Exercise the Public Components in the Consumer Smoke Build
 
 **Files:**
+
 - Modify: `test/demo-local-consumer.ts`
 - Modify: `demo/src/ThemePlayground.tsx`
 
@@ -273,6 +277,7 @@ Expected: PASS
 ## Task 5: Document and Verify the Final Surface
 
 **Files:**
+
 - Modify: `src/ui/README.md`
 - Modify: `test/ui-components.test.ts`
 

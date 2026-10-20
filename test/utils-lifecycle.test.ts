@@ -1,10 +1,12 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "./harness/test.ts";
+import { readText } from "./harness/io.ts";
+import { sleep } from "./harness/proc.ts";
 import { join } from "node:path";
 
-import { createDebounce } from "../src/createDebounce";
-import { selectRelevantMutations } from "../src/useMutation";
+import { createDebounce } from "../src/createDebounce.ts";
+import { selectRelevantMutations } from "../src/useMutation.ts";
 
-const readSource = (path: string) => Bun.file(join(import.meta.dir, "..", path)).text();
+const readSource = (path: string) => readText(join(import.meta.dirname, "..", path));
 
 describe("createDebounce", () => {
   test("exposes cancel that prevents a pending callback", async () => {
@@ -17,7 +19,7 @@ describe("createDebounce", () => {
     expect(typeof debounced.cancel).toBe("function");
     debounced.cancel();
 
-    await Bun.sleep(40);
+    await sleep(40);
     expect(calls).toBe(0);
   });
 
@@ -28,15 +30,16 @@ describe("createDebounce", () => {
     }, 15);
 
     debounced();
-    await Bun.sleep(40);
+    await sleep(40);
     expect(calls).toBe(1);
   });
 });
 
 describe("useMutation", () => {
   test("selectRelevantMutations includes records whose target is a descendant", () => {
-    const child = { id: "child" };
-    const outsider = { id: "out" };
+    // 伪 Node 目标：仅供身份比较，不参与真实 DOM（断言语义不变）
+    const child = { id: "child" } as unknown as Node;
+    const outsider = { id: "out" } as unknown as Node;
     const root = {
       contains(node: unknown) {
         return node === root || node === child;

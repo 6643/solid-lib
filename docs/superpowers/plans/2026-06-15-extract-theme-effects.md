@@ -21,6 +21,7 @@
 ### Task 1: 创建 `applyTheme()` 函数
 
 **Files:**
+
 - Create: `src/use/useTheme.ts`
 
 - [ ] **Step 1: 创建 `use/useTheme.ts`**
@@ -32,11 +33,11 @@ import { createStorage } from "./createStorage";
 type Theme = "light" | "dark";
 
 export const applyTheme = () => {
-    const [theme] = createStorage<Theme>("theme", "light");
-    createEffect(
-        () => theme(),
-        (current) => document.documentElement.setAttribute("theme", current),
-    );
+  const [theme] = createStorage<Theme>("theme", "light");
+  createEffect(
+    () => theme(),
+    (current) => document.documentElement.setAttribute("theme", current),
+  );
 };
 ```
 
@@ -55,6 +56,7 @@ git commit -m "feat: 添加 applyTheme 函数"
 ### Task 2: 创建 `applyAccent()` 函数
 
 **Files:**
+
 - Create: `src/use/useAccent.ts`
 
 - [ ] **Step 1: 创建 `use/useAccent.ts`**
@@ -64,11 +66,11 @@ import { createEffect } from "solid-js";
 import { createStorage } from "./createStorage";
 
 export const applyAccent = () => {
-    const [accent] = createStorage("accent", "teal");
-    createEffect(
-        () => accent(),
-        (color) => document.documentElement.style.setProperty("--accent-color", color),
-    );
+  const [accent] = createStorage("accent", "teal");
+  createEffect(
+    () => accent(),
+    (color) => document.documentElement.style.setProperty("--accent-color", color),
+  );
 };
 ```
 
@@ -87,6 +89,7 @@ git commit -m "feat: 添加 applyAccent 函数"
 ### Task 3: 修改 `ThemeToggle` 移除副作用
 
 **Files:**
+
 - Modify: `src/ui/ThemeToggle.tsx`
 
 - [ ] **Step 1: 修改 `ThemeToggle.tsx`**
@@ -110,6 +113,7 @@ export const ThemeToggle = () => {
 ```
 
 变更点：
+
 - 移除 `import { createEffect } from "solid-js"`
 - 移除 `createEffect(...)` 块
 
@@ -128,6 +132,7 @@ git commit -m "refactor: ThemeToggle 移除 createEffect 副作用"
 ### Task 4: 修改 `AccentPicker` 移除副作用
 
 **Files:**
+
 - Modify: `src/ui/AccentPicker.tsx`
 
 - [ ] **Step 1: 修改 `AccentPicker.tsx`**
@@ -180,6 +185,7 @@ export const AccentPicker = () => {
 ```
 
 变更点：
+
 - 移除 `import { createEffect } from "solid-js"` 中的 `createEffect`（保留 `createSignal` 和 `For`）
 - 移除 `createEffect(...)` 块
 
@@ -198,6 +204,7 @@ git commit -m "refactor: AccentPicker 移除 createEffect 副作用"
 ### Task 5: 更新导出并验证
 
 **Files:**
+
 - Modify: `src/ui/_.ts`
 
 - [ ] **Step 1: 在 `_.ts` 中添加导出**
@@ -236,6 +243,7 @@ Expected: BUILD SUCCESS
 - [ ] **Step 2: 验证需求清单**
 
 Check:
+
 - `applyTheme()` 可独立调用，从 localStorage 读取主题并设置到 `document.documentElement`
 - `applyAccent()` 可独立调用，从 localStorage 读取强调色并设置 CSS 变量
 - `ThemeToggle` 组件移除了 `createEffect`，仅保留 UI 切换

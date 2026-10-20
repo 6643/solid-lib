@@ -1,12 +1,15 @@
-export const createThrottle = <T extends (...args: any[]) => any>(fn: T, wait: number): ((...args: Parameters<T>) => void) => {
-    let inThrottle = false;
+export const createThrottle = <T extends (...args: any[]) => any>(
+  fn: T,
+  wait: number,
+): ((...args: Parameters<T>) => void) => {
+  let inThrottle = false;
 
-    return function (this: any, ...args: Parameters<T>): void {
-        if (inThrottle) return;
+  return function (this: any, ...args: Parameters<T>): void {
+    if (inThrottle) return;
 
-        fn.apply(this, args);
-        inThrottle = true;
+    fn.apply(this, args);
+    inThrottle = true;
 
-        setTimeout(() => (inThrottle = false), wait);
-    };
+    setTimeout(() => (inThrottle = false), wait);
+  };
 };

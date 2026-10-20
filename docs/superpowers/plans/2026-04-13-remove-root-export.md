@@ -13,6 +13,7 @@
 ### Task 1: Lock the no-root-export rule with failing tests
 
 **Files:**
+
 - Modify: `test/package-metadata.test.ts`
 - Modify: `test/solid-dev.test.ts`
 
@@ -27,6 +28,7 @@ Expected: FAIL because the root export still exists and the builder subpath is n
 ### Task 2: Remove the root export
 
 **Files:**
+
 - Modify: `package.json`
 - Delete: `src/_.ts`
 
@@ -42,6 +44,7 @@ Expected: PASS on metadata shape
 ### Task 3: Migrate all builder imports
 
 **Files:**
+
 - Modify: `test/solid-dev.test.ts`
 
 - [ ] **Step 1: Replace every `defineSolidBuildConfig` import from `solid-lib` with `solid-lib/builder`**
@@ -55,6 +58,7 @@ Expected: PASS
 ### Task 4: Migrate all route imports
 
 **Files:**
+
 - Modify: `demo/src/RouteShowcase.tsx`
 - Modify: `demo/src/routes/SearchRoute.tsx`
 - Modify: `demo/src/routes/HistoryRoute.tsx`
@@ -71,6 +75,7 @@ Expected: PASS
 ### Task 5: Update docs
 
 **Files:**
+
 - Modify: `README.md`
 - Modify: `src/builder/README.md`
 - Modify: `src/route/README.md`
@@ -82,6 +87,7 @@ Expected: PASS
 ### Task 6: Full verification
 
 **Files:**
+
 - Review: `package.json`
 - Review: `src/builder/README.md`
 - Review: `src/route/README.md`

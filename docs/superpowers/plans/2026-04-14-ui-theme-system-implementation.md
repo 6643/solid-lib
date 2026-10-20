@@ -58,6 +58,7 @@
 ## Task 1: Publish the `ui` Surface
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `README.md`
 - Create: `src/ui/README.md`
@@ -138,6 +139,7 @@ git commit -m "feat: publish ui package surface"
 ## Task 2: Replace Class Toggling with Root Theme Mode API
 
 **Files:**
+
 - Modify: `src/ui/theme.ts`
 - Modify: `src/ui/_.ts`
 - Modify: `test/theme.test.ts`
@@ -207,6 +209,7 @@ export const setDarkTheme = () => {
 ```
 
 Test helpers should fake:
+
 - `document.documentElement.getAttribute`
 - `document.documentElement.setAttribute`
 - `globalThis.localStorage`
@@ -226,6 +229,7 @@ git commit -m "feat: add root theme mode api"
 ## Task 3: Add the Public CSS Theme Contract
 
 **Files:**
+
 - Create: `src/ui/_.css`
 - Create: `test/ui-theme-css.test.ts`
 
@@ -316,6 +320,7 @@ git commit -m "feat: add ui theme css contract"
 ## Task 4: Exercise the Public UI Exports in Consumer Smoke Tests
 
 **Files:**
+
 - Modify: `test/demo-local-consumer.ts`
 
 - [ ] **Step 1: Extend the consumer fixture to import the new UI exports**
@@ -352,6 +357,7 @@ Only fix the packaging/export issues required for this build to succeed.
 - [ ] **Step 4: Run both consumer smoke modes**
 
 Run:
+
 - `bun run test:local-consumer`
 - `bun run test:packed-consumer`
 
@@ -367,6 +373,7 @@ git commit -m "test: cover ui exports in consumer smoke build"
 ## Task 5: Add a Demo Playground that Uses Only the New Variables
 
 **Files:**
+
 - Modify: `demo/global.d.ts`
 - Modify: `demo/src/_.tsx`
 - Create: `demo/src/ThemePlayground.tsx`
@@ -430,16 +437,26 @@ const ThemePlayground = () => {
   return (
     <main class={styles.shell}>
       <div class={styles.controls}>
-        <button type="button" onClick={() => applyMode("system")}>System</button>
-        <button type="button" onClick={() => applyMode("light")}>Light</button>
-        <button type="button" onClick={() => applyMode("dark")}>Dark</button>
+        <button type="button" onClick={() => applyMode("system")}>
+          System
+        </button>
+        <button type="button" onClick={() => applyMode("light")}>
+          Light
+        </button>
+        <button type="button" onClick={() => applyMode("dark")}>
+          Dark
+        </button>
       </div>
       <section class={styles.card}>
         <input class={styles.input} value="Inset field" />
         <div class={styles.actions}>
           <button type="button">Base</button>
-          <button type="button" class={styles.theme}>Theme</button>
-          <button type="button" class={styles.disabled}>Disabled</button>
+          <button type="button" class={styles.theme}>
+            Theme
+          </button>
+          <button type="button" class={styles.disabled}>
+            Disabled
+          </button>
         </div>
         <p class={styles.error}>Enter a valid email address.</p>
       </section>
@@ -478,10 +495,12 @@ const ThemePlayground = () => {
 - [ ] **Step 4: Run demo verification**
 
 Run:
+
 - `cd demo && bun run typecheck`
 - `cd demo && bun run build`
 
 Expected:
+
 - typecheck PASS
 - build PASS with CSS and JS output
 
@@ -495,11 +514,13 @@ git commit -m "demo: add ui theme playground"
 ## Task 6: Full Verification Pass
 
 **Files:**
+
 - Modify: any files still needed from earlier tasks
 
 - [ ] **Step 1: Run the focused unit suite**
 
 Run:
+
 - `bun test test/package-metadata.test.ts`
 - `bun test test/theme.test.ts`
 - `bun test test/ui-theme-css.test.ts`
@@ -509,6 +530,7 @@ Expected: PASS
 - [ ] **Step 2: Run the broader verification commands**
 
 Run:
+
 - `bun run test:unit`
 - `bun run test:local-consumer`
 - `bun run test:packed-consumer`
@@ -520,6 +542,7 @@ Expected: PASS
 - [ ] **Step 3: Sanity-check the public API surface**
 
 Confirm manually:
+
 - `solid-lib/ui` exports the runtime functions
 - `solid-lib/ui.css` resolves in both linked and packed consumers
 - `html[data-theme-mode]` is the only runtime mode hook

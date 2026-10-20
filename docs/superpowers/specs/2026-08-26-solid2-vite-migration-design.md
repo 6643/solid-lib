@@ -20,7 +20,7 @@
 `demo/vite.config.ts` 使用：
 
 ```ts
-solid({ start: true, compiler: "native", ssr: false })
+solid({ start: true, compiler: "native", ssr: false });
 ```
 
 这使用 `@solidjs/vite-plugin` 的官方 Start mode，而不是安装与 Solid 2 RC 不兼容的 `@solidjs/start` 包。`ssr: false` 保留当前客户端渲染语义，同时交给官方插件负责 JSX、lazy transform、Solid Refresh/HMR、静态 shell 和资源图；`vite` 命令由 Bun 执行。

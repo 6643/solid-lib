@@ -21,17 +21,18 @@
 
 ### 文件变更
 
-| 文件 | 变更 |
-|------|------|
-| `use/useTheme.ts` | 新增 `applyTheme()` |
-| `use/useAccent.ts` | 新增 `applyAccent()` |
-| `ui/ThemeToggle.tsx` | 移除 `createEffect`，保留 UI + `createStorage` |
+| 文件                  | 变更                                           |
+| --------------------- | ---------------------------------------------- |
+| `use/useTheme.ts`     | 新增 `applyTheme()`                            |
+| `use/useAccent.ts`    | 新增 `applyAccent()`                           |
+| `ui/ThemeToggle.tsx`  | 移除 `createEffect`，保留 UI + `createStorage` |
 | `ui/AccentPicker.tsx` | 移除 `createEffect`，保留 UI + `createStorage` |
-| `ui/_.ts` | 导出 `applyTheme`、`applyAccent` |
+| `ui/_.ts`             | 导出 `applyTheme`、`applyAccent`               |
 
 ### 实现细节
 
 **`use/useTheme.ts`**
+
 ```ts
 import { createEffect } from "solid-js";
 import { createStorage } from "./createStorage";
@@ -39,29 +40,31 @@ import { createStorage } from "./createStorage";
 type Theme = "light" | "dark";
 
 export const applyTheme = () => {
-    const [theme] = createStorage<Theme>("theme", "light");
-    createEffect(
-        () => theme(),
-        (current) => document.documentElement.setAttribute("theme", current),
-    );
+  const [theme] = createStorage<Theme>("theme", "light");
+  createEffect(
+    () => theme(),
+    (current) => document.documentElement.setAttribute("theme", current),
+  );
 };
 ```
 
 **`use/useAccent.ts`**
+
 ```ts
 import { createEffect } from "solid-js";
 import { createStorage } from "./createStorage";
 
 export const applyAccent = () => {
-    const [accent] = createStorage("accent", "teal");
-    createEffect(
-        () => accent(),
-        (color) => document.documentElement.style.setProperty("--accent-color", color),
-    );
+  const [accent] = createStorage("accent", "teal");
+  createEffect(
+    () => accent(),
+    (color) => document.documentElement.style.setProperty("--accent-color", color),
+  );
 };
 ```
 
 **`ui/ThemeToggle.tsx`（修改后）**
+
 ```ts
 import { IconButton } from "./Button";
 import { createStorage } from "../use/createStorage";
@@ -79,6 +82,7 @@ export const ThemeToggle = () => {
 ```
 
 **`ui/AccentPicker.tsx`（修改后）**
+
 ```ts
 import { createSignal, For } from "solid-js";
 import { IconButton } from "./Button";
