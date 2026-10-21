@@ -119,7 +119,7 @@ stateDiagram-v2
 1. 键是 history entry 的 `depth`, 不是 pathname (同一路径可有多条历史记录)。
 2. 在 scroll 事件里记录, 不在离开时读取 (阻断/回滚的导航会让"离开时读"记错)。
 3. 恢复只做一次, 在目标渲染后的首帧 (`requestAnimationFrame`, 无则 microtask) `scrollTo`。不做 ResizeObserver 追赶式恢复。
-4. `programmatic` 标志: 恢复引发的 scroll 不能判为用户接管; 用户真实滚动取消待恢复。
+4. `programmatic` 标志: 恢复引发的 scroll 不能判为用户接管; 待恢复由真实用户意图 (`wheel` / `touchstart` / `keydown`) 取消, 不由 `scroll` 取消 —— 浏览器自己的历史恢复也会派发 `scroll`。
 5. push 时剪掉 `depth >= 新 depth` 的记录并回到顶部; replace 保持 depth 与位置。
 6. `pagehide` 把 `positions` 与 `depth` 写入 `sessionStorage`; 首屏绑定 `ensureRouteState` 时仅当 `navigation.type !== "navigate"` (reload / back_forward) 才恢复。
 7. 初始化时设 `history.scrollRestoration = "manual"`, 一次性。
@@ -197,7 +197,7 @@ stateDiagram-v2
 - 多块: 2 无条件 + 1 `<Show>` → 渲染数量 2/3 随翻转; 匹配归零 → 兜底出现 → 翻回 → 兜底消失
 - query: 缺键 fallback, `Infinity` / `NaN` 回退, 自定义 parser 收到 `null`, 重复键取首个
 - 导航: push 拒绝跨源/协议相对/非 http(s), 违规不写 history
-- 滚动: scroll → 记录 → pop → `scrollTo` 恰好一次; programmatic 不取消; 用户滚动取消; push 剪枝; replace 不剪枝; `pagehide` → sessionStorage 往返; reload 才恢复 (首次 navigate 不恢复)
+- 滚动: scroll → 记录 → pop → `scrollTo` 恰好一次; programmatic 不取消; 用户意图 (wheel/触摸/键盘) 取消; 目标位置在标记时快照; push 剪枝; replace 不剪枝; `pagehide` → sessionStorage 往返; reload 才恢复 (首次 navigate 不恢复)
 
 契约断言 (源码层面): 模块顶层无 `window` / `history` / `document` 访问; 组件体内 `untrack` 读取静态 props; 注册在组件体内同步写入 (普通 `Map`, 非响应式写), 用 `onCleanup` 注销。
 
