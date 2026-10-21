@@ -1,0 +1,78 @@
+import type { RoutePort } from "../src/Route.ts";
+
+type Listener = (event?: unknown) => void;
+
+/**
+ * 假浏览器端口: 只实现 src/Route.ts 用到的表面.
+ * 事件通过 emit 手动触发, 调用通过 calls 观测, 监听器数量用 listenerCount 断言成对摘除.
+ */
+export const createFakePort = (path = "/", state: unknown = null) => {
+  const listeners = new Map<string, Listener[]>();
+  const calls = { scrollTo: [] as Array<[number, number]>, storage: {} as Record<string, string> };
+  const url = () => new URL(path, "https://example.test");
+  const port = {
+    location: {
+      get pathname() {
+        return url().pathname;
+      },
+      get search() {
+        return url().search;
+      },
+      get hash() {
+        return url().hash;
+      },
+      origin: "https://example.test",
+      get href() {
+        return url().href;
+      },
+    },
+    history: {
+      state,
+      scrollRestoration: "auto" as "auto" | "manual",
+      pushState: (_state: unknown, _unused: string, next: string) => {
+        path = next;
+      },
+      replaceState: (_state: unknown, _unused: string, next: string) => {
+        path = next;
+      },
+    },
+    scrollY: 0,
+    scrollTo: (x: number, y: number) => {
+      calls.scrollTo.push([x, y]);
+    },
+    addEventListener: (type: string, listener: Listener) => {
+      listeners.set(type, [...(listeners.get(type) ?? []), listener]);
+    },
+    removeEventListener: (type: string, listener: Listener) => {
+      listeners.set(
+        type,
+        (listeners.get(type) ?? []).filter((item) => item !== listener),
+      );
+    },
+    document: {
+      addEventListener: (type: string, listener: Listener) => {
+        const key = `document:${type}`;
+        listeners.set(key, [...(listeners.get(key) ?? []), listener]);
+      },
+      removeEventListener: (type: string, listener: Listener) => {
+        const key = `document:${type}`;
+        listeners.set(
+          key,
+          (listeners.get(key) ?? []).filter((item) => item !== listener),
+        );
+      },
+    },
+    sessionStorage: {
+      getItem: (key: string) => calls.storage[key] ?? null,
+      setItem: (key: string, value: string) => {
+        calls.storage[key] = value;
+      },
+    },
+    emit: (type: string, event?: unknown) => {
+      for (const listener of listeners.get(type) ?? []) listener(event);
+    },
+    listenerCount: (type: string) => (listeners.get(type) ?? []).length,
+    calls,
+  };
+  return port as typeof port & RoutePort;
+};
