@@ -2,12 +2,17 @@ import { expect, test } from "./harness/test.ts";
 import { createFakePort } from "./route-fakes.ts";
 import {
   ensureRouteState,
+  hasActiveExactRoute,
+  hasActiveFallbackRoute,
   isFallbackRoutePath,
   matchesExactRoute,
   normalizePathname,
   parseParam,
   parseParams,
   readLocation,
+  registerRoute,
+  resetRouteForTests,
+  unregisterRoute,
 } from "../src/Route.ts";
 
 test("normalizePathname decodes, collapses slashes, and strips the trailing slash", () => {
@@ -72,4 +77,36 @@ test("ensureRouteState is idempotent and detaching clears the snapshot", () => {
 
   detach();
   expect(readLocation().search).toBe("");
+});
+
+test("three routes on one path all match and the fallback follows the enabled ones", () => {
+  const detach = ensureRouteState(createFakePort("/abc"));
+  let thirdEnabled = false;
+
+  const first = registerRoute({ path: "/abc", fallback: false, isEnabled: () => true });
+  const second = registerRoute({ path: "/abc/", fallback: false, isEnabled: () => true });
+  const third = registerRoute({ path: "/abc", fallback: false, isEnabled: () => thirdEnabled });
+  const fallback = registerRoute({ path: "/*", fallback: true, isEnabled: () => true });
+
+  expect(hasActiveExactRoute("/abc")).toBe(true);
+  expect(hasActiveFallbackRoute()).toBe(false);
+
+  unregisterRoute(first);
+  unregisterRoute(second);
+  expect(hasActiveExactRoute("/abc")).toBe(false);
+  expect(hasActiveFallbackRoute()).toBe(true);
+
+  thirdEnabled = true;
+  expect(hasActiveExactRoute("/abc")).toBe(true);
+  expect(hasActiveFallbackRoute()).toBe(false);
+
+  thirdEnabled = false;
+  expect(hasActiveFallbackRoute()).toBe(true);
+
+  unregisterRoute(third);
+  unregisterRoute(fallback);
+  detach();
+  resetRouteForTests();
+  expect(hasActiveExactRoute("/abc")).toBe(false);
+  expect(hasActiveFallbackRoute()).toBe(true);
 });

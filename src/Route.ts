@@ -191,3 +191,48 @@ export const parseParams = <T extends ParamSchema>(
   );
   return Object.fromEntries(accessors) as { readonly [K in keyof T]: Accessor<ParsedParams<T>[K]> };
 };
+
+/** 一个已挂载的路由块. `isEnabled` 由使用方提供, 读取它就是订阅它的开关. */
+export type RegisteredRoute = {
+  path: string;
+  fallback: boolean;
+  isEnabled: () => boolean;
+};
+
+const registry = new Map<symbol, RegisteredRoute>();
+
+/** 注册一个路由块, 返回用于注销的 id. 非兜底路径在入口归一化. */
+export const registerRoute = (route: RegisteredRoute): symbol => {
+  const id = Symbol(route.path);
+  registry.set(id, {
+    path: route.fallback ? route.path : normalizePathname(route.path),
+    fallback: route.fallback,
+    isEnabled: route.isEnabled,
+  });
+  return id;
+};
+
+export const unregisterRoute = (id: symbol): void => {
+  registry.delete(id);
+};
+
+/**
+ * 是否存在"已启用且精确匹配"的块. 每次调用都全表扫描, 不缓存:
+ * 条目数是个位数, 而缓存需要跟随 isEnabled 增减, 只会引入失效 bug.
+ */
+export const hasActiveExactRoute = (pathname: string): boolean => {
+  for (const route of registry.values()) {
+    if (route.fallback || !route.isEnabled()) continue;
+    if (matchesExactRoute(route.path, pathname)) return true;
+  }
+  return false;
+};
+
+/** 兜底块判据: 当前 pathname 没有任何已启用的精确匹配. */
+export const hasActiveFallbackRoute = (): boolean =>
+  !hasActiveExactRoute(normalizePathname(readLocation().pathname));
+
+/** 仅供测试: 清空注册表. */
+export const resetRouteForTests = (): void => {
+  registry.clear();
+};
