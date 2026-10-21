@@ -13,6 +13,10 @@
       "types": "./src/_.ts",
       "import": "./src/_.ts"
     },
+    "./route": {
+      "types": "./src/Route.ts",
+      "import": "./src/Route.ts"
+    },
     "./ui.css": "./src/_.css"
   },
   "scripts": {

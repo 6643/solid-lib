@@ -19,10 +19,14 @@ test("solid-lib groups runtime, dev, and peer dependencies intentionally", async
   }>("package.json");
 
   expect(packageJson.bin).toBeUndefined();
-  expect(Object.keys(packageJson.exports).sort()).toEqual([".", "./ui.css"]);
+  expect(Object.keys(packageJson.exports).sort()).toEqual([".", "./route", "./ui.css"]);
   expect(packageJson.exports["."]).toEqual({
     types: "./src/_.ts",
     import: "./src/_.ts",
+  });
+  expect(packageJson.exports["./route"]).toEqual({
+    types: "./src/Route.ts",
+    import: "./src/Route.ts",
   });
   expect(packageJson.exports["./ui.css"]).toBe("./src/_.css");
 
