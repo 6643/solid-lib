@@ -11,6 +11,7 @@ export default defineConfig({
   plugins: lazyPlugins(() => [solid({ start: true, compiler: "native", ssr: false })]),
   resolve: {
     alias: {
+      "solid-lib/route": fileURLToPath(new URL("../src/Route.ts", import.meta.url)),
       "solid-lib/ui.css": fileURLToPath(new URL("../src/_.css", import.meta.url)),
       "solid-lib": fileURLToPath(new URL("../src/_.ts", import.meta.url)),
     },

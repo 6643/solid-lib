@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@solidjs/web':
-        specifier: 2.0.0-rc.15
-        version: 2.0.0-rc.15(solid-js@2.0.0-rc.15)
+        specifier: 2.0.0-rc.16
+        version: 2.0.0-rc.16(solid-js@2.0.0-rc.16)
       csstype:
         specifier: ^3.2.3
         version: 3.2.3
@@ -19,8 +19,8 @@ importers:
         specifier: ^26.6.5
         version: 26.6.5
       solid-js:
-        specifier: 2.0.0-rc.15
-        version: 2.0.0-rc.15
+        specifier: 2.0.0-rc.16
+        version: 2.0.0-rc.16
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -346,15 +346,15 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@solidjs/signals@2.0.0-rc.15':
-    resolution: {integrity: sha512-rMhLaYnBvpb9sB3NJGPsqIxjgr0XKU2nvBS7jhWX2fKx+K/m5O0VoAuCgYuTie3BMBZU9vX08NdnFXg508pcew==}
+  '@solidjs/signals@2.0.0-rc.16':
+    resolution: {integrity: sha512-WPMb8FuAVKyzF6sIgZn/c89V69VS3R4DtCnOoaS1ZXy5Uos9K/8yrclyQkG6kqkN3ubtPiPnaPfdjt/jfsi4qQ==}
     engines: {node: '>=22.12.0'}
 
-  '@solidjs/web@2.0.0-rc.15':
-    resolution: {integrity: sha512-xwt4rNZ9CXTdMraFqmVn/AXuHIXQJ3jnrKyzEZ4ZFdRCBml0VxL8pA5D3YZHSjHoF7okNAmiVtyRCMNz15jQCg==}
+  '@solidjs/web@2.0.0-rc.16':
+    resolution: {integrity: sha512-dWbRvG8PlcXelWYdoOmyJwItFPrPSsppUbOJ/RLrQhesQD3sEL9BTRUi8vdXyi+rdA8klYvxJtB43/BTqxJcbw==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
-      solid-js: ^2.0.0-rc.15
+      solid-js: ^2.0.0-rc.16
 
   '@testing-library/dom@10.4.2':
     resolution: {integrity: sha512-yzr2S9HyAIdhz2/6qHgbs665Q7PKVcDF05vsOlHPxG1mo36gKVesdYVeDLnXgfjJ03CrKRk08knc6+E/9m8v2Q==}
@@ -964,8 +964,8 @@ packages:
     resolution: {integrity: sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g==}
     engines: {node: '>=18'}
 
-  solid-js@2.0.0-rc.15:
-    resolution: {integrity: sha512-HXiWAEG5Rjp5C7reElUlvdriIadcbpwWwVdztTf0wuxeirw49rGuIzVbSRn06p6GjlINwi5d24Z46b478hNdvw==}
+  solid-js@2.0.0-rc.16:
+    resolution: {integrity: sha512-GtrX+ieB9ctN2eQ0raDOHAHZBpFPoMn98gCsUn6YD5hz0xSou3zzV4J3Hti6xclvvrnPIFO8NJ+kk+pXbuXPHg==}
     engines: {node: '>=22.12.0'}
 
   source-map-js@1.2.2:
@@ -1252,13 +1252,13 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@solidjs/signals@2.0.0-rc.15': {}
+  '@solidjs/signals@2.0.0-rc.16': {}
 
-  '@solidjs/web@2.0.0-rc.15(solid-js@2.0.0-rc.15)':
+  '@solidjs/web@2.0.0-rc.16(solid-js@2.0.0-rc.16)':
     dependencies:
       seroval: 1.6.7
       seroval-plugins: 1.6.7(seroval@1.6.7)
-      solid-js: 2.0.0-rc.15
+      solid-js: 2.0.0-rc.16
 
   '@testing-library/dom@10.4.2':
     dependencies:
@@ -1696,9 +1696,9 @@ snapshots:
       mrmime: 2.0.1
       totalist: 3.0.1
 
-  solid-js@2.0.0-rc.15:
+  solid-js@2.0.0-rc.16:
     dependencies:
-      '@solidjs/signals': 2.0.0-rc.15
+      '@solidjs/signals': 2.0.0-rc.16
       csstype: 3.2.3
       seroval: 1.6.7
       seroval-plugins: 1.6.7(seroval@1.6.7)

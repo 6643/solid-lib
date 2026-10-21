@@ -1,0 +1,14 @@
+# TODO(2026-10-22): 下列版本在升级当天发布, 未满 24h 供应链窗口; 过期后删除本段,
+# `vp install --frozen-lockfile` 会自行通过策略校验。
+minimumReleaseAgeExclude:
+  - solid-js@2.0.0-rc.16
+  - "@solidjs/web@2.0.0-rc.16"
+  - "@solidjs/compiler@2.0.0-rc.16"
+  - "@solidjs/router@2.0.0-next.41"
+  - "@solidjs/signals@2.0.0-rc.16"
+  - "@solidjs/compiler-darwin-arm64@2.0.0-rc.16"
+  - "@solidjs/compiler-darwin-x64@2.0.0-rc.16"
+  - "@solidjs/compiler-linux-arm64-gnu@2.0.0-rc.16"
+  - "@solidjs/compiler-linux-x64-gnu@2.0.0-rc.16"
+  - "@solidjs/compiler-wasm32-wasi@2.0.0-rc.16"
+  - "@solidjs/compiler-win32-x64-msvc@2.0.0-rc.16"

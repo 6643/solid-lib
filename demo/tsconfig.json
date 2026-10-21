@@ -3,6 +3,7 @@
   "compilerOptions": {
     "paths": {
       "solid-lib": ["../src/_.ts"],
+      "solid-lib/route": ["../src/Route.ts"],
       "solid-lib/*": ["../src/*"]
     },
     "types": ["node", "vite/client"]

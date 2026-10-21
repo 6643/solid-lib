@@ -12,3 +12,4 @@ deno.lock
 solid-lib-trash-*
 .playwright-cli
 demo/.playwright-cli/
+.superpowers

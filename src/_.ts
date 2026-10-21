@@ -37,7 +37,6 @@ export { CenterBox } from "./CenterBox";
 export { BottomModal, TopModal, LeftModal, RightModal } from "./Modal";
 export { Expand } from "./Expand";
 export { Carousel } from "./Carousel";
-export { Swiper } from "./Swiper";
 export { LeftTab } from "./LeftTab";
 export { NavTab } from "./NavTab";
 export { TopTab } from "./TopTab";
@@ -57,7 +56,6 @@ export { SvgIcon } from "./SvgIcon";
 export { BottomTab } from "./BottomTab";
 export { CityPicker, initCities } from "./CityPicker";
 export { LoadMore } from "./LoadMore";
-export { Plyr } from "./Plyr";
 export { ThemeSwitch, AccentSelector } from "./Theme";
 export { ThemeToggle, AccentPicker } from "./Theme";
 
@@ -75,8 +73,6 @@ export {
 } from "./themeMode";
 export type { ThemeMode } from "./themeMode";
 export { useMediaQuery } from "./useMediaQuery";
-export { loadScript } from "./loadScript";
-export { loadStyle } from "./loadStyle";
 export { createDebounce } from "./createDebounce";
 export { createDebouncedSignal } from "./createDebouncedSignal";
 export { createCopy } from "./createCopy";

@@ -25,16 +25,42 @@
 
 - 组件、hooks 与工具统一从 `solid-lib` 导入
 - 样式只能从 `solid-lib/ui.css` 导入
-- 发布包只提供 `.` 与 `./ui.css` 两个入口，不提供旧的 UI/utils 子入口、构建器或路由子入口
+- 发布包只提供 `.`、`./route` 与 `./ui.css` 三个入口，不提供旧的 UI/utils 子入口或构建器入口
+- 路由只能从 `solid-lib/route` 导入（它不进根入口，避免把浏览器副作用带进只想要组件的应用）
 
 ```ts
 import { Card, FilledButton, createStorage, useVis } from "solid-lib";
 import "solid-lib/ui.css";
 ```
 
+## 路由
+
+`solid-lib/route` 是单文件静态路由：路径只支持静态字符串（不支持 `:id` 动态段），参数只走 query string，滚动恢复只记窗口位置。
+
+```tsx
+import { Route, getRouteBackPath, parseParam, pushRoute, replaceRoute } from "solid-lib/route";
+
+// 同一 path 可以有多块同时渲染；`when` 为假时该块不参与匹配
+<Route path="/buttons" component={ButtonsPage} />
+<Route path="/buttons" component={ButtonsExtra} when={() => showExtra()} />
+<Route path="/*" component={NotFound} />          // 没有任何精确匹配时兜底
+
+const page = parseParam("page", 1);               // accessor，读取即订阅
+page();                                           // 3
+
+pushRoute("/inputs?page=2");                      // 站内跳转，跨源/协议相对会抛错
+replaceRoute("/inputs?page=3");
+getRouteBackPath();                               // 上一条记录的 pathname + search，没有则 null
+```
+
+- 链接拦截：文档级接管普通左键站内 `<a href>`；修饰键、中键、`download`、`target="_blank"`、页内 `#锚点` 交回浏览器
+- 兜底块放在精确块之后：判据读的是"已注册"的块，把 `/*` 写在前面会让它在首次渲染时看不到同级精确块
+- 滚动恢复：按 history entry 的 depth 记 `window.scrollY`，`push` 剪掉前进方向并回到顶部，`replace` 保持位置；首屏只在 `reload` / `back_forward` 时恢复
+- 容器内部滚动（可滚动 `<main>`、列表）不在本模块职责内，用 `useKeepScroll` 自己记
+
 ## 应用构建
 
-demo 和消费者应用由 Vite+ 驱动（pnpm 作为包管理器，脚本经 `vp dev` / `vp build` / `vp preview` 执行）；路由使用应用自己的 `@solidjs/router` 依赖。当前 Solid 2 `2.0.0-rc.15` 对应的兼容 Router 版本固定为 `2.0.0-next.40`。
+demo 和消费者应用由 Vite+ 驱动（pnpm 作为包管理器，脚本经 `vp dev` / `vp build` / `vp preview` 执行）；路由使用本库的 `solid-lib/route`，不再依赖 `@solidjs/router`。
 
 demo 使用官方 Solid 2 Start mode：
 
@@ -52,4 +78,4 @@ vp -C demo run preview
 
 ## 基于 SolidJS 2.0
 
-本项目锁定 SolidJS `2.0.0-rc.15` 运行时与类型约束，JSX 使用官方 native compiler。`@solidjs/start@2.0.4` 暂不加入依赖图，因为它的依赖仍指向 Solid 1；Solid 2 RC 使用 `@solidjs/vite-plugin` 的 Start mode。
+本项目锁定 SolidJS `2.0.0-rc.16` 运行时与类型约束，JSX 使用官方 native compiler。`@solidjs/start@2.0.4` 暂不加入依赖图，因为它的依赖仍指向 Solid 1；Solid 2 RC 使用 `@solidjs/vite-plugin` 的 Start mode。
