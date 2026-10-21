@@ -236,3 +236,98 @@ export const hasActiveFallbackRoute = (): boolean =>
 export const resetRouteForTests = (): void => {
   registry.clear();
 };
+
+/** 本库写进 history.state 的元数据. 与用户 state 合并, 不整体覆盖. */
+export type RouteHistoryState = {
+  depth: number;
+  backPath?: string;
+};
+
+export const ROUTE_STATE_KEY = "__solid_route__";
+
+const warnRoute = (message: string): void => {
+  console.warn(`[solid-lib/route] ${message}`);
+};
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+  if (typeof value !== "object" || value === null) return false;
+  const proto = Object.getPrototypeOf(value) as unknown;
+  return proto === Object.prototype || proto === null;
+};
+
+const readRouteHistoryState = (state: unknown): RouteHistoryState => {
+  const meta = isPlainObject(state) ? state[ROUTE_STATE_KEY] : undefined;
+  if (!isPlainObject(meta)) return { depth: 0 };
+  const depth =
+    typeof meta.depth === "number" && Number.isFinite(meta.depth) ? meta.depth : 0;
+  const backPath = typeof meta.backPath === "string" ? meta.backPath : undefined;
+  return backPath === undefined ? { depth } : { depth, backPath };
+};
+
+const mergeHistoryState = (base: unknown, meta: RouteHistoryState): Record<string, unknown> =>
+  isPlainObject(base) ? { ...base, [ROUTE_STATE_KEY]: meta } : { [ROUTE_STATE_KEY]: meta };
+
+const refreshLocation = (): void => {
+  if (port) setLocation(snapshotOf(port));
+};
+
+/**
+ * 校验并解析站内路径, 返回 pathname + search + hash.
+ * 跨源, 协议相对 (`//host`), 非 http(s) 协议一律抛错.
+ */
+export const resolveInternalPath = (raw: string, origin: string): string => {
+  if (raw.startsWith("//")) throw new Error(`不允许协议相对路径: ${raw}`);
+  const url = new URL(raw, origin);
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new Error(`不允许的协议: ${url.protocol}`);
+  }
+  if (url.origin !== origin) throw new Error(`不允许跨源导航: ${raw}`);
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+
+/** 压入一条历史记录: depth 递增, backPath 指回离开时的 pathname + search. */
+export const pushRoute = (path: string): void => {
+  const current = port;
+  if (!current) {
+    warnRoute(`无浏览器环境, 忽略导航: ${path}`);
+    return;
+  }
+  const next = resolveInternalPath(path, current.location.origin);
+  const previous = readRouteHistoryState(current.history.state);
+  const state = mergeHistoryState(current.history.state, {
+    depth: previous.depth + 1,
+    backPath: `${current.location.pathname}${current.location.search}`,
+  });
+  current.history.pushState(state, "", next);
+  refreshLocation();
+};
+
+/** 替换当前历史记录: 继承 depth 与既有 backPath. */
+export const replaceRoute = (path: string): void => {
+  const current = port;
+  if (!current) {
+    warnRoute(`无浏览器环境, 忽略导航: ${path}`);
+    return;
+  }
+  const next = resolveInternalPath(path, current.location.origin);
+  const previous = readRouteHistoryState(current.history.state);
+  const meta: RouteHistoryState =
+    previous.backPath === undefined
+      ? { depth: previous.depth }
+      : { depth: previous.depth, backPath: previous.backPath };
+  current.history.replaceState(mergeHistoryState(current.history.state, meta), "", next);
+  refreshLocation();
+};
+
+/** 当前记录的返回路径; 缺失或非法 (旧数据) 时返回 null. */
+export const getRouteBackPath = (): string | null => {
+  const current = port;
+  if (!current) return null;
+  const { backPath } = readRouteHistoryState(current.history.state);
+  if (backPath === undefined) return null;
+  try {
+    return resolveInternalPath(backPath, current.location.origin);
+  } catch {
+    return null;
+  }
+};

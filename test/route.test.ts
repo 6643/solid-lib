@@ -9,6 +9,11 @@ import {
   normalizePathname,
   parseParam,
   parseParams,
+  pushRoute,
+  replaceRoute,
+  resolveInternalPath,
+  ROUTE_STATE_KEY,
+  getRouteBackPath,
   readLocation,
   registerRoute,
   resetRouteForTests,
@@ -109,4 +114,70 @@ test("three routes on one path all match and the fallback follows the enabled on
   resetRouteForTests();
   expect(hasActiveExactRoute("/abc")).toBe(false);
   expect(hasActiveFallbackRoute()).toBe(true);
+});
+
+test("pushRoute and replaceRoute write depth plus backPath into history state", () => {
+  const port = createFakePort("/start");
+  const pushed: Array<{ state: never; url: string }> = [];
+  port.history.pushState = (state, _unused, url) => {
+    port.history.state = state;
+    pushed.push({ state: state as never, url });
+  };
+  port.history.replaceState = (state) => {
+    port.history.state = state;
+  };
+  const detach = ensureRouteState(port);
+
+  pushRoute("/next?page=2");
+  expect(pushed.at(-1)?.url).toBe("/next?page=2");
+  expect((port.history.state as Record<string, never>)[ROUTE_STATE_KEY]).toMatchObject({
+    depth: 1,
+    backPath: "/start",
+  });
+  expect(getRouteBackPath()).toBe("/start");
+
+  replaceRoute("/other");
+  expect((port.history.state as Record<string, never>)[ROUTE_STATE_KEY]).toMatchObject({
+    depth: 1,
+    backPath: "/start",
+  });
+  expect(getRouteBackPath()).toBe("/start");
+
+  detach();
+  expect(getRouteBackPath()).toBe(null);
+});
+
+test("navigation rejects cross-origin, protocol-relative and non-http(s) paths", () => {
+  const port = createFakePort("/start");
+  let writes = 0;
+  port.history.pushState = () => {
+    writes += 1;
+  };
+  const detach = ensureRouteState(port);
+
+  for (const bad of [
+    "https://evil.test/x",
+    "//evil.test/x",
+    "javascript:alert(1)",
+    "data:text/html,x",
+  ]) {
+    expect(() => pushRoute(bad)).toThrow();
+  }
+  expect(writes).toBe(0);
+  expect(resolveInternalPath("/ok?x=1#h", "https://example.test")).toBe("/ok?x=1#h");
+
+  detach();
+});
+
+test("navigation without a browser warns and does nothing", () => {
+  const warnings: string[] = [];
+  const original = console.warn;
+  console.warn = (message: string) => {
+    warnings.push(message);
+  };
+
+  expect(() => pushRoute("/silent")).not.toThrow();
+  expect(warnings.some((line) => line.includes("/silent"))).toBe(true);
+
+  console.warn = original;
 });
