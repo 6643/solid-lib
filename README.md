@@ -34,7 +34,7 @@ import "solid-lib/ui.css";
 
 ## 应用构建
 
-demo 和消费者应用由 Vite+ 驱动（pnpm 作为包管理器，脚本经 `vp dev` / `vp build` / `vp preview` 执行）；路由使用应用自己的 `@solidjs/router` 依赖。当前 Solid 2 `2.0.0-rc.15` 对应的兼容 Router 版本固定为 `2.0.0-next.40`。
+demo 和消费者应用由 Vite+ 驱动（pnpm 作为包管理器，脚本经 `vp dev` / `vp build` / `vp preview` 执行）；路由使用应用自己的 `@solidjs/router` 依赖。当前 Solid 2 `2.0.0-rc.16` 对应的兼容 Router 版本固定为 `2.0.0-next.41`。
 
 demo 使用官方 Solid 2 Start mode：
 
@@ -52,4 +52,4 @@ vp -C demo run preview
 
 ## 基于 SolidJS 2.0
 
-本项目锁定 SolidJS `2.0.0-rc.15` 运行时与类型约束，JSX 使用官方 native compiler。`@solidjs/start@2.0.4` 暂不加入依赖图，因为它的依赖仍指向 Solid 1；Solid 2 RC 使用 `@solidjs/vite-plugin` 的 Start mode。
+本项目锁定 SolidJS `2.0.0-rc.16` 运行时与类型约束，JSX 使用官方 native compiler。`@solidjs/start@2.0.4` 暂不加入依赖图，因为它的依赖仍指向 Solid 1；Solid 2 RC 使用 `@solidjs/vite-plugin` 的 Start mode。

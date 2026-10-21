@@ -1,0 +1,6 @@
+# TODO(2026-10-22): 下列版本在升级当天发布, 未满 24h 供应链窗口; 过期后删除本段,
+# `vp install --frozen-lockfile` 会自行通过策略校验。
+minimumReleaseAgeExclude:
+  - solid-js@2.0.0-rc.16
+  - "@solidjs/web@2.0.0-rc.16"
+  - "@solidjs/signals@2.0.0-rc.16"

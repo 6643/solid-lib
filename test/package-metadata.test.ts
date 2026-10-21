@@ -3,7 +3,7 @@ import { readText } from "./harness/io.ts";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-const SOLID_RC = "2.0.0-rc.15";
+const SOLID_RC = "2.0.0-rc.16";
 
 const readJson = async <T>(relativePath: string): Promise<T> =>
   JSON.parse(await readText(join(import.meta.dirname, "..", relativePath))) as T;
@@ -68,7 +68,7 @@ test("demo uses the official Solid 2 Vite toolchain", async () => {
     preview: "vp preview",
   });
   expect(demoPackageJson.devDependencies["@solidjs/compiler"]).toBe(SOLID_RC);
-  expect(demoPackageJson.devDependencies["@solidjs/router"]).toBe("2.0.0-next.40");
+  expect(demoPackageJson.devDependencies["@solidjs/router"]).toBe("2.0.0-next.41");
   expect(demoPackageJson.devDependencies["@solidjs/vite-plugin"]).toBe("3.0.0-next.50");
   expect(demoPackageJson.devDependencies["solid-js"]).toBe(SOLID_RC);
   expect(demoPackageJson.devDependencies["solid-lib"]).toBeUndefined();

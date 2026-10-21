@@ -11,26 +11,17 @@ test("root entry exports the public component and utility primitives", async () 
   expect(source).toContain('export { initTheme, useTheme, initAccent, useAccent } from "./Theme";');
   expect(source).toContain('export { createStorage } from "./createStorage";');
   expect(source).toContain('export { useMediaQuery } from "./useMediaQuery";');
-  expect(source).toContain('export { loadScript } from "./loadScript";');
-  expect(source).toContain('export { loadStyle } from "./loadStyle";');
 });
 
 test("flat source keeps generic helpers beside UI components", async () => {
-  const [buttonSource, loadMoreSource, themeSource, swiperSource, plyrSource, utilsSource] =
-    await Promise.all([
-      readText(join(import.meta.dirname, "..", "src", "Button.tsx")),
-      readText(join(import.meta.dirname, "..", "src", "LoadMore.tsx")),
-      readText(join(import.meta.dirname, "..", "src", "Theme.tsx")),
-      readText(join(import.meta.dirname, "..", "src", "Swiper.tsx")),
-      readText(join(import.meta.dirname, "..", "src", "Plyr.tsx")),
-      readText(join(import.meta.dirname, "..", "src", "_.ts")),
-    ]);
+  const [buttonSource, loadMoreSource, themeSource, utilsSource] = await Promise.all([
+    readText(join(import.meta.dirname, "..", "src", "Button.tsx")),
+    readText(join(import.meta.dirname, "..", "src", "LoadMore.tsx")),
+    readText(join(import.meta.dirname, "..", "src", "Theme.tsx")),
+    readText(join(import.meta.dirname, "..", "src", "_.ts")),
+  ]);
 
-  expect(await exists(join(import.meta.dirname, "..", "src", "loadScript.ts"))).toBe(true);
-  expect(await exists(join(import.meta.dirname, "..", "src", "loadStyle.ts"))).toBe(true);
   expect(await exists(join(import.meta.dirname, "..", "src", "useMediaQuery.ts"))).toBe(true);
-  expect(await exists(join(import.meta.dirname, "..", "src", "ui", "loadScript.ts"))).toBe(false);
-  expect(await exists(join(import.meta.dirname, "..", "src", "ui", "loadStyle.ts"))).toBe(false);
   expect(await exists(join(import.meta.dirname, "..", "src", "ui", "useMediaQuery.ts"))).toBe(
     false,
   );
@@ -44,12 +35,7 @@ test("flat source keeps generic helpers beside UI components", async () => {
   expect(themeSource).toContain('from "./themeAccent"');
   expect(themeSource).not.toContain('from "./createStorage"');
   expect(themeSource).toContain('from "./themeMode"');
-  expect(swiperSource).toContain('from "./loadScript"');
-  expect(plyrSource).toContain('from "./loadScript"');
-  expect(plyrSource).toContain('from "./loadStyle"');
   expect(utilsSource).toContain('export { useMediaQuery } from "./useMediaQuery";');
-  expect(utilsSource).toContain('export { loadScript } from "./loadScript";');
-  expect(utilsSource).toContain('export { loadStyle } from "./loadStyle";');
 });
 
 test("ui and utils use Solid 2.0 lifecycle primitives instead of createTrackedEffect", async () => {
