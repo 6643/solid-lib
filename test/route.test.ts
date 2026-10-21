@@ -12,6 +12,7 @@ import {
   pushRoute,
   replaceRoute,
   resolveInternalPath,
+  Route,
   ROUTE_STATE_KEY,
   getRouteBackPath,
   readLocation,
@@ -280,4 +281,99 @@ test("pushRoute prunes forward positions and returns to the top", () => {
   });
 
   detach();
+});
+
+test("a Route renders only while its path matches and its when is true", () => {
+  const detach = ensureRouteState(createFakePort("/abc"));
+  let gated = false;
+
+  const matched = Route({ path: "/abc", component: () => "abc" }) as () => unknown;
+  const other = Route({ path: "/def", component: () => "def" }) as () => unknown;
+  const conditional = Route({
+    path: "/abc/",
+    when: () => gated,
+    component: () => "gated",
+  }) as () => unknown;
+
+  expect(matched()).toBe("abc");
+  expect(other()).toBeUndefined();
+  expect(conditional()).toBeUndefined();
+  expect(hasActiveExactRoute("/abc")).toBe(true);
+
+  gated = true;
+  expect(conditional()).toBe("gated");
+
+  detach();
+  resetRouteForTests();
+});
+
+test("two exact routes on one path both render and the fallback stays hidden", () => {
+  const detach = ensureRouteState(createFakePort("/abc"));
+
+  const first = Route({ path: "/abc", component: () => "one" }) as () => unknown;
+  const second = Route({ path: "/abc", component: () => "two" }) as () => unknown;
+  const fallback = Route({ path: "/*", component: () => "fallback" }) as () => unknown;
+
+  expect([first(), second()]).toEqual(["one", "two"]);
+  expect(fallback()).toBeUndefined();
+
+  detach();
+  resetRouteForTests();
+});
+
+test("the fallback appears once the last exact route stops matching", () => {
+  const detach = ensureRouteState(createFakePort("/abc"));
+  const fallback = Route({ path: "/*", component: () => "fallback" }) as () => unknown;
+  const exact = Route({ path: "/abc", component: () => "exact" }) as () => unknown;
+
+  expect(exact()).toBe("exact");
+  expect(fallback()).toBeUndefined();
+
+  detach();
+  ensureRouteState(createFakePort("/abc/other"));
+  expect(fallback()).toBe("fallback");
+
+  resetRouteForTests();
+});
+
+test("a path with dynamic segments warns once and never matches", () => {
+  const detach = ensureRouteState(createFakePort("/user/42"));
+  const warnings: string[] = [];
+  const original = console.warn;
+  console.warn = (message: string) => {
+    warnings.push(message);
+  };
+
+  const view = Route({ path: "/user/:id", component: () => "user" }) as () => unknown;
+  expect(view()).toBeUndefined();
+  expect(view()).toBeUndefined();
+  expect(warnings.filter((line) => line.includes("/user/:id")).length).toBe(1);
+
+  console.warn = original;
+  detach();
+  resetRouteForTests();
+});
+
+test("anchor clicks navigate in place and are ignored outside the contract", () => {
+  const port = createFakePort("/start");
+  const detach = ensureRouteState(port);
+  const pushed: string[] = [];
+  port.history.pushState = (_state, _unused, url) => {
+    pushed.push(url);
+  };
+
+  const anchor = (href: string, extra: Record<string, unknown> = {}) => ({
+    closest: (selector: string) =>
+      selector === "a[href]" ? { getAttribute: () => href, href, ...extra } : null,
+  });
+
+  port.emit("document:click", { button: 0, target: anchor("/go") });
+  port.emit("document:click", { button: 0, target: anchor("/ext"), metaKey: true });
+  port.emit("document:click", { button: 1, target: anchor("/middle") });
+  port.emit("document:click", { button: 0, target: anchor("#inpage") });
+  port.emit("document:click", { button: 0, target: anchor("https://evil.test/x") });
+  expect(pushed).toEqual(["/go"]);
+
+  detach();
+  resetRouteForTests();
 });

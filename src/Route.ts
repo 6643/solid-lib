@@ -1,5 +1,12 @@
 // 轻量静态路由: 路径只有静态字符串, 参数只走 query string, 滚动只记窗口位置.
-import { createSignal, type Accessor } from "solid-js";
+import {
+  createComponent,
+  createSignal,
+  onSettled,
+  untrack,
+  type Accessor,
+  type Component,
+} from "solid-js";
 
 // 本模块顶层零副作用: 浏览器对象一律经 ensureRouteState() 惰性获取.
 
@@ -127,7 +134,7 @@ export const ensureRouteState = (next?: RoutePort | null): (() => void) => {
   detachRouteState();
   port = source;
   setLocation(snapshotOf(source));
-  bindScrollState(source);
+  bindRouteListeners(source);
   detachRoute = detachRouteState;
   return detachRoute;
 };
@@ -477,8 +484,11 @@ const onPageHideEvent = (): void => {
   }
 };
 
-/** 挂上滚动状态机的监听; 摘除逻辑压进 unbindTasks, 由 detachRouteState 统一执行. */
-const bindScrollState = (source: RoutePort): void => {
+/**
+ * 挂上路由状态机的监听 (窗口滚动 + 文档级链接拦截);
+ * 摘除逻辑压进 unbindTasks, 由 detachRouteState 统一执行.
+ */
+const bindRouteListeners = (source: RoutePort): void => {
   source.history.scrollRestoration = "manual";
   const listeners: Array<[string, (event?: unknown) => void]> = [
     ["scroll", onScrollEvent],
@@ -490,8 +500,113 @@ const bindScrollState = (source: RoutePort): void => {
     source.addEventListener(type, listener);
     unbindTasks.push(() => source.removeEventListener(type, listener));
   }
+  source.document.addEventListener("click", onDocumentClick);
+  unbindTasks.push(() => source.document.removeEventListener("click", onDocumentClick));
   armInitialRestore(source);
 };
 
 /** 上次会话落盘的 depth; 无存储或损坏时为 0. */
 export const readScrollDepth = (): number => storedDepth;
+
+type ClickLike = {
+  defaultPrevented?: boolean;
+  button?: number;
+  altKey?: boolean;
+  ctrlKey?: boolean;
+  metaKey?: boolean;
+  shiftKey?: boolean;
+  target?: unknown;
+  preventDefault?: () => void;
+};
+
+type AnchorLike = {
+  getAttribute?: (name: string) => string | null;
+  href?: string;
+  download?: string;
+  target?: string;
+};
+
+/**
+ * 文档级链接拦截: 只接管"修饰键未按下 / 主键 / 站内 http(s) 绝对或相对链接".
+ * 其余 (新窗口, 下载, 页内锚点, 跨源) 一律交回浏览器.
+ */
+const onDocumentClick = (event?: unknown): void => {
+  if (!isPlainObject(event)) return;
+  const click = event as ClickLike;
+  if (click.defaultPrevented) return;
+  if (click.button !== 0) return;
+  if (click.altKey || click.ctrlKey || click.metaKey || click.shiftKey) return;
+  const target = click.target as { closest?: (selector: string) => unknown } | undefined;
+  if (typeof target?.closest !== "function") return;
+  const anchor = target.closest("a[href]") as AnchorLike | null;
+  if (!anchor) return;
+  const rawHref = typeof anchor.getAttribute === "function" ? anchor.getAttribute("href") : anchor.href;
+  if (!rawHref || rawHref.startsWith("#")) return;
+  if (anchor.download) return;
+  if (anchor.target && anchor.target !== "_self") return;
+  try {
+    pushRoute(rawHref);
+  } catch {
+    warnRoute(`忽略无法路由的链接: ${rawHref}`);
+    return;
+  }
+  click.preventDefault?.();
+};
+
+export type RouteProps = {
+  path: string;
+  component: Component;
+  when?: boolean | (() => boolean);
+};
+
+/** 含冒号 (动态段) 或非法通配的路径: 只告警, 永不匹配. */
+const isUnsupportedRoutePath = (path: string): boolean =>
+  path.includes(":") || (path.includes("*") && !isFallbackRoutePath(path));
+
+/**
+ * 一个路由块. 同一 path 可以有多块同时渲染 (典型 2-3 块, 含嵌在 Show 里的条件块);
+ * `when` 为假时该块不参与精确匹配, 于是 `/*` 兜底会自动接手.
+ *
+ * 返回 accessor 而不是节点: 作为子表达式放进 JSX 时, 由渲染器按响应式读取重跑,
+ * 静态调用时也可以直接 `route()` 取当前渲染值.
+ */
+export const Route = (props: RouteProps): unknown => {
+  const rawPath = untrack(() => props.path);
+  const fallback = isFallbackRoutePath(rawPath);
+  const routePath = fallback ? rawPath : normalizePathname(rawPath);
+  const RouteComponent = untrack(() => props.component);
+  const unsupported = isUnsupportedRoutePath(rawPath);
+
+  if (unsupported) warnRoute(`路径只支持静态字符串, 该块永不匹配: ${rawPath}`);
+
+  const readWhen = (): boolean => {
+    if (unsupported) return false;
+    const when = props.when;
+    if (typeof when === "function") return Boolean(when());
+    return when ?? true;
+  };
+
+  // 体内同步注册 (写普通 Map, 不是响应式写): 注册必须早于任何兜底判据读取.
+  const routeId = registerRoute({ path: routePath, fallback, isEnabled: readWhen });
+  // 卸载时注销; 无 owner 的环境 (测试) 里不触发, 由 resetRouteForTests 兜底.
+  onSettled(() => () => unregisterRoute(routeId));
+
+  let rendered: unknown;
+
+  return () => {
+    if (!readWhen()) {
+      rendered = undefined;
+      return undefined;
+    }
+    const pathname = readLocation().pathname;
+    const matched = fallback
+      ? !hasActiveExactRoute(pathname)
+      : matchesExactRoute(routePath, pathname);
+    if (!matched) {
+      rendered = undefined;
+      return undefined;
+    }
+    rendered ??= createComponent(RouteComponent, {});
+    return rendered;
+  };
+};
