@@ -377,3 +377,19 @@ test("anchor clicks navigate in place and are ignored outside the contract", () 
   detach();
   resetRouteForTests();
 });
+
+test("mounting a Route attaches the window state machine", () => {
+  const port = createFakePort("/abc");
+  (globalThis as { window?: unknown }).window = port;
+
+  const view = Route({ path: "/abc", component: () => "abc" }) as () => unknown;
+  expect(view()).toBe("abc");
+  expect(port.listenerCount("popstate")).toBe(1);
+  expect(port.listenerCount("scroll")).toBe(1);
+  expect(port.listenerCount("document:click")).toBe(1);
+  expect(port.history.scrollRestoration).toBe("manual");
+
+  ensureRouteState(null);
+  delete (globalThis as { window?: unknown }).window;
+  resetRouteForTests();
+});

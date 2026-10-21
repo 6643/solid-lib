@@ -1,0 +1,67 @@
+/* demo 用文档流滚动: 库里把 body / #app 锁成 100vh 会把窗口滚动关掉,
+   而窗口级滚动恢复只认 window.scrollY. */
+html body {
+  height: auto;
+  min-height: 100vh;
+}
+
+html #app {
+  height: auto;
+  min-height: 100vh;
+}
+
+.demo-shell {
+  min-height: 100vh;
+}
+
+.demo-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  background-color: var(--raised-bg);
+  color: var(--raised-fg);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 24%);
+}
+
+.demo-link {
+  color: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.demo-link:hover {
+  text-decoration: underline;
+}
+
+.demo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.demo-main {
+  padding-top: 56px;
+}
+
+.demo-note {
+  margin: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: var(--inset-bg);
+  color: var(--inset-fg);
+  font-size: 14px;
+}
+
+.demo-note a {
+  color: inherit;
+}

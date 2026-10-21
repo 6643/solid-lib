@@ -6,6 +6,7 @@ import {
   untrack,
   type Accessor,
   type Component,
+  type Element,
 } from "solid-js";
 
 // 本模块顶层零副作用: 浏览器对象一律经 ensureRouteState() 惰性获取.
@@ -570,7 +571,7 @@ const isUnsupportedRoutePath = (path: string): boolean =>
  * 返回 accessor 而不是节点: 作为子表达式放进 JSX 时, 由渲染器按响应式读取重跑,
  * 静态调用时也可以直接 `route()` 取当前渲染值.
  */
-export const Route = (props: RouteProps): unknown => {
+export const Route = (props: RouteProps): Element => {
   const rawPath = untrack(() => props.path);
   const fallback = isFallbackRoutePath(rawPath);
   const routePath = fallback ? rawPath : normalizePathname(rawPath);
@@ -586,6 +587,9 @@ export const Route = (props: RouteProps): unknown => {
     return when ?? true;
   };
 
+  // 挂上窗口状态机 (滚动恢复 + 链接拦截). 幂等, 无浏览器时是 no-op.
+  ensureRouteState();
+
   // 体内同步注册 (写普通 Map, 不是响应式写): 注册必须早于任何兜底判据读取.
   const routeId = registerRoute({ path: routePath, fallback, isEnabled: readWhen });
   // 卸载时注销; 无 owner 的环境 (测试) 里不触发, 由 resetRouteForTests 兜底.
@@ -593,7 +597,7 @@ export const Route = (props: RouteProps): unknown => {
 
   let rendered: unknown;
 
-  return () => {
+  const renderRoute = () => {
     if (!readWhen()) {
       rendered = undefined;
       return undefined;
@@ -609,4 +613,7 @@ export const Route = (props: RouteProps): unknown => {
     rendered ??= createComponent(RouteComponent, {});
     return rendered;
   };
+  // 运行时契约: 渲染器把函数子表达式当响应式 accessor 重复求值 (insert() 的 effect 分支),
+  // 所以这里返回 accessor 而非节点; 类型上 Element 不含函数, 只能显式转一次.
+  return renderRoute as unknown as Element;
 };

@@ -72,7 +72,7 @@ test("demo uses the official Solid 2 Vite toolchain", async () => {
     preview: "vp preview",
   });
   expect(demoPackageJson.devDependencies["@solidjs/compiler"]).toBe(SOLID_RC);
-  expect(demoPackageJson.devDependencies["@solidjs/router"]).toBe("2.0.0-next.41");
+  expect(demoPackageJson.devDependencies["@solidjs/router"]).toBeUndefined();
   expect(demoPackageJson.devDependencies["@solidjs/vite-plugin"]).toBe("3.0.0-next.50");
   expect(demoPackageJson.devDependencies["solid-js"]).toBe(SOLID_RC);
   expect(demoPackageJson.devDependencies["solid-lib"]).toBeUndefined();
