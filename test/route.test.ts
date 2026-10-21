@@ -15,6 +15,12 @@ import {
   ROUTE_STATE_KEY,
   getRouteBackPath,
   readLocation,
+  recordScroll,
+  markTraversal,
+  pruneScroll,
+  readScrollDepth,
+  restoreScroll,
+  SCROLL_STORAGE_KEY,
   registerRoute,
   resetRouteForTests,
   unregisterRoute,
@@ -180,4 +186,98 @@ test("navigation without a browser warns and does nothing", () => {
   expect(warnings.some((line) => line.includes("/silent"))).toBe(true);
 
   console.warn = original;
+});
+
+test("pop restores the recorded window position exactly once", () => {
+  const port = createFakePort("/list", { [ROUTE_STATE_KEY]: { depth: 2 } });
+  const detach = ensureRouteState(port);
+
+  port.scrollY = 640;
+  port.emit("scroll");
+  port.emit("popstate", { state: { [ROUTE_STATE_KEY]: { depth: 2 } } });
+  restoreScroll();
+  restoreScroll();
+  expect(port.calls.scrollTo).toEqual([[0, 640]]);
+
+  detach();
+  expect(port.listenerCount("scroll")).toBe(0);
+  expect(port.listenerCount("popstate")).toBe(0);
+});
+
+test("user scrolling cancels a pending restore", () => {
+  const port = createFakePort("/list", { [ROUTE_STATE_KEY]: { depth: 1 } });
+  const detach = ensureRouteState(port);
+  recordScroll(500);
+
+  port.emit("popstate", { state: { [ROUTE_STATE_KEY]: { depth: 1 } } });
+  port.scrollY = 12;
+  port.emit("scroll");
+  restoreScroll();
+  expect(port.calls.scrollTo).toEqual([]);
+
+  detach();
+});
+
+test("pruneScroll drops forward positions, and pagehide persists the map", () => {
+  const port = createFakePort("/a", { [ROUTE_STATE_KEY]: { depth: 3 } });
+  const detach = ensureRouteState(port);
+
+  recordScroll(900);
+  pruneScroll(3);
+  markTraversal(3);
+  restoreScroll();
+  expect(port.calls.scrollTo).toEqual([]);
+
+  recordScroll(300);
+  port.emit("pagehide");
+  expect(JSON.parse(port.calls.storage[SCROLL_STORAGE_KEY] ?? "{}")).toEqual({
+    depth: 3,
+    positions: { "3": 300 },
+  });
+
+  detach();
+});
+
+test("a corrupt storage payload is ignored", () => {
+  const port = createFakePort("/a");
+  port.calls.storage[SCROLL_STORAGE_KEY] = "{not json";
+  const detach = ensureRouteState(port);
+
+  expect(readScrollDepth()).toBe(0);
+
+  detach();
+});
+
+test("only reload and back_forward initial loads arm a restore", () => {
+  const port = createFakePort("/a", { [ROUTE_STATE_KEY]: { depth: 0 } });
+  (port as unknown as { performance: unknown }).performance = {
+    getEntriesByType: () => [{ type: "navigate" }],
+  };
+  const detach = ensureRouteState(port);
+
+  restoreScroll();
+  expect(port.calls.scrollTo).toEqual([]);
+
+  detach();
+});
+
+test("pushRoute prunes forward positions and returns to the top", () => {
+  const port = createFakePort("/a", { [ROUTE_STATE_KEY]: { depth: 1 } });
+  const detach = ensureRouteState(port);
+
+  recordScroll(120);
+  port.history.state = { [ROUTE_STATE_KEY]: { depth: 2 } };
+  recordScroll(500);
+  port.history.state = { [ROUTE_STATE_KEY]: { depth: 1 } };
+
+  pushRoute("/c");
+  expect(port.calls.scrollTo).toEqual([[0, 0]]);
+
+  port.emit("pagehide");
+  expect(JSON.parse(port.calls.storage[SCROLL_STORAGE_KEY] ?? "{}").positions).toEqual({
+    "1": 120,
+    "2": 0,
+  });
+
+  detach();
 });

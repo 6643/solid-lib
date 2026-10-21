@@ -127,6 +127,7 @@ export const ensureRouteState = (next?: RoutePort | null): (() => void) => {
   detachRouteState();
   port = source;
   setLocation(snapshotOf(source));
+  bindScrollState(source);
   detachRoute = detachRouteState;
   return detachRoute;
 };
@@ -285,6 +286,19 @@ export const resolveInternalPath = (raw: string, origin: string): string => {
   return `${url.pathname}${url.search}${url.hash}`;
 };
 
+/** 回到顶部并记下新 depth 的位置, 恢复引发的 scroll 不计为用户接管. */
+const resetScrollToTop = (): void => {
+  const source = port;
+  if (!source) return;
+  programmatic = true;
+  try {
+    source.scrollTo(0, 0);
+  } finally {
+    programmatic = false;
+  }
+  positions.set(currentDepth(), 0);
+};
+
 /** 压入一条历史记录: depth 递增, backPath 指回离开时的 pathname + search. */
 export const pushRoute = (path: string): void => {
   const current = port;
@@ -299,7 +313,10 @@ export const pushRoute = (path: string): void => {
     backPath: `${current.location.pathname}${current.location.search}`,
   });
   current.history.pushState(state, "", next);
+  // 前进方向的记录已经失效; 新 entry 从顶部开始.
+  pruneScroll(previous.depth + 1);
   refreshLocation();
+  resetScrollToTop();
 };
 
 /** 替换当前历史记录: 继承 depth 与既有 backPath. */
@@ -331,3 +348,150 @@ export const getRouteBackPath = (): string | null => {
     return null;
   }
 };
+
+export const SCROLL_STORAGE_KEY = "solid-route:scroll";
+
+// 窗口滚动位置按 history entry 的 depth 记: 同一 pathname 可以有多条历史记录.
+const positions = new Map<number, number>();
+let storedDepth = 0;
+let pendingDepth: number | null = null;
+// 恢复引发的 scroll 不能判成用户接管.
+let programmatic = false;
+
+const currentDepth = (): number => readRouteHistoryState(port?.history.state).depth;
+
+/** 记录当前 depth 的窗口位置. 只在 scroll 事件里写, 不在离开时读. */
+export const recordScroll = (y: number): void => {
+  if (!port) return;
+  positions.set(currentDepth(), y);
+};
+
+/** 剪掉前进方向的记录: push 之后 depth >= 新 depth 的历史不会再被回到. */
+export const pruneScroll = (fromDepth: number): void => {
+  for (const depth of [...positions.keys()]) {
+    if (depth >= fromDepth) positions.delete(depth);
+  }
+};
+
+/** 标记一次待恢复: pop / bfcache / reload 到达后调用. */
+export const markTraversal = (depth: number): void => {
+  pendingDepth = Number.isFinite(depth) ? depth : null;
+  if (pendingDepth === null) return;
+  const source = port;
+  if (!source) return;
+  if (source.requestAnimationFrame) {
+    source.requestAnimationFrame(() => restoreScroll());
+    return;
+  }
+  queueMicrotask(() => restoreScroll());
+};
+
+/** 恢复待恢复位置, 每次只滚一次; 无端口或无目标时立即返回 (含已解绑的迟到调度). */
+export const restoreScroll = (): void => {
+  const source = port;
+  const target = pendingDepth;
+  if (!source || target === null) return;
+  pendingDepth = null;
+  const y = positions.get(target);
+  if (y === undefined) return;
+  programmatic = true;
+  try {
+    source.scrollTo(0, y);
+  } finally {
+    programmatic = false;
+  }
+};
+
+/** 从 sessionStorage 读回上次的位置表; 损坏或旧结构一律当作空表. */
+const readStoredScroll = (source: RoutePort): void => {
+  positions.clear();
+  storedDepth = 0;
+  let raw: string | null = null;
+  try {
+    raw = source.sessionStorage.getItem(SCROLL_STORAGE_KEY);
+  } catch {
+    return;
+  }
+  if (!raw) return;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!isPlainObject(parsed)) return;
+    if (typeof parsed.depth === "number" && Number.isFinite(parsed.depth)) {
+      storedDepth = parsed.depth;
+    }
+    if (!isPlainObject(parsed.positions)) return;
+    for (const [key, value] of Object.entries(parsed.positions)) {
+      const depth = Number(key);
+      if (!Number.isFinite(depth)) continue;
+      if (typeof value !== "number" || !Number.isFinite(value)) continue;
+      positions.set(depth, value);
+    }
+  } catch {
+    positions.clear();
+    storedDepth = 0;
+  }
+};
+
+/** 首屏只在 reload / back_forward 时恢复; 正常导航不抢用户位置. */
+const armInitialRestore = (source: RoutePort): void => {
+  readStoredScroll(source);
+  const type = source.performance?.getEntriesByType?.("navigation")?.[0]?.type;
+  if (type !== "reload" && type !== "back_forward") return;
+  markTraversal(storedDepth > 0 ? storedDepth : currentDepth());
+};
+
+const onScrollEvent = (): void => {
+  const source = port;
+  if (!source || programmatic) return;
+  // 用户真实滚动 = 接管, 取消待恢复.
+  pendingDepth = null;
+  positions.set(currentDepth(), source.scrollY);
+};
+
+const onPopStateEvent = (event?: unknown): void => {
+  if (!port) return;
+  const state = isPlainObject(event) ? event.state : undefined;
+  refreshLocation();
+  markTraversal(readRouteHistoryState(state).depth);
+};
+
+const onPageShowEvent = (event?: unknown): void => {
+  const source = port;
+  if (!source) return;
+  const persisted = isPlainObject(event) && event.persisted === true;
+  if (!persisted) return;
+  readStoredScroll(source);
+  markTraversal(currentDepth());
+};
+
+const onPageHideEvent = (): void => {
+  const source = port;
+  if (!source) return;
+  try {
+    source.sessionStorage.setItem(
+      SCROLL_STORAGE_KEY,
+      JSON.stringify({ depth: currentDepth(), positions: Object.fromEntries(positions) }),
+    );
+  } catch {
+    // 存储不可用 (隐私模式 / 配额) 时放弃持久化, 不影响导航.
+  }
+};
+
+/** 挂上滚动状态机的监听; 摘除逻辑压进 unbindTasks, 由 detachRouteState 统一执行. */
+const bindScrollState = (source: RoutePort): void => {
+  source.history.scrollRestoration = "manual";
+  const listeners: Array<[string, (event?: unknown) => void]> = [
+    ["scroll", onScrollEvent],
+    ["popstate", onPopStateEvent],
+    ["pageshow", onPageShowEvent],
+    ["pagehide", onPageHideEvent],
+  ];
+  for (const [type, listener] of listeners) {
+    source.addEventListener(type, listener);
+    unbindTasks.push(() => source.removeEventListener(type, listener));
+  }
+  armInitialRestore(source);
+};
+
+/** 上次会话落盘的 depth; 无存储或损坏时为 0. */
+export const readScrollDepth = (): number => storedDepth;

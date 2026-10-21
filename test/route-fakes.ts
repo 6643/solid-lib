@@ -27,12 +27,19 @@ export const createFakePort = (path = "/", state: unknown = null) => {
       },
     },
     history: {
-      state,
+      get state() {
+        return state;
+      },
+      set state(next: unknown) {
+        state = next;
+      },
       scrollRestoration: "auto" as "auto" | "manual",
-      pushState: (_state: unknown, _unused: string, next: string) => {
+      pushState: (nextState: unknown, _unused: string, next: string) => {
+        state = nextState;
         path = next;
       },
-      replaceState: (_state: unknown, _unused: string, next: string) => {
+      replaceState: (nextState: unknown, _unused: string, next: string) => {
+        state = nextState;
         path = next;
       },
     },
