@@ -56,6 +56,7 @@ getRouteBackPath();                               // 上一条记录的 pathname
 - 链接拦截：文档级接管普通左键站内 `<a href>`；修饰键、中键、`download`、`target="_blank"`、页内 `#锚点` 交回浏览器
 - 兜底块放在精确块之后：判据读的是"已注册"的块，把 `/*` 写在前面会让它在首次渲染时看不到同级精确块
 - 滚动恢复：按 history entry 的 depth 记 `window.scrollY`，`push` 剪掉前进方向并回到顶部，`replace` 保持位置；首屏只在 `reload` / `back_forward` 时恢复
+- 待恢复只由真实用户意图（`wheel` / `touchstart` / `keydown`）取消；`scroll` 事件不取消，因为浏览器自己的历史恢复也会派发 `scroll`
 - 容器内部滚动（可滚动 `<main>`、列表）不在本模块职责内，用 `useKeepScroll` 自己记
 
 ## 应用构建

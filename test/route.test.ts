@@ -1,4 +1,6 @@
 import { expect, test } from "./harness/test.ts";
+import { readText } from "./harness/io.ts";
+import { join } from "node:path";
 import { createFakePort } from "./route-fakes.ts";
 import {
   ensureRouteState,
@@ -205,16 +207,31 @@ test("pop restores the recorded window position exactly once", () => {
   expect(port.listenerCount("popstate")).toBe(0);
 });
 
-test("user scrolling cancels a pending restore", () => {
+test("user input cancels a pending restore", () => {
   const port = createFakePort("/list", { [ROUTE_STATE_KEY]: { depth: 1 } });
   const detach = ensureRouteState(port);
   recordScroll(500);
 
   port.emit("popstate", { state: { [ROUTE_STATE_KEY]: { depth: 1 } } });
   port.scrollY = 12;
-  port.emit("scroll");
+  port.emit("wheel");
   restoreScroll();
   expect(port.calls.scrollTo).toEqual([]);
+
+  detach();
+});
+
+test("a browser-driven scroll during a pending restore neither cancels nor retargets it", () => {
+  const port = createFakePort("/list", { [ROUTE_STATE_KEY]: { depth: 1 } });
+  const detach = ensureRouteState(port);
+  recordScroll(700);
+
+  port.emit("popstate", { state: { [ROUTE_STATE_KEY]: { depth: 1 } } });
+  // 浏览器自己把同一个 entry 滚到别处 (原生 history 恢复), 然后我们才拿到帧
+  port.scrollY = 1012;
+  port.emit("scroll");
+  restoreScroll();
+  expect(port.calls.scrollTo).toEqual([[0, 700]]);
 
   detach();
 });
@@ -392,4 +409,62 @@ test("mounting a Route attaches the window state machine", () => {
   ensureRouteState(null);
   delete (globalThis as { window?: unknown }).window;
   resetRouteForTests();
+});
+
+test("the route location signal declares its intentional owned writes", async () => {
+  // 绑定发生在 <Route> 的组件体内: 全局路由状态写在 owned scope 里是刻意的初始化,
+  // 必须显式声明, 否则 Solid 2 dev 会抛 REACTIVE_WRITE_IN_OWNED_SCOPE 并停掉响应式系统.
+  const source = await readText(join(import.meta.dirname, "..", "src", "Route.ts"));
+  expect(source).toContain("createSignal<RouteLocation>(EMPTY_LOCATION, {");
+  expect(source).toContain("ownedWrite: true");
+});
+
+test("anchor interception works for DOM-style event instances, not just plain objects", () => {
+  const port = createFakePort("/start");
+  const detach = ensureRouteState(port);
+  const pushed: string[] = [];
+  port.history.pushState = (_state, _unused, url) => {
+    pushed.push(url);
+  };
+
+  class FakeMouseEvent {
+    button = 0;
+    defaultPrevented = false;
+    target: unknown;
+    constructor(target: unknown) {
+      this.target = target;
+    }
+    preventDefault() {
+      this.defaultPrevented = true;
+    }
+  }
+
+  const anchor = { closest: () => ({ getAttribute: () => "/go" }) };
+  const event = new FakeMouseEvent(anchor);
+  port.emit("document:click", event);
+
+  expect(pushed).toEqual(["/go"]);
+  expect(event.defaultPrevented).toBe(true);
+
+  detach();
+  resetRouteForTests();
+});
+
+test("popstate restores for DOM-style event instances", () => {
+  const port = createFakePort("/list", { [ROUTE_STATE_KEY]: { depth: 1 } });
+  const detach = ensureRouteState(port);
+  recordScroll(480);
+
+  class FakePopStateEvent {
+    state: unknown;
+    constructor(state: unknown) {
+      this.state = state;
+    }
+  }
+
+  port.emit("popstate", new FakePopStateEvent({ [ROUTE_STATE_KEY]: { depth: 1 } }));
+  restoreScroll();
+  expect(port.calls.scrollTo).toEqual([[0, 480]]);
+
+  detach();
 });

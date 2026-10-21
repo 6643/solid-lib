@@ -92,7 +92,11 @@ let port: RoutePort | null = null;
 let detachRoute: (() => void) | null = null;
 // 后续任务 (滚动监听 / 链接拦截) 把自己的摘除逻辑 push 进来, 统一由 detachRouteState 执行.
 let unbindTasks: Array<() => void> = [];
-const [location, setLocation] = createSignal<RouteLocation>(EMPTY_LOCATION);
+// 路由状态是全局单例, 绑定/解绑发生在 <Route> 的组件体内:
+// ownedWrite 显式声明这类"刻意初始化写", 否则 Solid 2 dev 会以 REACTIVE_WRITE_IN_OWNED_SCOPE 停机.
+const [location, setLocation] = createSignal<RouteLocation>(EMPTY_LOCATION, {
+  ownedWrite: true,
+});
 
 /** 当前 location 快照; 读取它就是订阅导航. */
 export const readLocation = (): RouteLocation => location();
@@ -113,11 +117,13 @@ const resolveGlobalPort = (): RoutePort | null => {
 };
 
 const detachRouteState = (): void => {
+  const wasBound = port !== null;
   for (const unbind of unbindTasks) unbind();
   unbindTasks = [];
   port = null;
   detachRoute = null;
-  setLocation(EMPTY_LOCATION);
+  // 从未绑定过就不要写快照: 少一次响应式写, 也少一次无意义的重算.
+  if (wasBound) setLocation(EMPTY_LOCATION);
 };
 
 /**
@@ -258,6 +264,10 @@ const warnRoute = (message: string): void => {
   console.warn(`[solid-lib/route] ${message}`);
 };
 
+/** DOM 事件是类实例 (原型不是 Object.prototype), 不能用 isPlainObject 判断. */
+const isObjectLike = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   if (typeof value !== "object" || value === null) return false;
   const proto = Object.getPrototypeOf(value) as unknown;
@@ -363,6 +373,8 @@ export const SCROLL_STORAGE_KEY = "solid-route:scroll";
 const positions = new Map<number, number>();
 let storedDepth = 0;
 let pendingDepth: number | null = null;
+// 目标位置在标记时就快照下来: 浏览器自己的恢复滚动可能在我们的帧之前改写位置表.
+let pendingY: number | undefined;
 // 恢复引发的 scroll 不能判成用户接管.
 let programmatic = false;
 
@@ -384,6 +396,7 @@ export const pruneScroll = (fromDepth: number): void => {
 /** 标记一次待恢复: pop / bfcache / reload 到达后调用. */
 export const markTraversal = (depth: number): void => {
   pendingDepth = Number.isFinite(depth) ? depth : null;
+  pendingY = pendingDepth === null ? undefined : positions.get(pendingDepth);
   if (pendingDepth === null) return;
   const source = port;
   if (!source) return;
@@ -397,10 +410,10 @@ export const markTraversal = (depth: number): void => {
 /** 恢复待恢复位置, 每次只滚一次; 无端口或无目标时立即返回 (含已解绑的迟到调度). */
 export const restoreScroll = (): void => {
   const source = port;
-  const target = pendingDepth;
-  if (!source || target === null) return;
+  const y = pendingY;
+  if (!source || pendingDepth === null) return;
   pendingDepth = null;
-  const y = positions.get(target);
+  pendingY = undefined;
   if (y === undefined) return;
   programmatic = true;
   try {
@@ -448,17 +461,22 @@ const armInitialRestore = (source: RoutePort): void => {
   markTraversal(storedDepth > 0 ? storedDepth : currentDepth());
 };
 
+/** scroll 只记录位置: 浏览器自己的恢复滚动也会派发 scroll, 不能拿它当"用户接管"的证据. */
 const onScrollEvent = (): void => {
   const source = port;
   if (!source || programmatic) return;
-  // 用户真实滚动 = 接管, 取消待恢复.
-  pendingDepth = null;
   positions.set(currentDepth(), source.scrollY);
+};
+
+/** 真实用户意图 (滚轮 / 触摸 / 键盘) 才取消待恢复. */
+const onUserIntentEvent = (): void => {
+  pendingDepth = null;
+  pendingY = undefined;
 };
 
 const onPopStateEvent = (event?: unknown): void => {
   if (!port) return;
-  const state = isPlainObject(event) ? event.state : undefined;
+  const state = isObjectLike(event) ? event.state : undefined;
   refreshLocation();
   markTraversal(readRouteHistoryState(state).depth);
 };
@@ -466,7 +484,7 @@ const onPopStateEvent = (event?: unknown): void => {
 const onPageShowEvent = (event?: unknown): void => {
   const source = port;
   if (!source) return;
-  const persisted = isPlainObject(event) && event.persisted === true;
+  const persisted = isObjectLike(event) && event.persisted === true;
   if (!persisted) return;
   readStoredScroll(source);
   markTraversal(currentDepth());
@@ -496,6 +514,9 @@ const bindRouteListeners = (source: RoutePort): void => {
     ["popstate", onPopStateEvent],
     ["pageshow", onPageShowEvent],
     ["pagehide", onPageHideEvent],
+    ["wheel", onUserIntentEvent],
+    ["touchstart", onUserIntentEvent],
+    ["keydown", onUserIntentEvent],
   ];
   for (const [type, listener] of listeners) {
     source.addEventListener(type, listener);
@@ -532,7 +553,7 @@ type AnchorLike = {
  * 其余 (新窗口, 下载, 页内锚点, 跨源) 一律交回浏览器.
  */
 const onDocumentClick = (event?: unknown): void => {
-  if (!isPlainObject(event)) return;
+  if (!isObjectLike(event)) return;
   const click = event as ClickLike;
   if (click.defaultPrevented) return;
   if (click.button !== 0) return;
